@@ -11,8 +11,8 @@ pub struct Model {
   pub id: i32,
   #[sea_orm(column_type = "Text")]
   pub username: String,
-  #[sea_orm(column_type = "Binary(BlobSize::Blob(None))")]
-  pub password: Vec<u8>,
+  #[sea_orm(column_type = "Text")]
+  pub password: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
