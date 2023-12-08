@@ -4,24 +4,36 @@ use axum::{
 };
 use serde_json::json;
 
+pub enum AppErrors {
+  AppError(AppError),
+  ApiError(ApiError)
+}
+
 pub struct AppError(pub anyhow::Error);
 
-impl IntoResponse for AppError {
+impl IntoResponse for AppErrors {
   fn into_response(self) -> Response {
-    (
-      StatusCode::INTERNAL_SERVER_ERROR,
-      format!("Something went wrong: {}", self.0),
-    )
-      .into_response()
+    match self {
+      AppErrors::AppError(e) => (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        format!("Something went wrong: {}", e.0),
+      )
+        .into_response(),
+
+      AppErrors::ApiError(e) => (
+        e.status,
+        e.message
+      ).into_response()
+    }
   }
 }
 
-impl<E> From<E> for AppError
+impl<E> From<E> for AppErrors
 where
   E: Into<anyhow::Error>,
 {
   fn from(err: E) -> Self {
-    Self(err.into())
+    AppErrors::AppError(AppError(err.into()))
   }
 }
 

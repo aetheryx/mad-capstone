@@ -1,18 +1,20 @@
 use crate::db::entities::user;
-use axum::{extract::State, routing, Json, Router, http::StatusCode, response::IntoResponse};
+use axum::{extract::State, routing, Json, Router, http::StatusCode};
 use sea_orm::{ActiveValue, DatabaseConnection, EntityTrait, QueryFilter, ColumnTrait};
 use serde::{Deserialize, Serialize};
 
-use super::{AppError, app_error::ApiError};
+use super::app_error::{ApiError, AppErrors};
 
 pub fn auth_router() -> Router<DatabaseConnection> {
-  Router::new().route("/signup", routing::post(auth_signup))
+  Router::new()
+    .route("/signup", routing::post(auth_signup))
+    .route("/login", routing::post(auth_login))
 }
 
 async fn auth_signup(
   State(db): State<DatabaseConnection>,
   Json(credentials): Json<AuthCredentials>,
-) -> anyhow::Result<Json<AuthResponse>, AppError> {
+) -> anyhow::Result<Json<AuthResponse>, AppErrors> {
   let hashed_password = bcrypt::hash(credentials.password, bcrypt::DEFAULT_COST)?;
 
   user::Entity::insert(user::ActiveModel {
@@ -31,7 +33,7 @@ async fn auth_signup(
 async fn auth_login(
   State(db): State<DatabaseConnection>,
   Json(credentials): Json<AuthCredentials>,
-) -> anyhow::Result<impl IntoResponse, AppError> {
+) -> anyhow::Result<Json<AuthResponse>, AppErrors> {
   let user = user::Entity::find()
     .filter(user::Column::Username.eq(credentials.username))
     .one(&db)
@@ -42,15 +44,17 @@ async fn auth_login(
     .unwrap_or(false);
 
   if !correct {
-    return Ok(ApiError {
+    return Err(AppErrors::ApiError(ApiError {
       status: StatusCode::UNAUTHORIZED,
       message: "Password is incorrect".into()
-    })
+    }))
   }
 
-  Ok(Json(AuthResponse {
-    token: user.passwordyea.into(),
-  }))
+  let resp = AuthResponse {
+    token: user.password.into(),
+  };
+
+  Ok(Json(resp))
 }
 
 #[derive(Deserialize)]
