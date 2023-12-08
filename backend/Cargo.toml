@@ -12,3 +12,4 @@ tower = "0.4.13"
 typeshare = "1.0.1"
 sea-orm = { version = "0.12", features = [ "sqlx-postgres", "runtime-tokio-native-tls", "macros" ] }
 anyhow = "1.0.75"
+just = "1.16.0"
