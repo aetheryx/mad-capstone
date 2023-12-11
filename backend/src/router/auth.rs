@@ -1,9 +1,9 @@
 use crate::db::entities::user;
-use axum::{extract::State, routing, Json, Router, http::StatusCode};
-use sea_orm::{ActiveValue, DatabaseConnection, EntityTrait, QueryFilter, ColumnTrait};
+use axum::{extract::State, http::StatusCode, routing, Json, Router};
+use sea_orm::{ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 
-use super::app_error::{ApiError, AppErrors};
+use super::app_error::{HttpError, HttpResult};
 
 pub fn auth_router() -> Router<DatabaseConnection> {
   Router::new()
@@ -14,12 +14,12 @@ pub fn auth_router() -> Router<DatabaseConnection> {
 async fn auth_signup(
   State(db): State<DatabaseConnection>,
   Json(credentials): Json<AuthCredentials>,
-) -> anyhow::Result<Json<AuthResponse>, AppErrors> {
-  let hashed_password = bcrypt::hash(credentials.password, bcrypt::DEFAULT_COST)?;
+) -> HttpResult<AuthResponse> {
+  let hashed_password = bcrypt::hash(&credentials.password, bcrypt::DEFAULT_COST)?;
 
   user::Entity::insert(user::ActiveModel {
     username: ActiveValue::Set(credentials.username),
-    password: ActiveValue::Set("sdfsfd".into()),
+    password: ActiveValue::Set(hashed_password.clone()),
     ..Default::default()
   })
   .exec(&db)
@@ -33,21 +33,23 @@ async fn auth_signup(
 async fn auth_login(
   State(db): State<DatabaseConnection>,
   Json(credentials): Json<AuthCredentials>,
-) -> anyhow::Result<Json<AuthResponse>, AppErrors> {
+) -> HttpResult<AuthResponse> {
   let user = user::Entity::find()
     .filter(user::Column::Username.eq(credentials.username))
     .one(&db)
-    .await?
-    .expect("User not found");
+    .await?;
 
-  let correct = bcrypt::verify(credentials.password, &user.password)
-    .unwrap_or(false);
+  let user = match user {
+    Some(u) => u,
+    None => {
+      return Err(HttpError::Status(StatusCode::NOT_FOUND));
+    }
+  };
+
+  let correct = bcrypt::verify(&credentials.password, &user.password).unwrap_or(false);
 
   if !correct {
-    return Err(AppErrors::ApiError(ApiError {
-      status: StatusCode::UNAUTHORIZED,
-      message: "Password is incorrect".into()
-    }))
+    return Err(HttpError::Status(StatusCode::UNAUTHORIZED));
   }
 
   let resp = AuthResponse {
