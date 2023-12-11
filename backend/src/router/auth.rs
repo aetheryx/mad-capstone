@@ -2,6 +2,7 @@ use crate::db::entities::user;
 use axum::{extract::State, http::StatusCode, routing, Json, Router};
 use sea_orm::{ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
+use typeshare::typeshare;
 
 use crate::util::app_error::{HttpError, HttpResult};
 use crate::util::jwt;
@@ -45,7 +46,7 @@ async fn auth_login(
 
   let correct = bcrypt::verify(&credentials.password, &user.password).unwrap_or(false);
   if !correct {
-    return Err(HttpError::Status(StatusCode::UNAUTHORIZED));
+    return Err(HttpError::Status(StatusCode::BAD_REQUEST));
   }
 
   let jwt = jwt::encode_jwt(&user)?;
@@ -53,12 +54,14 @@ async fn auth_login(
 }
 
 #[derive(Deserialize)]
+#[typeshare]
 struct AuthCredentials {
   username: String,
   password: String,
 }
 
 #[derive(Serialize)]
+#[typeshare]
 struct AuthResponse {
   token: String,
 }
