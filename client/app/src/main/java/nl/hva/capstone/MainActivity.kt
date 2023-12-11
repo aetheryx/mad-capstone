@@ -1,5 +1,6 @@
 package nl.hva.capstone
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver
@@ -9,41 +10,50 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import nl.hva.capstone.ui.theme.CapstoneTheme
+import nl.hva.capstone.viewmodels.SessionState
+import nl.hva.capstone.viewmodels.SessionViewModel
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
+    val sessionViewModel = SessionViewModel(application)
+
     setContent {
       CapstoneTheme {
-        // A surface container using the 'background' color from the theme
         Surface(
           modifier = Modifier.fillMaxSize(),
           color = MaterialTheme.colorScheme.surface
         ) {
-          CapstoneApp()
+          CapstoneApp(sessionViewModel)
         }
       }
     }
 
-    val ready = false
+    val content: View = findViewById(android.R.id.content)
+    content.viewTreeObserver.addOnPreDrawListener(
+      object : ViewTreeObserver.OnPreDrawListener {
+        override fun onPreDraw(): Boolean {
+          val ready = when (sessionViewModel.state.value) {
+            SessionState.INITIALISING, SessionState.AUTHENTICATED -> false
+            else -> true
+          }
 
-//    val content: View = findViewById(android.R.id.content)
-//    content.viewTreeObserver.addOnPreDrawListener(
-//      object : ViewTreeObserver.OnPreDrawListener {
-//        override fun onPreDraw(): Boolean {
-//          // Check whether the initial data is ready.
-//          return if (ready) {
-//            // The content is ready. Start drawing.
-//            content.viewTreeObserver.removeOnPreDrawListener(this)
-//            true
-//          } else {
-//            // The content isn't ready. Suspend.
-//            false
-//          }
-//        }
-//      }
-//    )
+          println("ready: ${sessionViewModel.state.value} $ready")
+
+          if (ready) {
+            content.viewTreeObserver.removeOnPreDrawListener(this)
+          }
+
+          return ready
+        }
+      }
+    )
   }
 }
