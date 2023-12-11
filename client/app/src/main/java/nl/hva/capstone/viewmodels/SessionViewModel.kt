@@ -16,10 +16,9 @@ import nl.hva.capstone.dataStore
 
 enum class SessionState {
   INITIALISING,
-  STALE,
   LOGGING_IN,
+  STALE,
   CREDENTIAL_ERROR,
-  AUTHENTICATED,
   READY
 }
 
@@ -72,7 +71,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
     }
 
     dataStore.edit { it[sessionTokenKey] = newToken }
-    state.postValue(SessionState.AUTHENTICATED)
+    state.postValue(SessionState.READY)
     me.postValue(user)
 
     return true

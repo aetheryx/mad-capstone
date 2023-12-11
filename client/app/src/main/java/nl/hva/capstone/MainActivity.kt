@@ -40,10 +40,7 @@ class MainActivity : ComponentActivity() {
     content.viewTreeObserver.addOnPreDrawListener(
       object : ViewTreeObserver.OnPreDrawListener {
         override fun onPreDraw(): Boolean {
-          val ready = when (sessionViewModel.state.value) {
-            SessionState.INITIALISING, SessionState.AUTHENTICATED -> false
-            else -> true
-          }
+          val ready = sessionViewModel.state.value != SessionState.INITIALISING
 
           println("ready: ${sessionViewModel.state.value} $ready")
 
