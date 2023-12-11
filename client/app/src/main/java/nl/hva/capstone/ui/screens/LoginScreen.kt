@@ -45,7 +45,7 @@ fun LoginScreen(
   val state by sessionViewModel.state.observeAsState()
   val isError = state == SessionState.CREDENTIAL_ERROR
 
-  if (state == SessionState.READY) {
+  if (state == SessionState.AUTHENTICATED) {
     navController.navigate("/home")
   }
 
@@ -100,10 +100,6 @@ fun LoginScreen(
       colors = ButtonDefaults.buttonColors()
     ) {
       when (state) {
-        SessionState.STALE,
-        SessionState.CREDENTIAL_ERROR -> {
-          Text(stringResource(R.string.log_in))
-        }
         SessionState.LOGGING_IN -> {
           CircularProgressIndicator(
             color = MaterialTheme.colorScheme.onPrimary,
@@ -112,7 +108,7 @@ fun LoginScreen(
           )
         }
         else -> {
-
+          Text(stringResource(R.string.log_in))
         }
       }
     }
