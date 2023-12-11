@@ -45,7 +45,7 @@ fun LoginScreen(
   val state by sessionViewModel.state.observeAsState()
   val isError = state == SessionState.CREDENTIAL_ERROR
 
-  if (state == SessionState.AUTHENTICATED) {
+  if (state == SessionState.READY) {
     navController.navigate("/home")
   }
 
