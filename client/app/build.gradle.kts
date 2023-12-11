@@ -1,6 +1,7 @@
 plugins {
   id("com.android.application")
   id("org.jetbrains.kotlin.android")
+  kotlin("plugin.serialization") version "1.8.10"
 }
 
 android {
@@ -66,10 +67,23 @@ dependencies {
   debugImplementation("androidx.compose.ui:ui-tooling")
   debugImplementation("androidx.compose.ui:ui-test-manifest")
 
+  // material icons
+  implementation("androidx.compose.material:material-icons-extended")
+
   // live data
-  implementation ("androidx.compose.runtime:runtime-livedata:1.5.1")
+  implementation("androidx.compose.runtime:runtime-livedata:1.5.1")
 
   // navigation
-  implementation ("androidx.navigation:navigation-compose:2.7.3")
+  implementation("androidx.navigation:navigation-compose:2.7.3")
   implementation("androidx.compose.material:material:1.5.1")
+
+  // splash screen
+  implementation("androidx.core:core-splashscreen:1.0.0")
+
+  // network libraries
+  implementation("com.squareup.retrofit2:retrofit:2.8.1")
+  implementation("com.squareup.okhttp3:okhttp:4.9.3")
+  implementation("com.squareup.okhttp3:logging-interceptor:4.4.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+  implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
 }
