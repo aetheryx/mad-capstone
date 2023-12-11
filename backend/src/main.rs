@@ -4,6 +4,7 @@ use tokio::net::TcpListener;
 
 mod db;
 mod router;
+mod util;
 
 #[tokio::main]
 async fn main() -> Result<()> {
