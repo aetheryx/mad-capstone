@@ -86,4 +86,7 @@ dependencies {
   implementation("com.squareup.okhttp3:logging-interceptor:4.4.0")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
   implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+
+  // datastore
+  implementation("androidx.datastore:datastore-preferences:1.0.0")
 }
