@@ -4,6 +4,7 @@ use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};
 
 mod auth;
+mod users;
 
 pub fn get_router() -> Router<DatabaseConnection> {
   let timeout_svc = ServiceBuilder::new()
@@ -21,5 +22,6 @@ pub fn get_router() -> Router<DatabaseConnection> {
 
   Router::new()
     .nest("/auth", auth::auth_router())
+    .nest("/users", users::users_router())
     .layer(timeout_svc.into_inner())
 }
