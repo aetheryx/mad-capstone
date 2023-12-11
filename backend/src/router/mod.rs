@@ -1,13 +1,8 @@
-use std::time::Duration;
-
-use sea_orm::DatabaseConnection;
-
 use axum::{error_handling::HandleErrorLayer, http::StatusCode, Router};
+use sea_orm::DatabaseConnection;
+use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};
 
-use self::auth::auth_router;
-
-mod app_error;
 mod auth;
 
 pub fn get_router() -> Router<DatabaseConnection> {
@@ -25,6 +20,6 @@ pub fn get_router() -> Router<DatabaseConnection> {
     .timeout(Duration::from_secs(10));
 
   Router::new()
-    .nest("/auth", auth_router())
+    .nest("/auth", auth::auth_router())
     .layer(timeout_svc.into_inner())
 }

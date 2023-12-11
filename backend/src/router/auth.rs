@@ -3,7 +3,8 @@ use axum::{extract::State, http::StatusCode, routing, Json, Router};
 use sea_orm::{ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 
-use super::app_error::{HttpError, HttpResult};
+use crate::util::app_error::{HttpError, HttpResult};
+use crate::util::jwt;
 
 pub fn auth_router() -> Router<DatabaseConnection> {
   Router::new()
@@ -17,17 +18,16 @@ async fn auth_signup(
 ) -> HttpResult<AuthResponse> {
   let hashed_password = bcrypt::hash(&credentials.password, bcrypt::DEFAULT_COST)?;
 
-  user::Entity::insert(user::ActiveModel {
+  let new_user = user::Entity::insert(user::ActiveModel {
     username: ActiveValue::Set(credentials.username),
     password: ActiveValue::Set(hashed_password.clone()),
     ..Default::default()
   })
-  .exec(&db)
+  .exec_with_returning(&db)
   .await?;
 
-  Ok(Json(AuthResponse {
-    token: hashed_password.into(),
-  }))
+  let jwt = jwt::encode_jwt(&new_user)?;
+  Ok(Json(AuthResponse { token: jwt }))
 }
 
 async fn auth_login(
@@ -39,24 +39,17 @@ async fn auth_login(
     .one(&db)
     .await?;
 
-  let user = match user {
-    Some(u) => u,
-    None => {
-      return Err(HttpError::Status(StatusCode::NOT_FOUND));
-    }
+  let Some(user) = user else {
+    return Err(HttpError::Status(StatusCode::NOT_FOUND));
   };
 
   let correct = bcrypt::verify(&credentials.password, &user.password).unwrap_or(false);
-
   if !correct {
     return Err(HttpError::Status(StatusCode::UNAUTHORIZED));
   }
 
-  let resp = AuthResponse {
-    token: user.password.into(),
-  };
-
-  Ok(Json(resp))
+  let jwt = jwt::encode_jwt(&user)?;
+  Ok(Json(AuthResponse { token: jwt }))
 }
 
 #[derive(Deserialize)]
