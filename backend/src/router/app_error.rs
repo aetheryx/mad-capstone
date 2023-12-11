@@ -1,56 +1,47 @@
 use axum::{
   http::StatusCode,
-  response::{IntoResponse, Response}, Json,
+  response::{IntoResponse, Response},
+  Json,
 };
 use serde_json::json;
 
-pub enum AppErrors {
-  AppError(AppError),
-  ApiError(ApiError)
+pub enum HttpError {
+  InternalServerError(anyhow::Error),
+  Status(StatusCode),
 }
 
-pub struct AppError(pub anyhow::Error);
-
-impl IntoResponse for AppErrors {
-  fn into_response(self) -> Response {
-    match self {
-      AppErrors::AppError(e) => (
-        StatusCode::INTERNAL_SERVER_ERROR,
-        format!("Something went wrong: {}", e.0),
-      )
-        .into_response(),
-
-      AppErrors::ApiError(e) => (
-        e.status,
-        e.message
-      ).into_response()
-    }
-  }
-}
-
-impl<E> From<E> for AppErrors
+// implement `?` operator
+impl<E> From<E> for HttpError
 where
   E: Into<anyhow::Error>,
 {
   fn from(err: E) -> Self {
-    AppErrors::AppError(AppError(err.into()))
+    HttpError::InternalServerError(err.into())
   }
 }
 
-// For application-level http errors (e.g. 404, 401)
-#[derive(Debug)]
-pub struct ApiError {
-  pub status: StatusCode,
-  pub message: String,
-}
-
-impl IntoResponse for ApiError {
+// map HttpError to axum Response
+impl IntoResponse for HttpError {
   fn into_response(self) -> Response {
+    let (code, message) = match self {
+      Self::InternalServerError(e) => (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        format!("Something went wrong: {}", e),
+      ),
+      Self::Status(code) => (
+        code,
+        code.canonical_reason().unwrap_or("Unknown").into()
+      ),
+    };
+
     let payload = json!({
-      "status": self.status.as_u16(),
-      "message": self.message
+      "status": code.as_u16(),
+      "message": message
     });
 
-    (self.status, Json(payload)).into_response()
+    (code, Json(payload)).into_response()
   }
 }
+
+
+pub type HttpResult<T> = anyhow::Result<Json<T>, HttpError>;
