@@ -10,3 +10,12 @@ model User {
 
   @@map("user")
 }
+
+model Conversation {
+  id Int @id @default(autoincrement())
+
+  participantA Int @map("participant_a")
+  participantB Int @map("participant_b")
+
+  @@map("conversation")
+}
