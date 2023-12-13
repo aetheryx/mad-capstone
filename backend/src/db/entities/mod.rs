@@ -3,4 +3,5 @@
 pub mod prelude;
 
 pub mod conversation;
+pub mod participant;
 pub mod user;

@@ -8,14 +8,27 @@ model User {
   username String @unique
   password String
 
+  Participant Participant[]
+
   @@map("user")
 }
 
 model Conversation {
   id Int @id @default(autoincrement())
 
-  participantA Int @map("participant_a")
-  participantB Int @map("participant_b")
+  Participant Participant[]
 
   @@map("conversation")
+}
+
+model Participant {
+  user   User @relation(fields: [userID], references: [id])
+  userID Int  @map("user_id")
+
+  conversation   Conversation @relation(fields: [conversationID], references: [id])
+  conversationID Int          @map("conversation_id")
+
+  @@id([userID, conversationID])
+  @@index([userID])
+  @@map("participant")
 }
