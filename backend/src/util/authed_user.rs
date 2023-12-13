@@ -37,7 +37,7 @@ where
 
     match user {
       Some(u) => Ok(AuthedUser(u)),
-      None => Err(HttpError::Status(StatusCode::NOT_FOUND)),
+      None => Err(HttpError::Status(StatusCode::UNAUTHORIZED)),
     }
   }
 }
