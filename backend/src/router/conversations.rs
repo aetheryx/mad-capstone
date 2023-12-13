@@ -21,15 +21,10 @@ async fn get_conversations(
   let conversation_ids = participant::Entity::find()
     .filter(participant::Column::UserId.eq(user.id))
     .all(&db)
-    .await?
-    .iter()
-    .map(|participant| participant.conversation_id)
-    .collect::<Vec<_>>();
+    .await?;
 
-  let mut conversations: Vec<Conversation> = vec![];
-
-  for id in conversation_ids {
-    let conversation = conversation::Entity::find_by_id(id)
+  let conversations = conversation_ids.iter().map(|p| async {
+    let conversation = conversation::Entity::find_by_id(p.conversation_id)
       .one(&db)
       .await?
       .context("conversation not found")?;
@@ -39,11 +34,17 @@ async fn get_conversations(
       .all(&db)
       .await?;
 
-    conversations.push(Conversation {
+    anyhow::Ok(Conversation {
       conversation,
       participants,
     })
-  }
+  });
+
+  let conversations = futures::future::join_all(conversations)
+    .await
+    .into_iter()
+    .filter_map(|s| s.ok())
+    .collect::<Vec<_>>();
 
   Ok(Json(conversations))
 }
@@ -57,23 +58,32 @@ async fn create_conversation(
     .exec_with_returning(&db)
     .await?;
 
-  let p1 = participant::Entity::insert(participant::ActiveModel {
-    conversation_id: ActiveValue::Set(new_conversation.id),
-    user_id: ActiveValue::Set(user.id),
-  })
-  .exec_with_returning(&db)
-  .await?;
+  let participants = vec![user.id, input.other_user]
+    .into_iter()
+    .map(|id| {
+      let db = db.clone();
 
-  let p2 = participant::Entity::insert(participant::ActiveModel {
-    conversation_id: ActiveValue::Set(new_conversation.id),
-    user_id: ActiveValue::Set(input.other_user),
-  })
-  .exec_with_returning(&db)
-  .await?;
+      async move {
+        let new_participant = participant::Entity::insert(participant::ActiveModel {
+          conversation_id: ActiveValue::Set(new_conversation.id),
+          user_id: ActiveValue::Set(id),
+        })
+        .exec_with_returning(&db)
+        .await?;
+  
+        anyhow::Ok(new_participant)
+      }
+    });
+
+  let participants = futures::future::join_all(participants)
+    .await
+    .into_iter()
+    .filter_map(|s| s.ok())
+    .collect::<Vec<_>>();
 
   Ok(Json(Conversation {
     conversation: new_conversation,
-    participants: vec![p1, p2]
+    participants,
   }))
 }
 
