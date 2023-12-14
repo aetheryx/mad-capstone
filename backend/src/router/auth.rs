@@ -15,13 +15,14 @@ pub fn auth_router() -> Router<DatabaseConnection> {
 
 async fn auth_signup(
   State(db): State<DatabaseConnection>,
-  Json(credentials): Json<AuthCredentials>,
+  Json(input): Json<SignupInput>,
 ) -> HttpResult<AuthResponse> {
-  let hashed_password = bcrypt::hash(&credentials.password, bcrypt::DEFAULT_COST)?;
+  let hashed_password = bcrypt::hash(&input.password, bcrypt::DEFAULT_COST)?;
 
   let new_user = user::Entity::insert(user::ActiveModel {
-    username: ActiveValue::Set(credentials.username),
+    username: ActiveValue::Set(input.username),
     password: ActiveValue::Set(hashed_password.clone()),
+    profile_picture_url: ActiveValue::Set(input.profile_picture_url),
     ..Default::default()
   })
   .exec_with_returning(&db)
@@ -33,7 +34,7 @@ async fn auth_signup(
 
 async fn auth_login(
   State(db): State<DatabaseConnection>,
-  Json(credentials): Json<AuthCredentials>,
+  Json(credentials): Json<LoginInput>,
 ) -> HttpResult<AuthResponse> {
   let user = user::Entity::find()
     .filter(user::Column::Username.eq(credentials.username))
@@ -55,9 +56,17 @@ async fn auth_login(
 
 #[derive(Deserialize)]
 #[typeshare]
-struct AuthCredentials {
+struct LoginInput {
   username: String,
   password: String,
+}
+
+#[derive(Deserialize)]
+#[typeshare]
+struct SignupInput {
+  username: String,
+  password: String,
+  profile_picture_url: String,
 }
 
 #[derive(Serialize)]

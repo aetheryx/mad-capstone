@@ -4,9 +4,10 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  username String @unique
-  password String
+  id                Int    @id @default(autoincrement())
+  username          String @unique
+  password          String
+  profilePictureURL String @map("profile_picture_url")
 
   Participant Participant[]
 

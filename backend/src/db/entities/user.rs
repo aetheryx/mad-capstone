@@ -13,6 +13,8 @@ pub struct Model {
   pub username: String,
   #[sea_orm(column_type = "Text")]
   pub password: String,
+  #[sea_orm(column_type = "Text")]
+  pub profile_picture_url: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
