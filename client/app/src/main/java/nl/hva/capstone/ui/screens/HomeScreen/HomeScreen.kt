@@ -1,7 +1,9 @@
-package nl.hva.capstone.ui.screens
+package nl.hva.capstone.ui.screens.HomeScreen
 
-import android.util.Log
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import nl.hva.capstone.R
+import nl.hva.capstone.data.api.FullConversation
+import nl.hva.capstone.viewmodel.ConversationsViewModel
 import nl.hva.capstone.viewmodel.SessionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,8 +33,6 @@ fun HomeScreen(navController: NavHostController, sessionViewModel: SessionViewMo
   LaunchedEffect(Unit) {
     conversationsViewModel.fetchConversations()
   }
-
-  val conversations by conversationsViewModel.conversations.observeAsState(emptyList())
 
   Scaffold(
     topBar = {
@@ -52,7 +54,7 @@ fun HomeScreen(navController: NavHostController, sessionViewModel: SessionViewMo
       }
     }
   ) {
-    Text("$conversations", modifier = Modifier.padding(it))
+    ConversationsList(conversationsViewModel, Modifier.padding(it))
   }
 }
 
