@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -29,6 +31,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
   private var capstoneApi = CapstoneApi.createApi("")
   private val scope = CoroutineScope(Dispatchers.IO)
   private val dataStore = application.dataStore
+  val storage = Firebase.storage("gs://capstone-386f7.appspot.com")
 
   val state = MutableLiveData(SessionState.INITIALISING)
   val me: MutableLiveData<User> = MutableLiveData()
