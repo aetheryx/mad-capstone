@@ -5,7 +5,7 @@ use sea_orm::{ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFi
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
-use crate::db::entities::{conversation, participant};
+use crate::db::entities::{conversation, participant, user};
 use crate::util::{app_error::HttpResult, authed_user::AuthedUser};
 
 pub fn conversations_router() -> Router<DatabaseConnection> {
@@ -31,8 +31,12 @@ async fn get_conversations(
 
     let participants = participant::Entity::find()
       .filter(participant::Column::ConversationId.eq(conversation.id))
+      .find_also_related(user::Entity)
       .all(&db)
-      .await?;
+      .await?
+      .into_iter()
+      .filter_map(|p| p.1)
+      .collect::<Vec<_>>();
 
     anyhow::Ok(Conversation {
       conversation,
@@ -53,7 +57,7 @@ async fn create_conversation(
   AuthedUser(user): AuthedUser,
   State(db): State<DatabaseConnection>,
   Json(input): Json<CreateConversation>,
-) -> HttpResult<Conversation> {
+) -> HttpResult<conversation::Model> {
   let new_conversation = conversation::Entity::insert(conversation::ActiveModel::default())
     .exec_with_returning(&db)
     .await?;
@@ -75,16 +79,9 @@ async fn create_conversation(
       }
     });
 
-  let participants = futures::future::join_all(participants)
-    .await
-    .into_iter()
-    .filter_map(|s| s.ok())
-    .collect::<Vec<_>>();
+  futures::future::join_all(participants).await;
 
-  Ok(Json(Conversation {
-    conversation: new_conversation,
-    participants,
-  }))
+  Ok(Json(new_conversation))
 }
 
 #[derive(Deserialize)]
@@ -97,5 +94,5 @@ struct CreateConversation {
 #[typeshare]
 struct Conversation {
   conversation: conversation::Model,
-  participants: Vec<participant::Model>,
+  participants: Vec<user::Model>,
 }
