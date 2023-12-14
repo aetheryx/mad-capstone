@@ -1,8 +1,7 @@
-package nl.hva.capstone.viewmodels
+package nl.hva.capstone.viewmodel
 
 import android.app.Application
 import android.net.Uri
-import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.AndroidViewModel
@@ -32,10 +31,11 @@ val sessionTokenKey = stringPreferencesKey("session_token")
 
 class SessionViewModel(application: Application) : AndroidViewModel(application) {
   private var token: String? = null
-  private var capstoneApi = CapstoneApi.createApi("")
+  var capstoneApi = CapstoneApi.createApi("")
   private val scope = CoroutineScope(Dispatchers.IO)
   private val dataStore = application.dataStore
   private val storage = Firebase.storage("gs://capstone-386f7.appspot.com") // TODO: move to env
+  val conversationsViewModel = ConversationsViewModel(application, this)
 
   val state = MutableLiveData(SessionState.INITIALISING)
   val me: MutableLiveData<User> = MutableLiveData()

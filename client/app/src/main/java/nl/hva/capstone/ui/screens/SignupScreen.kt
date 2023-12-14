@@ -34,8 +34,8 @@ import androidx.navigation.NavHostController
 import coil.request.ImageRequest
 import coil.compose.AsyncImage
 import nl.hva.capstone.R
-import nl.hva.capstone.viewmodels.SessionState
-import nl.hva.capstone.viewmodels.SessionViewModel
+import nl.hva.capstone.viewmodel.SessionState
+import nl.hva.capstone.viewmodel.SessionViewModel
 
 @Composable
 fun SignupScreen(
@@ -67,7 +67,8 @@ fun SignupScreen(
   ) {
     // TODO: fix layout
     Column(
-      modifier = Modifier.clickable {
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.fillMaxWidth().clickable {
         pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
       }
     ) {
