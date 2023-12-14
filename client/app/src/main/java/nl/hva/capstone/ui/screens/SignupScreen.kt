@@ -47,7 +47,7 @@ fun SignupScreen(
   }
 
   val model = ImageRequest.Builder(LocalContext.current)
-    .data(imageUri)
+    .data("https://firebasestorage.googleapis.com/v0/b/capstone-386f7.appspot.com/o/profile_pictures%2Ftest.png?alt=media&token=842b101f-4828-4388-b328-9eff16e9e265")
     .crossfade(true)
     .fallback(R.drawable.default_pfp)
     .build()
@@ -79,7 +79,14 @@ fun SignupScreen(
       LogInSection(
         error = null,
         onSubmit = { username, password ->
-          Log.v("signup", "$username $password")
+          val ref = sessionViewModel.storage.reference.child("profile_pictures/test.png")
+          val task = ref.putFile(imageUri!!)
+
+          task.addOnSuccessListener {
+            Log.v("upload", "$it ${it.storage.downloadUrl.result}")
+          }.addOnFailureListener {
+            Log.v("upload", "$it")
+          }
         }
       ) {
         Text(stringResource(R.string.create))
