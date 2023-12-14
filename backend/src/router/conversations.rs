@@ -1,7 +1,7 @@
 use anyhow::Context;
 use axum::extract::State;
 use axum::{routing, Json, Router};
-use sea_orm::{ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::{ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Condition};
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
@@ -17,7 +17,7 @@ pub fn conversations_router() -> Router<DatabaseConnection> {
 async fn get_conversations(
   AuthedUser(user): AuthedUser,
   State(db): State<DatabaseConnection>,
-) -> HttpResult<Vec<Conversation>> {
+) -> HttpResult<Vec<FullConversation>> {
   let conversation_ids = participant::Entity::find()
     .filter(participant::Column::UserId.eq(user.id))
     .all(&db)
@@ -29,18 +29,20 @@ async fn get_conversations(
       .await?
       .context("conversation not found")?;
 
-    let participants = participant::Entity::find()
-      .filter(participant::Column::ConversationId.eq(conversation.id))
+    let other_participant = participant::Entity::find()
+      .filter(
+        Condition::all()
+          .add(participant::Column::ConversationId.eq(conversation.id))
+          .add(participant::Column::UserId.ne(user.id))
+      )
       .find_also_related(user::Entity)
-      .all(&db)
+      .one(&db)
       .await?
-      .into_iter()
-      .filter_map(|p| p.1)
-      .collect::<Vec<_>>();
+      .unwrap().1.unwrap(); // TODO: remove unwrap
 
-    anyhow::Ok(Conversation {
+    anyhow::Ok(FullConversation {
       conversation,
-      participants,
+      other_participant,
     })
   });
 
@@ -92,7 +94,7 @@ struct CreateConversation {
 
 #[derive(Serialize)]
 #[typeshare]
-struct Conversation {
+struct FullConversation {
   conversation: conversation::Model,
-  participants: Vec<user::Model>,
+  other_participant: user::Model,
 }
