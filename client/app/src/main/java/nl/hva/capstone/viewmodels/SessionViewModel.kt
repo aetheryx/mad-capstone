@@ -1,6 +1,8 @@
 package nl.hva.capstone.viewmodels
 
 import android.app.Application
+import android.net.Uri
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.AndroidViewModel
@@ -11,8 +13,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import nl.hva.capstone.data.api.CapstoneApi
-import nl.hva.capstone.data.api.model.AuthCredentials
+import nl.hva.capstone.data.api.model.LoginInput
+import nl.hva.capstone.data.api.model.SignupInput
 import nl.hva.capstone.data.api.model.User
 import nl.hva.capstone.dataStore
 
@@ -31,7 +35,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
   private var capstoneApi = CapstoneApi.createApi("")
   private val scope = CoroutineScope(Dispatchers.IO)
   private val dataStore = application.dataStore
-  val storage = Firebase.storage("gs://capstone-386f7.appspot.com")
+  private val storage = Firebase.storage("gs://capstone-386f7.appspot.com") // TODO: move to env
 
   val state = MutableLiveData(SessionState.INITIALISING)
   val me: MutableLiveData<User> = MutableLiveData()
@@ -51,7 +55,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
 
     scope.launch {
       val isValid = try {
-        val resp = capstoneApi.logIn(AuthCredentials(username, password))
+        val resp = capstoneApi.logIn(LoginInput(username, password))
         onReady(resp.token)
       } catch (err: Exception) {
         false
@@ -60,6 +64,23 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
       if (!isValid) {
         state.postValue(SessionState.CREDENTIAL_ERROR)
       }
+    }
+  }
+
+  fun signUp(username: String, password: String, mediaURI: Uri) {
+    state.value = SessionState.LOGGING_IN
+
+    scope.launch {
+      val ref = storage.reference.child("profile_pictures/$username.png")
+
+      val imageURI = ref.putFile(mediaURI)
+        .continueWithTask { ref.downloadUrl }
+        .addOnCompleteListener { it.result }
+        .await()
+
+      val signupInput = SignupInput(username, password, imageURI.toString())
+      val resp = capstoneApi.signUp(signupInput)
+      onReady(resp.token)
     }
   }
 
