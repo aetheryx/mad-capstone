@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import nl.hva.capstone.ui.screens.HomeScreen
 import nl.hva.capstone.ui.screens.LoginScreen
+import nl.hva.capstone.ui.screens.SignupScreen
 import nl.hva.capstone.viewmodels.SessionState
 import nl.hva.capstone.viewmodels.SessionViewModel
 
@@ -27,6 +28,10 @@ fun CapstoneApp(sessionViewModel: SessionViewModel) {
   ) {
     composable("/login") {
       LoginScreen(navController, sessionViewModel)
+    }
+
+    composable("/signup") {
+      SignupScreen(navController, sessionViewModel)
     }
 
     composable("/home") {

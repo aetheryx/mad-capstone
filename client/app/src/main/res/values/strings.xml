@@ -4,4 +4,7 @@
     <string name="password">Password</string>
     <string name="log_in">Log in</string>
     <string name="password_is_incorrect">Password is incorrect</string>
+    <string name="create_new_account">Create new account</string>
+    <string name="create">Create</string>
+    <string name="log_in_with_existing_account">Log in with existing account</string>
 </resources>
