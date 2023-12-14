@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -32,8 +31,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import nl.hva.capstone.R
-import nl.hva.capstone.viewmodels.SessionState
-import nl.hva.capstone.viewmodels.SessionViewModel
+import nl.hva.capstone.viewmodel.SessionState
+import nl.hva.capstone.viewmodel.SessionViewModel
 
 @Composable
 fun LoginScreen(
@@ -93,7 +92,6 @@ fun LoginScreen(
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogInSection(
   error: String?,
@@ -108,8 +106,8 @@ fun LogInSection(
     onValueChange = { username = it },
     label = { Text(stringResource(R.string.username)) },
     modifier = Modifier.fillMaxWidth(),
-    colors = TextFieldDefaults.textFieldColors(),
-    shape = TextFieldDefaults.filledShape,
+    colors = TextFieldDefaults.colors(),
+    shape = TextFieldDefaults.shape,
   )
 
   TextField(
@@ -117,8 +115,8 @@ fun LogInSection(
     onValueChange = { password = it },
     label = { Text(stringResource(R.string.password)) },
     modifier = Modifier.fillMaxWidth(),
-    colors = TextFieldDefaults.textFieldColors(),
-    shape = TextFieldDefaults.filledShape,
+    colors = TextFieldDefaults.colors(),
+    shape = TextFieldDefaults.shape,
     isError = error != null,
     visualTransformation = PasswordVisualTransformation(),
     supportingText = {

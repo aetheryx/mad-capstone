@@ -14,8 +14,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import nl.hva.capstone.ui.theme.CapstoneTheme
-import nl.hva.capstone.viewmodels.SessionState
-import nl.hva.capstone.viewmodels.SessionViewModel
+import nl.hva.capstone.viewmodel.SessionState
+import nl.hva.capstone.viewmodel.SessionViewModel
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -24,6 +24,7 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
 
     val sessionViewModel = SessionViewModel(application)
+
 
     setContent {
       CapstoneTheme {

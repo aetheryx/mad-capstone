@@ -1,12 +1,14 @@
 package nl.hva.capstone.data.api
 
 import nl.hva.capstone.data.api.model.AuthResponse
+import nl.hva.capstone.data.api.model.CreateConversation
 import nl.hva.capstone.data.api.model.LoginInput
 import nl.hva.capstone.data.api.model.SignupInput
 import nl.hva.capstone.data.api.model.User
 import retrofit2.http.POST
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface CapstoneApiService {
   @POST("/auth/signup")
@@ -21,4 +23,17 @@ interface CapstoneApiService {
 
   @GET("/users/@me")
   suspend fun getMe(): User
+
+  @GET("/users/find")
+  suspend fun findUser(
+    @Query("username") username: String,
+  ): User
+
+  @GET("/conversations")
+  suspend fun getConversations(): List<FullConversation>
+
+  @POST("/conversations")
+  suspend fun createConversation(
+    @Body otherUser: CreateConversation
+  ): Conversation
 }
