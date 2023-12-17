@@ -5,3 +5,10 @@ sync_db:
     --model-extra-attributes "typeshare::typeshare" \
     --enum-extra-attributes "typeshare::typeshare" \
     -o src/db/entities
+
+seed:
+  npx prisma db push --schema ./src/db/schema.prisma --force-reset
+  zsh scripts/seed.zsh
+
+psql:
+  PGPASSWORD=mysecretpassword psql -U postgres -d capstone -h localhost
