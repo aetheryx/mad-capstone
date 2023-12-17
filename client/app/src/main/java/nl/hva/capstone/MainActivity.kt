@@ -25,7 +25,6 @@ class MainActivity : ComponentActivity() {
 
     val sessionViewModel = SessionViewModel(application)
 
-
     setContent {
       CapstoneTheme {
         Surface(

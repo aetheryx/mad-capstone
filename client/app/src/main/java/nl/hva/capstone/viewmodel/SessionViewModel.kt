@@ -75,7 +75,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
 
       val imageURI = ref.putFile(mediaURI)
         .continueWithTask { ref.downloadUrl }
-        .addOnCompleteListener { it.result }
+        .addOnCompleteListener { it.result }  // TODO: uri encoding
         .await()
 
       val signupInput = SignupInput(username, password, imageURI.toString())
