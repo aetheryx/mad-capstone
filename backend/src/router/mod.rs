@@ -1,10 +1,11 @@
-use axum::{error_handling::HandleErrorLayer, http::StatusCode, Router};
+use axum::{error_handling::HandleErrorLayer, http::StatusCode, Router, routing};
 use sea_orm::DatabaseConnection;
 use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};
 
 mod auth;
 mod users;
+mod cdn;
 mod conversations;
 
 pub fn get_router() -> Router<DatabaseConnection> {
@@ -25,5 +26,6 @@ pub fn get_router() -> Router<DatabaseConnection> {
     .nest("/auth", auth::auth_router())
     .nest("/users", users::users_router())
     .nest("/conversations", conversations::conversations_router())
+    .nest("/cdn", cdn::cdn_router())
     .layer(timeout_svc.into_inner())
 }
