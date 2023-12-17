@@ -225,6 +225,7 @@ dependencies = [
  "dotenvy",
  "futures",
  "jsonwebtoken",
+ "lazy_static",
  "listenfd",
  "once_cell",
  "reqwest",
