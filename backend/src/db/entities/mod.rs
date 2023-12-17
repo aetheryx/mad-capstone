@@ -3,5 +3,6 @@
 pub mod prelude;
 
 pub mod conversation;
+pub mod conversation_message;
 pub mod participant;
 pub mod user;
