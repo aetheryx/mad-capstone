@@ -9,7 +9,7 @@ import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
 
 object CapstoneApi {
-  private const val baseUrl = "http://10.0.2.2:3000"
+  const val baseUrl = "http://10.0.2.2:3000"
 
   fun createApi(token: String): CapstoneApiService {
     val httpClient = OkHttpClient.Builder()
