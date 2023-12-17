@@ -22,7 +22,7 @@ async fn auth_signup(
   let new_user = user::Entity::insert(user::ActiveModel {
     username: ActiveValue::Set(input.username),
     password: ActiveValue::Set(hashed_password.clone()),
-    profile_picture_url: ActiveValue::Set(input.profile_picture_url),
+    avatar: ActiveValue::Set(input.avatar),
     ..Default::default()
   })
   .exec_with_returning(&db)
@@ -66,7 +66,7 @@ struct LoginInput {
 struct SignupInput {
   username: String,
   password: String,
-  profile_picture_url: String,
+  avatar: String,
 }
 
 #[derive(Serialize)]

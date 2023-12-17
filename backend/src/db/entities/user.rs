@@ -14,13 +14,21 @@ pub struct Model {
   #[sea_orm(column_type = "Text")]
   pub password: String,
   #[sea_orm(column_type = "Text")]
-  pub profile_picture_url: String,
+  pub avatar: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+  #[sea_orm(has_many = "super::conversation_message::Entity")]
+  ConversationMessage,
   #[sea_orm(has_many = "super::participant::Entity")]
   Participant,
+}
+
+impl Related<super::conversation_message::Entity> for Entity {
+  fn to() -> RelationDef {
+    Relation::ConversationMessage.def()
+  }
 }
 
 impl Related<super::participant::Entity> for Entity {
