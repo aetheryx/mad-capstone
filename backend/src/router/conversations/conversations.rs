@@ -1,20 +1,13 @@
 use anyhow::Context;
-use axum::extract::State;
-use axum::{routing, Json, Router};
-use sea_orm::{ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Condition};
+use axum::{extract::State, Json};
+use sea_orm::{ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Condition, QuerySelect, QueryOrder};
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
-use crate::db::entities::{conversation, participant, user};
+use crate::db::entities::{conversation, participant, user, conversation_message};
 use crate::util::{app_error::HttpResult, authed_user::AuthedUser};
 
-pub fn conversations_router() -> Router<DatabaseConnection> {
-  Router::new()
-    .route("/", routing::get(get_conversations))
-    .route("/", routing::post(create_conversation))
-}
-
-async fn get_conversations(
+pub async fn get_conversations(
   AuthedUser(user): AuthedUser,
   State(db): State<DatabaseConnection>,
 ) -> HttpResult<Vec<FullConversation>> {
@@ -40,9 +33,17 @@ async fn get_conversations(
       .await?
       .unwrap().1.unwrap(); // TODO: remove unwrap
 
+    let last_message = conversation_message::Entity::find()
+      .filter(conversation_message::Column::ConversationId.eq(conversation.id))
+      .order_by_desc(conversation_message::Column::CreatedAt)
+      .limit(1)
+      .one(&db)
+      .await?;
+
     anyhow::Ok(FullConversation {
       conversation,
       other_participant,
+      last_message
     })
   });
 
@@ -55,7 +56,7 @@ async fn get_conversations(
   Ok(Json(conversations))
 }
 
-async fn create_conversation(
+pub async fn create_conversation(
   AuthedUser(user): AuthedUser,
   State(db): State<DatabaseConnection>,
   Json(input): Json<CreateConversation>,
@@ -88,13 +89,14 @@ async fn create_conversation(
 
 #[derive(Deserialize)]
 #[typeshare]
-struct CreateConversation {
+pub struct CreateConversation {
   other_user: i32,
 }
 
 #[derive(Serialize)]
 #[typeshare]
-struct FullConversation {
+pub struct FullConversation {
   conversation: conversation::Model,
   other_participant: user::Model,
+  last_message: Option<conversation_message::Model>
 }
