@@ -11,10 +11,10 @@ use tokio::sync::{Mutex, OnceCell};
 
 use crate::util::app_error::HttpError;
 
-const FIREBASE_URL: &str =
-  "https://firebasestorage.googleapis.com/v0/b/capstone-386f7.appspot.com/o";
-
 lazy_static! {
+  static ref FIREBASE_BUCKET: String =
+    std::env::var("FIREBASE_BUCKET").expect("FIREBASE_BUCKET must be set");
+
   static ref CACHE: Mutex<HashMap<String, Arc<OnceCell<Bytes>>>> = Mutex::default();
 }
 
@@ -30,7 +30,11 @@ async fn get_proxy_image(Path(path): Path<String>) -> Result<impl IntoResponse, 
 
   let v = cell
     .get_or_try_init(|| async {
-      let url = format!("{FIREBASE_URL}/{path}");
+      let url = format!(
+        "https://firebasestorage.googleapis.com/v0/b/{}/o/{}",
+        FIREBASE_BUCKET.as_str(),
+        path
+      );
       let image = reqwest::get(url).await?.bytes().await?;
       anyhow::Ok(image)
     })

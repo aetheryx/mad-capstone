@@ -1,17 +1,15 @@
 use crate::db::entities::user;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
-use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::ops::Add;
 
-static JWT_SECRET: Lazy<String> =
-  Lazy::new(|| std::env::var("JWT_SECRET").expect("JWT_SECRET must be set"));
+lazy_static! {
+  static ref JWT_SECRET: Vec<u8> = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set").as_bytes().to_owned();
 
-static ENCODING_KEY: Lazy<EncodingKey> =
-  Lazy::new(|| EncodingKey::from_secret(JWT_SECRET.as_bytes()));
-static DECODING_KEY: Lazy<DecodingKey> =
-  Lazy::new(|| DecodingKey::from_secret(JWT_SECRET.as_bytes()));
+  static ref ENCODING_KEY: EncodingKey = EncodingKey::from_secret(&JWT_SECRET);
+  static ref DECODING_KEY: DecodingKey = DecodingKey::from_secret(&JWT_SECRET);
+}
 
 pub fn encode_jwt(user: &user::Model) -> anyhow::Result<String> {
   let expiry = Utc::now().add(Duration::days(31)).timestamp();

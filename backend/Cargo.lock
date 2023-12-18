@@ -227,7 +227,6 @@ dependencies = [
  "jsonwebtoken",
  "lazy_static",
  "listenfd",
- "once_cell",
  "reqwest",
  "sea-orm",
  "serde",
