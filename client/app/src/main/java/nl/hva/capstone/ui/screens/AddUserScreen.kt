@@ -52,10 +52,10 @@ private fun AddUserView(navController: NavHostController, sessionViewModel: Sess
 
   var username by remember { mutableStateOf("") }
   val createState by conversationsViewModel.createState.observeAsState()
-  val isError = createState == ConversationCreateState.Errored
+  val isError = createState is ConversationCreateState.Errored
 
-  if (createState == ConversationCreateState.Created) {
-    navController.navigate("/home")
+  if (createState is ConversationCreateState.Created) {
+    navController.navigate("/conversations/${createState!!.id}")
   }
 
   TextField(
@@ -81,7 +81,7 @@ private fun AddUserView(navController: NavHostController, sessionViewModel: Sess
     }
   ) {
     when (createState) {
-      ConversationCreateState.Creating -> {
+      is ConversationCreateState.Creating -> {
         CircularProgressIndicator(
           color = MaterialTheme.colorScheme.onPrimary,
           strokeWidth = 3.dp,
