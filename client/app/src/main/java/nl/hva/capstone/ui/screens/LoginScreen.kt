@@ -45,7 +45,7 @@ fun LoginScreen(
     else null
 
   if (state == SessionState.READY) {
-    navController.navigate("/home")
+    navController.navigate("/conversations")
   }
 
   Column(

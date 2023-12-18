@@ -46,7 +46,7 @@ fun SignupScreen(
   val state by sessionViewModel.state.observeAsState()
 
   if (state == SessionState.READY) {
-    navController.navigate("/home")
+    navController.navigate("/conversations")
   }
 
   val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) {

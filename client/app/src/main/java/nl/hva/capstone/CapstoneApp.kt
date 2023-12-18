@@ -5,10 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import nl.hva.capstone.ui.screens.AddUserScreen
+import nl.hva.capstone.ui.screens.ConversationScreen.ConversationScreen
 import nl.hva.capstone.ui.screens.HomeScreen.HomeScreen
 import nl.hva.capstone.ui.screens.LoginScreen
 import nl.hva.capstone.ui.screens.SignupScreen
@@ -24,7 +27,7 @@ fun CapstoneApp(sessionViewModel: SessionViewModel) {
 
   NavHost(
     navController,
-    startDestination = if (state == SessionState.READY) "/home" else "/login",
+    startDestination = if (state == SessionState.READY) "/conversations" else "/login",
     modifier = Modifier.fillMaxSize()
   ) {
     composable("/login") {
@@ -35,11 +38,11 @@ fun CapstoneApp(sessionViewModel: SessionViewModel) {
       SignupScreen(navController, sessionViewModel)
     }
 
-    composable("/home") {
+    composable("/conversations") {
       HomeScreen(navController, sessionViewModel)
     }
 
-    composable("/home/add-user") {
+    composable("/conversations/add") {
       AddUserScreen(navController, sessionViewModel)
     }
   }

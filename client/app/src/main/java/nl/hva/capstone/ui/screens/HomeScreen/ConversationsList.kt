@@ -1,5 +1,6 @@
 package nl.hva.capstone.ui.screens.HomeScreen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -15,6 +16,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import nl.hva.capstone.R
@@ -24,6 +27,7 @@ import nl.hva.capstone.viewmodel.ConversationsViewModel
 
 @Composable
 fun ConversationsList(
+  navController: NavHostController,
   conversationsViewModel: ConversationsViewModel,
   modifier: Modifier
 ) {
@@ -34,14 +38,14 @@ fun ConversationsList(
   ) {
     LazyColumn {
       items(conversations) {
-        Conversation(it)
+        Conversation(navController, it)
       }
     }
   }
 }
 
 @Composable
-private fun Conversation(conversation: FullConversation) {
+private fun Conversation(navController: NavHostController, conversation: FullConversation) {
   val user = conversation.otherParticipant
 
   val model = ImageRequest.Builder(LocalContext.current)
@@ -49,7 +53,11 @@ private fun Conversation(conversation: FullConversation) {
     .fallback(R.drawable.default_pfp)
     .build()
 
-  Row() {
+  Row(
+    modifier = Modifier.clickable {
+      navController.navigate("/conversations/${conversation.conversation.id}")
+    }
+  ) {
     AsyncImage(
       model,
       contentDescription = "${user.username}'s profile picture",
