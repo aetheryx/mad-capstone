@@ -1,4 +1,4 @@
-use axum::{error_handling::HandleErrorLayer, http::StatusCode, Router, routing};
+use axum::{error_handling::HandleErrorLayer, http::StatusCode, Router};
 use sea_orm::DatabaseConnection;
 use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};

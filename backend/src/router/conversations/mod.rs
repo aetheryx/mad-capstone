@@ -1,15 +1,25 @@
-use axum::{routing, Json, Router};
-use sea_orm::{ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Condition};
+use axum::{routing, Router};
+use sea_orm::*;
+use serde::Serialize;
+use typeshare::typeshare;
 
-use self::conversations::{get_conversations, create_conversation};
-use self::messages::{create_message};
+use crate::db::entities::*;
 
-mod conversations;
-mod messages;
+mod create_conversation;
+mod get_conversations;
+mod create_message;
 
 pub fn conversations_router() -> Router<DatabaseConnection> {
   Router::new()
-    .route("/", routing::get(get_conversations))
-    .route("/", routing::post(create_conversation))
-    .route("/:conversation_id/messages", routing::post(create_message))
+    .route("/", routing::get(get_conversations::get_conversations))
+    .route("/", routing::post(create_conversation::create_conversation))
+    .route("/:conversation_id/messages", routing::post(create_message::create_message))
+}
+
+#[derive(Serialize)]
+#[typeshare]
+struct FullConversation {
+  conversation: conversation::Model,
+  other_participant: user::Model,
+  last_message: Option<conversation_message::Model>,
 }
