@@ -7,14 +7,16 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import nl.hva.capstone.data.api.Conversation
 import nl.hva.capstone.data.api.FullConversation
+import nl.hva.capstone.data.api.model.ConversationMessage
 import nl.hva.capstone.data.api.model.CreateConversation
 
-enum class ConversationCreateState {
-  None,
-  Creating,
-  Created,
-  Errored
+sealed class ConversationCreateState(val id: Int?) {
+  class None: ConversationCreateState(null)
+  class Creating: ConversationCreateState(null)
+  class Created(id: Int): ConversationCreateState(id)
+  class Errored: ConversationCreateState(null)
 }
 
 class ConversationsViewModel(
@@ -24,28 +26,44 @@ class ConversationsViewModel(
   private val capstoneApi get() = sessionViewModel.capstoneApi
   private val scope = CoroutineScope(Dispatchers.IO)
 
-  val conversations = MutableLiveData(emptyList<FullConversation>())
+  val conversations = MutableLiveData<List<FullConversation>>()
+  val conversationMessages = HashMap<Int, MutableLiveData<List<ConversationMessage>>>()
 
-  val createState = MutableLiveData(ConversationCreateState.None)
+  val createState = MutableLiveData<ConversationCreateState>(ConversationCreateState.None())
 
   fun createConversation(username: String) {
-    createState.value = ConversationCreateState.Creating
+    createState.value = ConversationCreateState.Creating()
     scope.launch {
       try {
         val user = capstoneApi.findUser(username)
-        capstoneApi.createConversation(CreateConversation(user.id))
+        val conversation = capstoneApi.createConversation(CreateConversation(user.id))
         conversations.postValue(capstoneApi.getConversations())
-        createState.postValue(ConversationCreateState.Created)
+        createState.postValue(ConversationCreateState.Created(conversation.id))
       } catch (err: Exception) {
         Log.v("conversationvm", "failed to find user $username $err")
-        createState.postValue(ConversationCreateState.Errored)
+        createState.postValue(ConversationCreateState.Errored())
       }
     }
   }
 
   fun fetchConversations() {
     scope.launch {
-      conversations.postValue(capstoneApi.getConversations())
+      val fullConversations = capstoneApi.getConversations()
+      conversations.postValue(fullConversations)
+
+      fullConversations.forEach { fetchConversationMessages(it.conversation) }
     }
+  }
+
+  private suspend fun fetchConversationMessages(conversation: Conversation) {
+    val data = MutableLiveData<List<ConversationMessage>>(emptyList())
+    conversationMessages[conversation.id] = data
+
+    val messages = capstoneApi.getConversationMessages(
+      conversationID = conversation.id,
+      limit = 50,
+      offset = 0
+    )
+    data.postValue(messages)
   }
 }

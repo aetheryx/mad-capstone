@@ -45,5 +45,20 @@ fun CapstoneApp(sessionViewModel: SessionViewModel) {
     composable("/conversations/add") {
       AddUserScreen(navController, sessionViewModel)
     }
+
+    composable(
+      route = "/conversations/{id}",
+      arguments = listOf(
+        navArgument("id") {
+          type = NavType.IntType
+        }
+      )
+    ) { entry ->
+      val id = entry.arguments?.getInt("id")
+      ConversationScreen(
+        conversationID = id!!,
+        sessionViewModel.conversationsViewModel
+      )
+    }
   }
 }
