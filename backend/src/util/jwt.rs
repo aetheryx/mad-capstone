@@ -5,7 +5,8 @@ use serde::{Deserialize, Serialize};
 use std::ops::Add;
 
 lazy_static! {
-  static ref JWT_SECRET: Vec<u8> = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set").as_bytes().to_owned();
+  static ref JWT_SECRET: Vec<u8> =
+    std::env::var("JWT_SECRET").expect("JWT_SECRET must be set").as_bytes().to_owned();
 
   static ref ENCODING_KEY: EncodingKey = EncodingKey::from_secret(&JWT_SECRET);
   static ref DECODING_KEY: DecodingKey = DecodingKey::from_secret(&JWT_SECRET);
