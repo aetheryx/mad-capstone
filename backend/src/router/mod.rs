@@ -5,9 +5,10 @@ use tower::{BoxError, ServiceBuilder};
 use crate::SharedState;
 
 mod auth;
-mod users;
 mod cdn;
 mod conversations;
+mod users;
+mod ws;
 
 pub fn get_router() -> Router<SharedState> {
   let timeout_svc = ServiceBuilder::new()
@@ -27,6 +28,7 @@ pub fn get_router() -> Router<SharedState> {
     .nest("/auth", auth::auth_router())
     .nest("/users", users::users_router())
     .nest("/conversations", conversations::conversations_router())
+    .nest("/ws", ws::ws_router())
     .nest("/cdn", cdn::cdn_router())
     .layer(timeout_svc.into_inner())
 }
