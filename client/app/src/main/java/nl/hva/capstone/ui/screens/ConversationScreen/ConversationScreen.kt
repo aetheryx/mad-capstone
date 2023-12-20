@@ -1,10 +1,11 @@
 package nl.hva.capstone.ui.screens.ConversationScreen
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -73,7 +74,7 @@ fun ConversationScreen(
           Icon(Icons.Filled.MoreVert, "Details")
         }
       )
-    },
+    }
   ) {
     ConversationsView(conversationsViewModel, conversation, Modifier.padding(it))
   }
@@ -85,10 +86,11 @@ private fun ConversationsView(
   conversation: FullConversation,
   modifier: Modifier
 ) {
-  val liveData = conversationsViewModel.conversationMessages[conversation.conversation.id]!!
-  val messages by liveData.observeAsState(emptyList())
-
-  Column(modifier) {
-    Text("$messages")
+  Column(
+    modifier = modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.SpaceBetween
+  ) {
+    MessageList(conversationsViewModel, conversation)
+    MessageBar(conversationsViewModel, conversation)
   }
 }
