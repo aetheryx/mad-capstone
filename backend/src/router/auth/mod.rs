@@ -1,12 +1,13 @@
 use axum::{routing, Router};
-use sea_orm::DatabaseConnection;
 use serde::Serialize;
 use typeshare::typeshare;
+
+use crate::SharedState;
 
 mod login;
 mod signup;
 
-pub fn auth_router() -> Router<DatabaseConnection> {
+pub fn auth_router() -> Router<SharedState> {
   Router::new()
     .route("/signup", routing::post(signup::signup))
     .route("/login", routing::post(login::login))

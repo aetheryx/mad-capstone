@@ -3,18 +3,19 @@ use sea_orm::*;
 use serde::Deserialize;
 use typeshare::typeshare;
 
+use crate::SharedState;
 use crate::db::entities::*;
 use crate::util::{app_error::*, jwt};
 
 use super::AuthResponse;
 
 pub async fn login(
-  State(db): State<DatabaseConnection>,
+  State(state): State<SharedState>,
   Json(credentials): Json<LoginInput>,
 ) -> HttpResult<AuthResponse> {
   let user = user::Entity::find()
     .filter(user::Column::Username.eq(credentials.username))
-    .one(&db)
+    .one(&state.db)
     .await?;
 
   let Some(user) = user else {

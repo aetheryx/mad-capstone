@@ -4,16 +4,16 @@ use serde::Deserialize;
 
 use crate::{
   util::app_error::*,
-  db::entities::user
+  db::entities::user, SharedState
 };
 
 pub async fn find_user(
-  State(db): State<DatabaseConnection>,
+  State(state): State<SharedState>,
   query: Query<FindUserQuery>
 ) -> HttpResult<user::Model> {
   let user = user::Entity::find()
     .filter(user::Column::Username.eq(&query.username))
-    .one(&db)
+    .one(&state.db)
     .await?;
 
   let Some(user) = user else {

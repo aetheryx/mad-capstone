@@ -1,14 +1,15 @@
 use axum::{error_handling::HandleErrorLayer, http::StatusCode, Router};
-use sea_orm::DatabaseConnection;
 use std::time::Duration;
 use tower::{BoxError, ServiceBuilder};
+
+use crate::SharedState;
 
 mod auth;
 mod users;
 mod cdn;
 mod conversations;
 
-pub fn get_router() -> Router<DatabaseConnection> {
+pub fn get_router() -> Router<SharedState> {
   let timeout_svc = ServiceBuilder::new()
     .layer(HandleErrorLayer::new(|error: BoxError| async move {
       if error.is::<tower::timeout::error::Elapsed>() {
