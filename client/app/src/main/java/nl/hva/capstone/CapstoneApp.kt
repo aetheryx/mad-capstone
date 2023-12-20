@@ -1,6 +1,7 @@
 package nl.hva.capstone
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -28,7 +29,7 @@ fun CapstoneApp(sessionViewModel: SessionViewModel) {
   NavHost(
     navController,
     startDestination = if (state == SessionState.READY) "/conversations" else "/login",
-    modifier = Modifier.fillMaxSize()
+    modifier = Modifier.fillMaxSize().safeDrawingPadding()
   ) {
     composable("/login") {
       LoginScreen(navController, sessionViewModel)
