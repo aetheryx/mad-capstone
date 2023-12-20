@@ -11,6 +11,7 @@ import nl.hva.capstone.data.api.Conversation
 import nl.hva.capstone.data.api.FullConversation
 import nl.hva.capstone.data.api.model.ConversationMessage
 import nl.hva.capstone.data.api.model.CreateConversation
+import nl.hva.capstone.data.api.model.CreateMessage
 
 sealed class ConversationCreateState(val id: Int?) {
   class None: ConversationCreateState(null)
@@ -25,6 +26,8 @@ class ConversationsViewModel(
 ) : AndroidViewModel(application) {
   private val capstoneApi get() = sessionViewModel.capstoneApi
   private val scope = CoroutineScope(Dispatchers.IO)
+
+  val me get() = sessionViewModel.me.value!!
 
   val conversations = MutableLiveData<List<FullConversation>>()
   val conversationMessages = HashMap<Int, MutableLiveData<List<ConversationMessage>>>()
@@ -43,6 +46,13 @@ class ConversationsViewModel(
         Log.v("conversationvm", "failed to find user $username $err")
         createState.postValue(ConversationCreateState.Errored())
       }
+    }
+  }
+
+  fun sendMessage(conversation: Conversation, content: String) {
+    scope.launch {
+      val input = CreateMessage(content)
+      capstoneApi.createMessage(conversation.id, input)
     }
   }
 

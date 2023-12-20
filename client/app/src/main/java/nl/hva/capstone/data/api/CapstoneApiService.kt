@@ -3,6 +3,7 @@ package nl.hva.capstone.data.api
 import nl.hva.capstone.data.api.model.AuthResponse
 import nl.hva.capstone.data.api.model.ConversationMessage
 import nl.hva.capstone.data.api.model.CreateConversation
+import nl.hva.capstone.data.api.model.CreateMessage
 import nl.hva.capstone.data.api.model.LoginInput
 import nl.hva.capstone.data.api.model.SignupInput
 import nl.hva.capstone.data.api.model.User
@@ -45,4 +46,10 @@ interface CapstoneApiService {
     @Query("limit") limit: Int = 50,
     @Query("offset") offset: Int = 0,
   ): List<ConversationMessage>
+
+  @POST("/conversations/{id}/messages")
+  suspend fun createMessage(
+    @Path("id") conversationID: Int,
+    @Body input: CreateMessage
+  )
 }
