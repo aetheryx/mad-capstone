@@ -1,16 +1,15 @@
 use axum::{routing, Router};
-use sea_orm::*;
 use serde::Serialize;
 use typeshare::typeshare;
 
-use crate::db::entities::*;
+use crate::{db::entities::*, SharedState};
 
 mod create_conversation;
 mod get_conversations;
 mod create_message;
 mod get_messages;
 
-pub fn conversations_router() -> Router<DatabaseConnection> {
+pub fn conversations_router() -> Router<SharedState> {
   Router::new()
     .route("/", routing::get(get_conversations::get_conversations))
     .route("/", routing::post(create_conversation::create_conversation))

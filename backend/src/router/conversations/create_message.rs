@@ -2,16 +2,16 @@ use axum::{
   extract::{Path, State},
   Json,
 };
-use sea_orm::{ActiveValue, DatabaseConnection, EntityTrait};
+use sea_orm::*;
 use serde::Deserialize;
 use typeshare::typeshare;
 
-use crate::util::{app_error::*, authed_user::*};
+use crate::{util::{app_error::*, authed_user::*}, SharedState};
 use crate::db::entities::*;
 
 pub async fn create_message(
   AuthedUser(user): AuthedUser,
-  State(db): State<DatabaseConnection>,
+  State(state): State<SharedState>,
   Path(conversation_id): Path<i32>,
   Json(input): Json<CreateMessage>,
 ) -> HttpResult<conversation_message::Model> {
@@ -21,7 +21,7 @@ pub async fn create_message(
     content: ActiveValue::Set(input.content),
     ..Default::default()
   })
-  .exec_with_returning(&db)
+  .exec_with_returning(&state.db)
   .await?;
 
   Ok(Json(message))

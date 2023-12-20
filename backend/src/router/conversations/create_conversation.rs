@@ -3,6 +3,7 @@ use sea_orm::*;
 use serde::Deserialize;
 use typeshare::typeshare;
 
+use crate::SharedState;
 use crate::db::entities::*;
 use crate::util::{
   authed_user::*, 
@@ -11,19 +12,19 @@ use crate::util::{
 
 pub async fn create_conversation(
   AuthedUser(user): AuthedUser,
-  State(db): State<DatabaseConnection>,
+  State(state): State<SharedState>,
   Json(input): Json<CreateConversation>,
 ) -> HttpResult<conversation::Model> {
   let new_conversation = conversation::Entity::insert(conversation::ActiveModel {
     ..Default::default()
   })
-    .exec_with_returning(&db)
+    .exec_with_returning(&state.db)
     .await?;
 
   let participants = vec![user.id, input.other_user]
     .into_iter()
     .map(|id| {
-      let db = db.clone();
+      let db = state.db.clone();
 
       async move {
         let new_participant = participant::Entity::insert(participant::ActiveModel {

@@ -2,6 +2,7 @@ use anyhow::Context;
 use axum::{extract::State, Json};
 use sea_orm::*;
 
+use crate::SharedState;
 use crate::db::entities::*;
 use crate::util::{
   authed_user::*, 
@@ -12,16 +13,16 @@ use super::FullConversation;
 
 pub async fn get_conversations(
   AuthedUser(user): AuthedUser,
-  State(db): State<DatabaseConnection>,
+  State(state): State<SharedState>,
 ) -> HttpResult<Vec<FullConversation>> {
   let conversation_ids = participant::Entity::find()
     .filter(participant::Column::UserId.eq(user.id))
-    .all(&db)
+    .all(&state.db)
     .await?;
 
   let conversations = conversation_ids.iter().map(|p| async {
     let conversation = conversation::Entity::find_by_id(p.conversation_id)
-      .one(&db)
+      .one(&state.db)
       .await?
       .context("conversation not found")?;
 
@@ -32,7 +33,7 @@ pub async fn get_conversations(
           .add(participant::Column::UserId.ne(user.id))
       )
       .find_also_related(user::Entity)
-      .one(&db)
+      .one(&state.db)
       .await?
       .unwrap().1.unwrap(); // TODO: remove unwrap
 
@@ -40,7 +41,7 @@ pub async fn get_conversations(
       .filter(conversation_message::Column::ConversationId.eq(conversation.id))
       .order_by_desc(conversation_message::Column::CreatedAt)
       .limit(1)
-      .one(&db)
+      .one(&state.db)
       .await?;
 
     anyhow::Ok(FullConversation {

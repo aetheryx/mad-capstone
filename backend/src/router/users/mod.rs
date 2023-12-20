@@ -1,10 +1,11 @@
 use axum::{Router, routing};
-use sea_orm::DatabaseConnection;
+
+use crate::SharedState;
 
 mod get_me;
 mod find_user;
 
-pub fn users_router() -> Router<DatabaseConnection> {
+pub fn users_router() -> Router<SharedState> {
   Router::new()
     .route("/@me", routing::get(get_me::get_me))
     .route("/find", routing::get(find_user::find_user))

@@ -1,8 +1,9 @@
 use std::{collections::HashMap, sync::Arc};
 
 use axum::{body::Bytes, routing, Router};
-use sea_orm::DatabaseConnection;
 use tokio::sync::{Mutex, OnceCell};
+
+use crate::SharedState;
 
 mod proxy;
 
@@ -13,7 +14,7 @@ lazy_static! {
   static ref CACHE: Mutex<HashMap<String, Arc<OnceCell<Bytes>>>> = Mutex::default();
 }
 
-pub fn cdn_router() -> Router<DatabaseConnection> {
+pub fn cdn_router() -> Router<SharedState> {
   Router::new()
     .route("/proxy/:path", routing::get(proxy::proxy_image))
 }
