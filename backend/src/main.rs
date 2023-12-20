@@ -2,9 +2,11 @@
 extern crate lazy_static;
 
 use anyhow::Result;
+use axum::extract::ws::{Message, WebSocket};
+use futures::{lock::Mutex, stream::SplitSink};
 use listenfd::ListenFd;
 use sea_orm::DatabaseConnection;
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 use tokio::net::TcpListener;
 
 mod db;
@@ -25,8 +27,9 @@ async fn main() -> Result<()> {
   println!("listening on {}", listener.local_addr().unwrap());
 
   let db = db::init_db::init_db().await?;
+  let clients = Mutex::default();
 
-  let app_state = AppState { db };
+  let app_state = AppState { db, clients };
   let shared_state = Arc::new(app_state);
 
   let app = router::get_router().with_state(shared_state);
@@ -37,6 +40,7 @@ async fn main() -> Result<()> {
 
 struct AppState {
   db: DatabaseConnection,
+  clients: Mutex<HashMap<i32, SplitSink<WebSocket, Message>>>,
 }
 
 type SharedState = Arc<AppState>;
