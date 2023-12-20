@@ -12,6 +12,7 @@ use tokio::net::TcpListener;
 mod db;
 mod router;
 mod util;
+mod ws;
 
 #[tokio::main]
 async fn main() -> Result<()> {

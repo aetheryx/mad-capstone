@@ -6,8 +6,12 @@ use sea_orm::*;
 use serde::Deserialize;
 use typeshare::typeshare;
 
-use crate::{util::{app_error::*, authed_user::*}, SharedState};
+use crate::ws::WebsocketEvent;
 use crate::db::entities::*;
+use crate::{
+  util::{app_error::*, authed_user::*},
+  SharedState,
+};
 
 pub async fn create_message(
   AuthedUser(user): AuthedUser,
@@ -23,6 +27,19 @@ pub async fn create_message(
   })
   .exec_with_returning(&state.db)
   .await?;
+
+  let other_user = participant::Entity::find()
+    .filter(
+      Condition::all()
+        .add(participant::Column::ConversationId.eq(conversation_id))
+        .add(participant::Column::UserId.ne(user.id)),
+    )
+    .one(&state.db)
+    .await?
+    .unwrap(); // TODO unwrap
+
+  let event = WebsocketEvent::MessageCreate(&message);
+  event.send_to(&state, other_user.user_id).await?;
 
   Ok(Json(message))
 }
