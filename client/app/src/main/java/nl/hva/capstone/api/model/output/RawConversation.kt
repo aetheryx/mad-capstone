@@ -1,8 +1,8 @@
-package nl.hva.capstone.data.api
+package nl.hva.capstone.api.model.output
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Conversation(
+data class RawConversation(
   val id: Int
 )

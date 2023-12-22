@@ -1,12 +1,7 @@
-package nl.hva.capstone.data.api
+package nl.hva.capstone.api
 
-import nl.hva.capstone.data.api.model.AuthResponse
-import nl.hva.capstone.data.api.model.ConversationMessage
-import nl.hva.capstone.data.api.model.CreateConversation
-import nl.hva.capstone.data.api.model.CreateMessage
-import nl.hva.capstone.data.api.model.LoginInput
-import nl.hva.capstone.data.api.model.SignupInput
-import nl.hva.capstone.data.api.model.User
+import nl.hva.capstone.api.model.input.*
+import nl.hva.capstone.api.model.output.*
 import retrofit2.http.POST
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -33,11 +28,11 @@ interface CapstoneApiService {
   ): User
 
   @GET("/conversations")
-  suspend fun getConversations(): List<FullConversation>
+  suspend fun getConversations(): List<Conversation>
 
   @POST("/conversations")
   suspend fun createConversation(
-    @Body otherUser: CreateConversation
+    @Body otherUser: CreateConversationInput
   ): Conversation
 
   @GET("/conversations/{id}/messages")
@@ -50,6 +45,6 @@ interface CapstoneApiService {
   @POST("/conversations/{id}/messages")
   suspend fun createMessage(
     @Path("id") conversationID: Int,
-    @Body input: CreateMessage
+    @Body input: CreateMessageInput
   )
 }

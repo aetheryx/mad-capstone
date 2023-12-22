@@ -1,8 +1,8 @@
-package nl.hva.capstone.data.api.model
+package nl.hva.capstone.api.model.input
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CreateMessage (
+data class CreateMessageInput (
   val content: String
 )

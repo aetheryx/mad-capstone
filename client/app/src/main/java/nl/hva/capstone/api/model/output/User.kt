@@ -1,8 +1,7 @@
-package nl.hva.capstone.data.api.model
+package nl.hva.capstone.api.model.output
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import nl.hva.capstone.data.api.CapstoneApi
+import nl.hva.capstone.api.CapstoneApi
 
 @Serializable
 data class User (

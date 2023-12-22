@@ -1,4 +1,4 @@
-package nl.hva.capstone.ui.screens.HomeScreen
+package nl.hva.capstone.ui.screens.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -16,13 +16,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import nl.hva.capstone.R
-import nl.hva.capstone.data.api.FullConversation
-import nl.hva.capstone.data.api.model.User
+import nl.hva.capstone.api.model.output.Conversation
+import nl.hva.capstone.api.model.output.User
 import nl.hva.capstone.viewmodel.ConversationsViewModel
 
 @Composable
@@ -45,7 +44,7 @@ fun ConversationsList(
 }
 
 @Composable
-private fun Conversation(navController: NavHostController, conversation: FullConversation) {
+private fun Conversation(navController: NavHostController, conversation: Conversation) {
   val user = conversation.otherParticipant
 
   val model = ImageRequest.Builder(LocalContext.current)
@@ -74,7 +73,7 @@ private fun Conversation(navController: NavHostController, conversation: FullCon
 }
 
 @Composable
-private fun ConversationDetails(conversation: FullConversation, user: User) {
+private fun ConversationDetails(conversation: Conversation, user: User) {
   Row() {
     Text(user.username)
 

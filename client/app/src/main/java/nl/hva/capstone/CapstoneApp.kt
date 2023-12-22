@@ -12,8 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import nl.hva.capstone.ui.screens.AddUserScreen
-import nl.hva.capstone.ui.screens.ConversationScreen.ConversationScreen
-import nl.hva.capstone.ui.screens.HomeScreen.HomeScreen
+import nl.hva.capstone.ui.screens.conversation.ConversationScreen
+import nl.hva.capstone.ui.screens.home.HomeScreen
 import nl.hva.capstone.ui.screens.LoginScreen
 import nl.hva.capstone.ui.screens.SignupScreen
 import nl.hva.capstone.viewmodel.SessionState

@@ -1,4 +1,4 @@
-package nl.hva.capstone.data.api.model
+package nl.hva.capstone.api.model.output
 
 import kotlinx.serialization.Serializable
 

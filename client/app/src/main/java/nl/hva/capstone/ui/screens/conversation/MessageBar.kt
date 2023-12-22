@@ -1,4 +1,4 @@
-package nl.hva.capstone.ui.screens.ConversationScreen
+package nl.hva.capstone.ui.screens.conversation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -24,13 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
-import nl.hva.capstone.data.api.FullConversation
+import nl.hva.capstone.api.model.output.Conversation
 import nl.hva.capstone.viewmodel.ConversationsViewModel
 
 @Composable
 fun MessageBar(
   conversationsViewModel: ConversationsViewModel,
-  conversation: FullConversation
+  conversation: Conversation
 ) {
   var messageContent by remember { mutableStateOf("") }
 
@@ -53,7 +53,7 @@ fun MessageBar(
 
     IconButton(
       onClick = {
-        conversationsViewModel.sendMessage(conversation.conversation, messageContent)
+        conversationsViewModel.sendMessage(conversation, messageContent)
         messageContent = ""
       }
     ) {

@@ -1,4 +1,4 @@
-package nl.hva.capstone.ui.screens.ConversationScreen
+package nl.hva.capstone.ui.screens.conversation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import nl.hva.capstone.R
-import nl.hva.capstone.data.api.FullConversation
+import nl.hva.capstone.api.model.output.Conversation
 import nl.hva.capstone.viewmodel.ConversationsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,7 +83,7 @@ fun ConversationScreen(
 @Composable
 private fun ConversationsView(
   conversationsViewModel: ConversationsViewModel,
-  conversation: FullConversation,
+  conversation: Conversation,
   modifier: Modifier
 ) {
   Column(

@@ -7,11 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import nl.hva.capstone.data.api.Conversation
-import nl.hva.capstone.data.api.FullConversation
-import nl.hva.capstone.data.api.model.ConversationMessage
-import nl.hva.capstone.data.api.model.CreateConversation
-import nl.hva.capstone.data.api.model.CreateMessage
+import nl.hva.capstone.api.model.output.Conversation
+import nl.hva.capstone.api.model.output.ConversationMessage
+import nl.hva.capstone.api.model.input.CreateConversationInput
+import nl.hva.capstone.api.model.input.CreateMessageInput
 
 sealed class ConversationCreateState(val id: Int?) {
   class None: ConversationCreateState(null)
@@ -29,7 +28,7 @@ class ConversationsViewModel(
 
   val me get() = sessionViewModel.me.value!!
 
-  val conversations = MutableLiveData<List<FullConversation>>()
+  val conversations = MutableLiveData<List<Conversation>>()
   val conversationMessages = HashMap<Int, MutableLiveData<List<ConversationMessage>>>()
 
   val createState = MutableLiveData<ConversationCreateState>(ConversationCreateState.None())
@@ -39,7 +38,7 @@ class ConversationsViewModel(
     scope.launch {
       try {
         val user = capstoneApi.findUser(username)
-        val conversation = capstoneApi.createConversation(CreateConversation(user.id))
+        val conversation = capstoneApi.createConversation(CreateConversationInput(user.id))
         conversations.postValue(capstoneApi.getConversations())
         createState.postValue(ConversationCreateState.Created(conversation.id))
       } catch (err: Exception) {
@@ -51,7 +50,7 @@ class ConversationsViewModel(
 
   fun sendMessage(conversation: Conversation, content: String) {
     scope.launch {
-      val input = CreateMessage(content)
+      val input = CreateMessageInput(content)
       capstoneApi.createMessage(conversation.id, input)
     }
   }
@@ -61,7 +60,7 @@ class ConversationsViewModel(
       val fullConversations = capstoneApi.getConversations()
       conversations.postValue(fullConversations)
 
-      fullConversations.forEach { fetchConversationMessages(it.conversation) }
+      fullConversations.forEach { fetchConversationMessages(it) }
     }
   }
 
