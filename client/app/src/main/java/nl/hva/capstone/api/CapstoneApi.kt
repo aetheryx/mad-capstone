@@ -2,6 +2,7 @@ package nl.hva.capstone.api
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
+import nl.hva.capstone.BuildConfig
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -12,7 +13,7 @@ import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
 
 object CapstoneApi {
-  const val BASE_URL = "http://10.0.2.2:3000"
+  const val BASE_URL = BuildConfig.API_BASE_URL
 
   private fun createOkHttpClient(token: String) = OkHttpClient.Builder()
     .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))

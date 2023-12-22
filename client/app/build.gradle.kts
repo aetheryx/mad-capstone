@@ -32,6 +32,7 @@ android {
     buildFeatures {
       buildConfig = true
       buildConfigField("String", "FIREBASE_BUCKET", envProperties["FIREBASE_BUCKET"] as String)
+      buildConfigField("String", "API_BASE_URL", envProperties["API_BASE_URL"] as String)
     }
   }
 
@@ -88,7 +89,7 @@ dependencies {
   implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
 
   // navigation
-  implementation("androidx.navigation:navigation-compose:2.7.5")
+  implementation("androidx.navigation:navigation-compose:2.7.6")
   implementation("androidx.compose.material:material:1.5.4")
 
   // splash screen
