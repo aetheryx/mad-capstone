@@ -5,6 +5,7 @@ import kotlinx.serialization.json.Json
 import nl.hva.capstone.api.CapstoneApi
 import nl.hva.capstone.api.WebsocketEvent
 import nl.hva.capstone.api.model.output.ConversationMessage
+import nl.hva.capstone.api.model.output.User
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -19,14 +20,13 @@ class CapstoneWebsocket(
     ignoreUnknownKeys = true
   }
 
-  fun connect() {
-    val ws = CapstoneApi.createWebSocket(conversationsVM.me.id, this)
+  fun connect(user: User) {
+    val ws = CapstoneApi.createWebSocket(user.id, this)
   }
 
   private fun onMessageCreate(message: ConversationMessage) {
-    val messages = conversationsVM.conversationMessages[message.conversationID]!!
-    val newMessages = messages.value!!.plus(message)
-    messages.postValue(ArrayList(newMessages))  // TODO: perf
+    val messages = conversationsVM.conversationMessages[message.conversationID] ?: return
+    messages.add(0, message)
   }
 
   override fun onMessage(webSocket: WebSocket, bytes: ByteString) {

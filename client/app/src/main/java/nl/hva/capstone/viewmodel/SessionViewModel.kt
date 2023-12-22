@@ -100,7 +100,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
     state.postValue(SessionState.READY)
     me.postValue(user)
 
-    websocket.connect()
+    websocket.connect(user)
 
     return true
   }

@@ -1,9 +1,6 @@
 package nl.hva.capstone.ui.screens.conversation
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -31,66 +28,59 @@ import nl.hva.capstone.R
 import nl.hva.capstone.api.model.output.Conversation
 import nl.hva.capstone.viewmodel.ConversationsViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConversationScreen(
   conversationID: Int,
   conversationsVM: ConversationsViewModel,
 ) {
   val conversations by conversationsVM.conversations.observeAsState(emptyList())
-  val conversation = conversations.find { it.conversation.id == conversationID }!!
+  val conversation = conversations.find { it.conversation.id == conversationID }.let { it ?: return }
 
   Scaffold(
     topBar = {
-      TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(),
-        title = {
-          val model = ImageRequest.Builder(LocalContext.current)
-            .data(conversation.otherParticipant.avatarURL)
-            .fallback(R.drawable.default_pfp)
-            .build()
-
-          Row() {
-            AsyncImage(
-              model,
-              contentDescription = "${conversation.otherParticipant.username}'s profile picture",
-              contentScale = ContentScale.Crop,
-              modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape)
-            )
-
-            Text(conversation.otherParticipant.username)
-          }
-        },
-        navigationIcon = {
-          Icon(
-            Icons.Default.ArrowBack,
-            contentDescription = "Go back"
-          )
-        },
-        actions = {
-          Icon(Icons.Filled.Videocam, "Video call")
-          Icon(Icons.Filled.MoreVert, "Details")
-        }
-      )
+      ConversationScreenTopBar(conversation)
+    },
+    bottomBar = {
+      MessageBar(conversationsVM, conversation)
     }
   ) {
-    ConversationsView(conversationsVM, conversation, Modifier.padding(it))
+    MessageList(conversationsVM, conversation, Modifier.padding(it))
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ConversationsView(
-  conversationsVM: ConversationsViewModel,
-  conversation: Conversation,
-  modifier: Modifier
-) {
-  Column(
-    modifier = modifier.fillMaxSize(),
-    verticalArrangement = Arrangement.SpaceBetween
-  ) {
-    MessageList(conversationsVM, conversation)
-    MessageBar(conversationsVM, conversation)
-  }
+private fun ConversationScreenTopBar(conversation: Conversation) {
+  TopAppBar(
+    colors = TopAppBarDefaults.topAppBarColors(),
+    title = {
+      val model = ImageRequest.Builder(LocalContext.current)
+        .data(conversation.otherParticipant.avatarURL)
+        .fallback(R.drawable.default_pfp)
+        .build()
+
+      Row() {
+        AsyncImage(
+          model,
+          contentDescription = "${conversation.otherParticipant.username}'s profile picture",
+          contentScale = ContentScale.Crop,
+          modifier = Modifier
+            .size(64.dp)
+            .clip(CircleShape)
+        )
+
+        Text(conversation.otherParticipant.username)
+      }
+    },
+    navigationIcon = {
+      Icon(
+        Icons.Default.ArrowBack,
+        contentDescription = "Go back"
+      )
+    },
+    actions = {
+      Icon(Icons.Filled.Videocam, "Video call")
+      Icon(Icons.Filled.MoreVert, "Details")
+    }
+  )
 }
