@@ -1,4 +1,4 @@
-package nl.hva.capstone.ui.screens.HomeScreen
+package nl.hva.capstone.ui.screens.home
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons

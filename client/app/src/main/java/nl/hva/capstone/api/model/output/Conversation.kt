@@ -1,13 +1,13 @@
-package nl.hva.capstone.data.api
+package nl.hva.capstone.api.model.output
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import nl.hva.capstone.data.api.model.ConversationMessage
-import nl.hva.capstone.data.api.model.User
 
 @Serializable
-data class FullConversation(
-  val conversation: Conversation,
+data class Conversation(
+  val conversation: RawConversation,
   @SerialName("other_participant") val otherParticipant: User,
   @SerialName("last_message") val lastMessage: ConversationMessage?,
-)
+) {
+  val id get() = conversation.id
+}

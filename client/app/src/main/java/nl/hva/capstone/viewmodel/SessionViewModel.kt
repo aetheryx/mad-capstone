@@ -13,10 +13,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import nl.hva.capstone.data.api.CapstoneApi
-import nl.hva.capstone.data.api.model.LoginInput
-import nl.hva.capstone.data.api.model.SignupInput
-import nl.hva.capstone.data.api.model.User
+import nl.hva.capstone.api.CapstoneApi
+import nl.hva.capstone.api.model.input.LoginInput
+import nl.hva.capstone.api.model.input.SignupInput
+import nl.hva.capstone.api.model.output.User
 import nl.hva.capstone.dataStore
 
 enum class SessionState {

@@ -1,4 +1,4 @@
-package nl.hva.capstone.ui.screens.ConversationScreen
+package nl.hva.capstone.ui.screens.conversation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -10,14 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import nl.hva.capstone.data.api.FullConversation
-import nl.hva.capstone.data.api.model.ConversationMessage
+import nl.hva.capstone.api.model.output.Conversation
+import nl.hva.capstone.api.model.output.ConversationMessage
 import nl.hva.capstone.viewmodel.ConversationsViewModel
 
 @Composable
 fun MessageList(
   conversationsViewModel: ConversationsViewModel,
-  conversation: FullConversation
+  conversation: Conversation
 ) {
   val liveData = conversationsViewModel.conversationMessages[conversation.conversation.id]!!
   val messages by liveData.observeAsState(emptyList())
