@@ -5,6 +5,7 @@ use serde::Serialize;
 
 #[derive(Serialize)]
 #[serde(tag = "event", content = "data")]
+#[typeshare::typeshare]
 pub enum WebsocketEvent<'a> {
   MessageCreate(&'a conversation_message::Model),
 }
@@ -14,8 +15,9 @@ impl<'a> WebsocketEvent<'a> {
     let msg = Message::Binary(serde_json::to_vec(&self)?);
 
     let mut clients = state.clients.lock().await;
-    let client = clients.get_mut(&id).unwrap();
-    client.send(msg).await?;
+    if let Some(client) = clients.get_mut(&id) {
+      client.send(msg).await?;
+    }
 
     Ok(())
   }
