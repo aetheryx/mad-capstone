@@ -23,7 +23,7 @@ fun MessageList(
   val messages by liveData.observeAsState(emptyList())
 
   LazyColumn() {
-    items(messages.reversed()) { message ->
+    items(messages) { message ->
       MessageComponent(conversationsVM, message)
     }
   }

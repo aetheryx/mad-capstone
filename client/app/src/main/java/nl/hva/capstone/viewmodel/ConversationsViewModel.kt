@@ -29,7 +29,7 @@ class ConversationsViewModel(
   val me get() = sessionVM.me.value!!
 
   val conversations = MutableLiveData<List<Conversation>>()
-  val conversationMessages = HashMap<Int, MutableLiveData<List<ConversationMessage>>>()
+  val conversationMessages = HashMap<Int, MutableLiveData<ArrayList<ConversationMessage>>>()
 
   val createState = MutableLiveData<ConversationCreateState>(ConversationCreateState.None())
 
@@ -65,7 +65,7 @@ class ConversationsViewModel(
   }
 
   private suspend fun fetchConversationMessages(conversation: Conversation) {
-    val data = MutableLiveData<List<ConversationMessage>>(emptyList())
+    val data = MutableLiveData(ArrayList<ConversationMessage>())
     conversationMessages[conversation.id] = data
 
     val messages = capstoneApi.getConversationMessages(
@@ -73,6 +73,6 @@ class ConversationsViewModel(
       limit = 50,
       offset = 0
     )
-    data.postValue(messages)
+    data.postValue(ArrayList(messages.reversed()))
   }
 }
