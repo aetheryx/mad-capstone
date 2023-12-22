@@ -18,6 +18,7 @@ import nl.hva.capstone.api.model.input.LoginInput
 import nl.hva.capstone.api.model.input.SignupInput
 import nl.hva.capstone.api.model.output.User
 import nl.hva.capstone.dataStore
+import nl.hva.capstone.BuildConfig
 
 enum class SessionState {
   INITIALISING,
@@ -34,7 +35,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
   var capstoneApi = CapstoneApi.createApi("")
   private val scope = CoroutineScope(Dispatchers.IO)
   private val dataStore = application.dataStore
-  private val storage = Firebase.storage("gs://capstone-386f7.appspot.com") // TODO: move to env
+  private val storage = Firebase.storage("gs://${BuildConfig.FIREBASE_BUCKET}")
   val conversationsVM = ConversationsViewModel(application, this)
 
   val state = MutableLiveData(SessionState.INITIALISING)

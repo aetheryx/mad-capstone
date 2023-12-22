@@ -1,3 +1,11 @@
+import java.io.FileInputStream
+import java.util.Properties
+
+val envProperties = Properties()
+envProperties.load(
+  FileInputStream(rootProject.file("env.properties"))
+)
+
 plugins {
   id("com.android.application")
   id("org.jetbrains.kotlin.android")
@@ -19,6 +27,11 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables {
       useSupportLibrary = true
+    }
+    
+    buildFeatures {
+      buildConfig = true
+      buildConfigField("String", "FIREBASE_BUCKET", envProperties["FIREBASE_BUCKET"] as String)
     }
   }
 
