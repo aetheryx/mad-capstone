@@ -13,7 +13,7 @@ use crate::util::{
 pub async fn create_conversation(
   AuthedUser(user): AuthedUser,
   State(state): State<SharedState>,
-  Json(input): Json<CreateConversation>,
+  Json(input): Json<CreateConversationInput>,
 ) -> HttpResult<conversation::Model> {
   let new_conversation = conversation::Entity::insert(conversation::ActiveModel {
     ..Default::default()
@@ -45,6 +45,6 @@ pub async fn create_conversation(
 
 #[derive(Deserialize)]
 #[typeshare]
-pub struct CreateConversation {
+pub struct CreateConversationInput {
   other_user: i32,
 }
