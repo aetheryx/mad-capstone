@@ -35,9 +35,9 @@ import nl.hva.capstone.viewmodel.ConversationsViewModel
 @Composable
 fun ConversationScreen(
   conversationID: Int,
-  conversationsViewModel: ConversationsViewModel,
+  conversationsVM: ConversationsViewModel,
 ) {
-  val conversations by conversationsViewModel.conversations.observeAsState(emptyList())
+  val conversations by conversationsVM.conversations.observeAsState(emptyList())
   val conversation = conversations.find { it.conversation.id == conversationID }!!
 
   Scaffold(
@@ -76,13 +76,13 @@ fun ConversationScreen(
       )
     }
   ) {
-    ConversationsView(conversationsViewModel, conversation, Modifier.padding(it))
+    ConversationsView(conversationsVM, conversation, Modifier.padding(it))
   }
 }
 
 @Composable
 private fun ConversationsView(
-  conversationsViewModel: ConversationsViewModel,
+  conversationsVM: ConversationsViewModel,
   conversation: Conversation,
   modifier: Modifier
 ) {
@@ -90,7 +90,7 @@ private fun ConversationsView(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.SpaceBetween
   ) {
-    MessageList(conversationsViewModel, conversation)
-    MessageBar(conversationsViewModel, conversation)
+    MessageList(conversationsVM, conversation)
+    MessageBar(conversationsVM, conversation)
   }
 }

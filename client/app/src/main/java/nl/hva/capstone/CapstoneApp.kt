@@ -20,9 +20,9 @@ import nl.hva.capstone.viewmodel.SessionState
 import nl.hva.capstone.viewmodel.SessionViewModel
 
 @Composable
-fun CapstoneApp(sessionViewModel: SessionViewModel) {
+fun CapstoneApp(sessionVM: SessionViewModel) {
   val navController = rememberNavController()
-  val state by sessionViewModel.state.observeAsState()
+  val state by sessionVM.state.observeAsState()
 
   if (state == SessionState.INITIALISING) return
 
@@ -32,19 +32,19 @@ fun CapstoneApp(sessionViewModel: SessionViewModel) {
     modifier = Modifier.fillMaxSize().safeDrawingPadding()
   ) {
     composable("/login") {
-      LoginScreen(navController, sessionViewModel)
+      LoginScreen(navController, sessionVM)
     }
 
     composable("/signup") {
-      SignupScreen(navController, sessionViewModel)
+      SignupScreen(navController, sessionVM)
     }
 
     composable("/conversations") {
-      HomeScreen(navController, sessionViewModel)
+      HomeScreen(navController, sessionVM)
     }
 
     composable("/conversations/add") {
-      AddUserScreen(navController, sessionViewModel)
+      AddUserScreen(navController, sessionVM)
     }
 
     composable(
@@ -58,7 +58,7 @@ fun CapstoneApp(sessionViewModel: SessionViewModel) {
       val id = entry.arguments?.getInt("id")
       ConversationScreen(
         conversationID = id!!,
-        sessionViewModel.conversationsViewModel
+        sessionVM.conversationsVM
       )
     }
   }

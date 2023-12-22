@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
 
-    val sessionViewModel = SessionViewModel(application)
+    val sessionVM = SessionViewModel(application)
 
     setContent {
       CapstoneTheme {
@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
           modifier = Modifier.fillMaxSize(),
           color = MaterialTheme.colorScheme.surface,
         ) {
-          CapstoneApp(sessionViewModel)
+          CapstoneApp(sessionVM)
         }
       }
     }
@@ -44,9 +44,9 @@ class MainActivity : ComponentActivity() {
     content.viewTreeObserver.addOnPreDrawListener(
       object : ViewTreeObserver.OnPreDrawListener {
         override fun onPreDraw(): Boolean {
-          val ready = sessionViewModel.state.value != SessionState.INITIALISING
+          val ready = sessionVM.state.value != SessionState.INITIALISING
 
-          println("ready: ${sessionViewModel.state.value} $ready")
+          println("ready: ${sessionVM.state.value} $ready")
 
           if (ready) {
             content.viewTreeObserver.removeOnPreDrawListener(this)

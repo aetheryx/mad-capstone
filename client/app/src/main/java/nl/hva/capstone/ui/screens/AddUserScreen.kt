@@ -31,7 +31,7 @@ import nl.hva.capstone.viewmodel.SessionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddUserScreen(navController: NavHostController, sessionViewModel: SessionViewModel) {
+fun AddUserScreen(navController: NavHostController, sessionVM: SessionViewModel) {
   Scaffold(
     topBar = {
       TopAppBar(
@@ -41,17 +41,17 @@ fun AddUserScreen(navController: NavHostController, sessionViewModel: SessionVie
     }
   ) {
     Column(modifier = Modifier.padding(it)) {
-      AddUserView(navController, sessionViewModel)
+      AddUserView(navController, sessionVM)
     }
   }
 }
 
 @Composable
-private fun AddUserView(navController: NavHostController, sessionViewModel: SessionViewModel) {
-  val conversationsViewModel = sessionViewModel.conversationsViewModel
+private fun AddUserView(navController: NavHostController, sessionVM: SessionViewModel) {
+  val conversationsVM = sessionVM.conversationsVM
 
   var username by remember { mutableStateOf("") }
-  val createState by conversationsViewModel.createState.observeAsState()
+  val createState by conversationsVM.createState.observeAsState()
   val isError = createState is ConversationCreateState.Errored
 
   if (createState is ConversationCreateState.Created) {
@@ -77,7 +77,7 @@ private fun AddUserView(navController: NavHostController, sessionViewModel: Sess
   Button(
     colors = ButtonDefaults.buttonColors(),
     onClick = {
-      conversationsViewModel.createConversation(username)
+      conversationsVM.createConversation(username)
     }
   ) {
     when (createState) {

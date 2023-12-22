@@ -21,12 +21,12 @@ sealed class ConversationCreateState(val id: Int?) {
 
 class ConversationsViewModel(
   application: Application,
-  private val sessionViewModel: SessionViewModel
+  private val sessionVM: SessionViewModel
 ) : AndroidViewModel(application) {
-  private val capstoneApi get() = sessionViewModel.capstoneApi
+  private val capstoneApi get() = sessionVM.capstoneApi
   private val scope = CoroutineScope(Dispatchers.IO)
 
-  val me get() = sessionViewModel.me.value!!
+  val me get() = sessionVM.me.value!!
 
   val conversations = MutableLiveData<List<Conversation>>()
   val conversationMessages = HashMap<Int, MutableLiveData<List<ConversationMessage>>>()

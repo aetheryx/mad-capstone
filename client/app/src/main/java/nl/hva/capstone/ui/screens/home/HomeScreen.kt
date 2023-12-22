@@ -20,12 +20,12 @@ import nl.hva.capstone.viewmodel.SessionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavHostController, sessionViewModel: SessionViewModel) {
-  val conversationsViewModel = sessionViewModel.conversationsViewModel
+fun HomeScreen(navController: NavHostController, sessionVM: SessionViewModel) {
+  val conversationsVM = sessionVM.conversationsVM
 
   LaunchedEffect(Unit) {
-    if (!conversationsViewModel.conversations.isInitialized) {
-      conversationsViewModel.fetchConversations()
+    if (!conversationsVM.conversations.isInitialized) {
+      conversationsVM.fetchConversations()
     }
   }
 
@@ -49,7 +49,7 @@ fun HomeScreen(navController: NavHostController, sessionViewModel: SessionViewMo
       }
     }
   ) {
-    ConversationsList(navController, conversationsViewModel, Modifier.padding(it))
+    ConversationsList(navController, conversationsVM, Modifier.padding(it))
   }
 }
 
