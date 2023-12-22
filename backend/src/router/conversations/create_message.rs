@@ -17,7 +17,7 @@ pub async fn create_message(
   AuthedUser(user): AuthedUser,
   State(state): State<SharedState>,
   Path(conversation_id): Path<i32>,
-  Json(input): Json<CreateMessage>,
+  Json(input): Json<CreateMessageInput>,
 ) -> HttpResult<conversation_message::Model> {
   let message = conversation_message::Entity::insert(conversation_message::ActiveModel {
     author_id: ActiveValue::Set(user.id),
@@ -46,6 +46,6 @@ pub async fn create_message(
 
 #[derive(Deserialize)]
 #[typeshare]
-pub struct CreateMessage {
+pub struct CreateMessageInput {
   content: String,
 }
