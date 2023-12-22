@@ -50,10 +50,16 @@ class ConversationsViewModel(
     }
   }
 
+  fun addConversationMessage(message: ConversationMessage) {
+    val messages = conversationMessages[message.conversationID] ?: return
+    messages.add(0, message)
+  }
+
   fun sendMessage(conversation: Conversation, content: String) {
     scope.launch {
       val input = CreateMessageInput(content)
-      capstoneApi.createMessage(conversation.id, input)
+      val message = capstoneApi.createMessage(conversation.id, input)
+      addConversationMessage(message)
     }
   }
 

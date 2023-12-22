@@ -25,8 +25,7 @@ class CapstoneWebsocket(
   }
 
   private fun onMessageCreate(message: ConversationMessage) {
-    val messages = conversationsVM.conversationMessages[message.conversationID] ?: return
-    messages.add(0, message)
+    conversationsVM.addConversationMessage(message)
   }
 
   override fun onMessage(webSocket: WebSocket, bytes: ByteString) {

@@ -46,5 +46,5 @@ interface CapstoneApiService {
   suspend fun createMessage(
     @Path("id") conversationID: Int,
     @Body input: CreateMessageInput
-  )
+  ): ConversationMessage
 }
