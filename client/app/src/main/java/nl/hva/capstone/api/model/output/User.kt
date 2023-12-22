@@ -10,5 +10,5 @@ data class User (
   val password: String,
   val avatar: String
 ) {
-  val avatarURL get() = "${CapstoneApi.baseUrl}/cdn/proxy/${avatar}"
+  val avatarURL get() = "${CapstoneApi.BASE_URL}/cdn/proxy/${avatar}"
 }
