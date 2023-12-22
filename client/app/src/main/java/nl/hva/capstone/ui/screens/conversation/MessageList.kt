@@ -16,25 +16,25 @@ import nl.hva.capstone.viewmodel.ConversationsViewModel
 
 @Composable
 fun MessageList(
-  conversationsViewModel: ConversationsViewModel,
+  conversationsVM: ConversationsViewModel,
   conversation: Conversation
 ) {
-  val liveData = conversationsViewModel.conversationMessages[conversation.conversation.id]!!
+  val liveData = conversationsVM.conversationMessages[conversation.conversation.id]!!
   val messages by liveData.observeAsState(emptyList())
 
   LazyColumn() {
     items(messages.reversed()) { message ->
-      MessageComponent(conversationsViewModel, message)
+      MessageComponent(conversationsVM, message)
     }
   }
 }
 
 @Composable
 private fun MessageComponent(
-  conversationsViewModel: ConversationsViewModel,
+  conversationsVM: ConversationsViewModel,
   message: ConversationMessage
 ) {
-  val isAuthor = message.authorID == conversationsViewModel.me.id
+  val isAuthor = message.authorID == conversationsVM.me.id
 
   Row(
     modifier = Modifier.fillMaxWidth(),

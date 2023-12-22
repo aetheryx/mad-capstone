@@ -40,10 +40,10 @@ import nl.hva.capstone.viewmodel.SessionViewModel
 @Composable
 fun SignupScreen(
   navController: NavHostController,
-  sessionViewModel: SessionViewModel
+  sessionVM: SessionViewModel
 ) {
   var imageUri: Uri? by remember { mutableStateOf(null) }
-  val state by sessionViewModel.state.observeAsState()
+  val state by sessionVM.state.observeAsState()
 
   if (state == SessionState.READY) {
     navController.navigate("/conversations")
@@ -89,7 +89,7 @@ fun SignupScreen(
       LogInSection(
         error = null,
         onSubmit = { username, password ->
-          sessionViewModel.signUp(username, password, imageUri!!)
+          sessionVM.signUp(username, password, imageUri!!)
         }
       ) {
         when (state) {

@@ -37,9 +37,9 @@ import nl.hva.capstone.viewmodel.SessionViewModel
 @Composable
 fun LoginScreen(
   navController: NavHostController,
-  sessionViewModel: SessionViewModel
+  sessionVM: SessionViewModel
 ) {
-  val state by sessionViewModel.state.observeAsState()
+  val state by sessionVM.state.observeAsState()
   val error =
     if (state == SessionState.CREDENTIAL_ERROR) stringResource(R.string.password_is_incorrect)
     else null
@@ -61,7 +61,7 @@ fun LoginScreen(
     ) {
       LogInSection(
         error,
-        onSubmit = sessionViewModel::logIn
+        onSubmit = sessionVM::logIn
       ) {
         when (state) {
           SessionState.LOGGING_IN -> {

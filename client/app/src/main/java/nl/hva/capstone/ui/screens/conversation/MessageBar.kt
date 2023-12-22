@@ -29,7 +29,7 @@ import nl.hva.capstone.viewmodel.ConversationsViewModel
 
 @Composable
 fun MessageBar(
-  conversationsViewModel: ConversationsViewModel,
+  conversationsVM: ConversationsViewModel,
   conversation: Conversation
 ) {
   var messageContent by remember { mutableStateOf("") }
@@ -53,7 +53,7 @@ fun MessageBar(
 
     IconButton(
       onClick = {
-        conversationsViewModel.sendMessage(conversation, messageContent)
+        conversationsVM.sendMessage(conversation, messageContent)
         messageContent = ""
       }
     ) {

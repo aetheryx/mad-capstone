@@ -27,10 +27,10 @@ import nl.hva.capstone.viewmodel.ConversationsViewModel
 @Composable
 fun ConversationsList(
   navController: NavHostController,
-  conversationsViewModel: ConversationsViewModel,
+  conversationsVM: ConversationsViewModel,
   modifier: Modifier
 ) {
-  val conversations by conversationsViewModel.conversations.observeAsState(emptyList())
+  val conversations by conversationsVM.conversations.observeAsState(emptyList())
 
   Column(
     modifier = modifier
