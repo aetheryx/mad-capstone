@@ -2,6 +2,8 @@ package nl.hva.capstone.viewmodel
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +31,7 @@ class ConversationsViewModel(
   val me get() = sessionVM.me.value!!
 
   val conversations = MutableLiveData<List<Conversation>>()
-  val conversationMessages = HashMap<Int, MutableLiveData<ArrayList<ConversationMessage>>>()
+  val conversationMessages = HashMap<Int, SnapshotStateList<ConversationMessage>>()
 
   val createState = MutableLiveData<ConversationCreateState>(ConversationCreateState.None())
 
@@ -65,7 +67,7 @@ class ConversationsViewModel(
   }
 
   private suspend fun fetchConversationMessages(conversation: Conversation) {
-    val data = MutableLiveData(ArrayList<ConversationMessage>())
+    val data = mutableStateListOf<ConversationMessage>()
     conversationMessages[conversation.id] = data
 
     val messages = capstoneApi.getConversationMessages(
@@ -73,6 +75,6 @@ class ConversationsViewModel(
       limit = 50,
       offset = 0
     )
-    data.postValue(ArrayList(messages.reversed()))
+    data.addAll(messages)
   }
 }
