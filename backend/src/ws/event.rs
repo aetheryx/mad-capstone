@@ -1,26 +1,12 @@
 use crate::{db::entities::*, SharedState};
 use axum::extract::ws::Message;
 use futures::SinkExt;
-use serde::{ser::SerializeStruct, Serialize, Serializer};
+use serde::Serialize;
 
+#[derive(Serialize)]
+#[serde(tag = "event", content = "data")]
 pub enum WebsocketEvent<'a> {
   MessageCreate(&'a conversation_message::Model),
-}
-
-impl<'a> Serialize for WebsocketEvent<'a> {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-  where
-    S: Serializer,
-  {
-    let (event, data) = match *self {
-      Self::MessageCreate(i) => ("MESSAGE_CREATE", i),
-    };
-
-    let mut state = serializer.serialize_struct("WebsocketEvent", 2)?;
-    state.serialize_field("event", event)?;
-    state.serialize_field("data", data)?;
-    state.end()
-  }
 }
 
 impl<'a> WebsocketEvent<'a> {
