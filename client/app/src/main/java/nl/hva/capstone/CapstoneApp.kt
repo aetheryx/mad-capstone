@@ -57,6 +57,7 @@ fun CapstoneApp(sessionVM: SessionViewModel) {
     ) { entry ->
       val id = entry.arguments?.getInt("id")
       ConversationScreen(
+        navController,
         conversationID = id!!,
         sessionVM.conversationsVM
       )
