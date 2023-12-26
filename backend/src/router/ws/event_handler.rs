@@ -23,7 +23,7 @@ async fn handle_event(
   println!("got websocket event from: {id} {event:?}");
 
   match event {
-    ClientEvent::CallOffer(offer) => handle_call_offer(offer, state).await?,
+    ClientEvent::CallOffer(offer) => handle_call_offer(id, offer, state).await?,
     ClientEvent::CallResponse(resp) => handle_call_response(id, resp, state).await?,
     ClientEvent::WebRTCPayload(payload) => handle_webrtc_payload(id, payload, state).await?,
   }
