@@ -3,7 +3,7 @@ package nl.hva.capstone.viewmodel
 import android.util.Log
 import kotlinx.serialization.json.Json
 import nl.hva.capstone.api.CapstoneApi
-import nl.hva.capstone.api.WebsocketEvent
+import nl.hva.capstone.api.ServerEvent
 import nl.hva.capstone.api.model.output.ConversationMessage
 import nl.hva.capstone.api.model.output.User
 import okhttp3.Response
@@ -30,10 +30,11 @@ class CapstoneWebsocket(
 
   override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
     val raw = bytes.utf8()
-    val decoded = decoder.decodeFromString(WebsocketEvent, raw)
+    val decoded = decoder.decodeFromString(ServerEvent, raw)
 
     when (decoded) {
-      is WebsocketEvent.MessageCreate -> onMessageCreate(decoded.data)
+      is ServerEvent.MessageCreateEvent -> onMessageCreate(decoded.data)
+      else -> {}
     }
   }
 

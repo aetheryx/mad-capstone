@@ -1,6 +1,6 @@
-mod outgoing_event;
-mod incoming_event;
+mod server_event;
+mod client_event;
 pub mod call_state;
 
-pub use outgoing_event::OutgoingWebsocketEvent;
-pub use incoming_event::IncomingWebsocketEvent;
+pub use server_event::ServerEvent;
+pub use client_event::ClientEvent;

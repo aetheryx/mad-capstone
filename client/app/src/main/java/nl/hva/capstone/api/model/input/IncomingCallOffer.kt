@@ -1,0 +1,9 @@
+package nl.hva.capstone.api.model.input
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class IncomingCallOffer(
+  @SerialName("callee_id") val calleeID: Int
+)

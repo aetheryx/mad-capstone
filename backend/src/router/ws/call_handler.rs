@@ -1,20 +1,26 @@
-use anyhow::{Context, Ok, Result};
+use anyhow::{Ok, Result, Context};
 use futures::lock::Mutex;
+use sea_orm::EntityTrait;
 
 use crate::{
-  ws::{call_state::*, OutgoingWebsocketEvent},
-  SharedState,
+  ws::{call_state::*, ServerEvent},
+  SharedState, db::entities::user,
 };
 
 lazy_static! {
   static ref CALL: Mutex<Option<Call>> = Mutex::from(None);
 }
 
-pub async fn handle_call_offer(call_offer: CallOffer, state: SharedState) -> Result<()> {
-  let event = OutgoingWebsocketEvent::CallOffer(call_offer);
-  event.send_to(&state, call_offer.callee).await?;
+pub async fn handle_call_offer(call_offer: IncomingCallOffer, state: SharedState) -> Result<()> {
+  let outgoing_call_offer = OutgoingCallOffer {
+    callee: user::Entity::find_by_id(call_offer.callee_id)
+      .one(&state.db)
+      .await?
+      .context("callee not found")?,
+  };
 
-  Ok(())
+  let event = ServerEvent::CallOffer(outgoing_call_offer);
+  event.send_to(&state, call_offer.callee_id).await
 }
 
 pub async fn handle_call_response(
@@ -22,18 +28,16 @@ pub async fn handle_call_response(
   call_response: CallResponse,
   state: SharedState,
 ) -> Result<()> {
-  let event = OutgoingWebsocketEvent::CallResponse(call_response);
-  event.send_to(&state, call_response.caller).await?;
-
   if call_response.accepted {
     let mut call = CALL.lock().await;
     *call = Some(Call {
-      caller: call_response.caller,
+      caller: call_response.caller_id,
       callee: id,
     });
   }
 
-  Ok(())
+  let event = ServerEvent::CallResponse(call_response);
+  event.send_to(&state, call_response.caller_id).await
 }
 
 pub async fn handle_webrtc_payload(
@@ -47,7 +51,7 @@ pub async fn handle_webrtc_payload(
 
   let target_id = if id == call.callee { call.caller } else { call.callee };
 
-  let event = OutgoingWebsocketEvent::WebRTCPayload(payload);
+  let event = ServerEvent::WebRTCPayload(payload);
   event.send_to(&state, target_id).await?;
 
   println!("sent {event:?} to {target_id}");
