@@ -1,19 +1,24 @@
-use anyhow::{Ok, Result, Context};
+use anyhow::{Context, Ok, Result};
 use futures::lock::Mutex;
 use sea_orm::EntityTrait;
 
 use crate::{
+  db::entities::user,
   ws::{call_state::*, ServerEvent},
-  SharedState, db::entities::user,
+  SharedState,
 };
 
 lazy_static! {
   static ref CALL: Mutex<Option<Call>> = Mutex::from(None);
 }
 
-pub async fn handle_call_offer(call_offer: IncomingCallOffer, state: SharedState) -> Result<()> {
+pub async fn handle_call_offer(
+  id: i32,
+  call_offer: IncomingCallOffer,
+  state: SharedState,
+) -> Result<()> {
   let outgoing_call_offer = OutgoingCallOffer {
-    callee: user::Entity::find_by_id(call_offer.callee_id)
+    callee: user::Entity::find_by_id(id)
       .one(&state.db)
       .await?
       .context("callee not found")?,
