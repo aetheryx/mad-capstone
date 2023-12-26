@@ -9,6 +9,7 @@ use axum::{
 use futures::StreamExt;
 
 use crate::SharedState;
+use super::event_handler::register_event_handler;
 
 pub async fn connect(
   ws: WebSocketUpgrade,
@@ -21,7 +22,11 @@ pub async fn connect(
 }
 
 async fn websocket(socket: WebSocket, state: SharedState, id: i32) {
-  let (sender, _) = socket.split();
+  let (sender, receiver) = socket.split();
+
+  println!("got connection from {id}");
+
+  register_event_handler(id, receiver, state.clone());
 
   // TODO: auth, keepalive, handle close
 
