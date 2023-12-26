@@ -6,7 +6,7 @@ use sea_orm::*;
 use serde::Deserialize;
 use typeshare::typeshare;
 
-use crate::ws::WebsocketEvent;
+use crate::ws::OutgoingWebsocketEvent;
 use crate::db::entities::*;
 use crate::{
   util::{app_error::*, authed_user::*},
@@ -38,7 +38,7 @@ pub async fn create_message(
     .await?
     .unwrap(); // TODO unwrap
 
-  let event = WebsocketEvent::MessageCreate(&message);
+  let event = OutgoingWebsocketEvent::MessageCreate(&message);
   event.send_to(&state, other_user.user_id).await?;
 
   Ok(Json(message))

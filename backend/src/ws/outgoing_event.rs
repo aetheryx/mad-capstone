@@ -3,14 +3,17 @@ use axum::extract::ws::Message;
 use futures::SinkExt;
 use serde::Serialize;
 
+use super::call_state::CallResponse;
+
 #[derive(Serialize)]
 #[serde(tag = "event", content = "data")]
 #[typeshare::typeshare]
-pub enum WebsocketEvent<'a> {
+pub enum OutgoingWebsocketEvent<'a> {
   MessageCreate(&'a conversation_message::Model),
+  CallResponse(CallResponse)
 }
 
-impl<'a> WebsocketEvent<'a> {
+impl<'a> OutgoingWebsocketEvent<'a> {
   pub async fn send_to(&self, state: &SharedState, id: i32) -> anyhow::Result<()> {
     let msg = Message::Binary(serde_json::to_vec(&self)?);
 
