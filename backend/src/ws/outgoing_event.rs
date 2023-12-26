@@ -3,14 +3,16 @@ use axum::extract::ws::Message;
 use futures::SinkExt;
 use serde::Serialize;
 
-use super::call_state::CallResponse;
+use super::call_state::{CallResponse, WebRTCPayload, CallOffer};
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 #[serde(tag = "event", content = "data")]
 #[typeshare::typeshare]
 pub enum OutgoingWebsocketEvent<'a> {
   MessageCreate(&'a conversation_message::Model),
-  CallResponse(CallResponse)
+  CallOffer(CallOffer),
+  CallResponse(CallResponse),
+  WebRTCPayload(WebRTCPayload)
 }
 
 impl<'a> OutgoingWebsocketEvent<'a> {
