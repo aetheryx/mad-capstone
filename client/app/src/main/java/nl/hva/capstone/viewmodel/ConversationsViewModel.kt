@@ -9,10 +9,12 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import nl.hva.capstone.api.ClientEvent
 import nl.hva.capstone.api.model.output.Conversation
 import nl.hva.capstone.api.model.output.ConversationMessage
 import nl.hva.capstone.api.model.input.CreateConversationInput
 import nl.hva.capstone.api.model.input.CreateMessageInput
+import nl.hva.capstone.api.model.input.IncomingCallOffer
 
 sealed class ConversationCreateState(val id: Int?) {
   class None: ConversationCreateState(null)
@@ -61,6 +63,12 @@ class ConversationsViewModel(
       val message = capstoneApi.createMessage(conversation.id, input)
       addConversationMessage(message)
     }
+  }
+
+  fun call(conversation: Conversation) {
+    val offer = IncomingCallOffer(conversation.otherParticipant.id)
+    val message = ClientEvent.CallOffer(offer)
+    sessionVM.websocket.sendMessage(message)
   }
 
   fun fetchConversations() {

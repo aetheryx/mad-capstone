@@ -37,7 +37,7 @@ fun ConversationScreen(
 
   Scaffold(
     topBar = {
-      ConversationScreenTopBar(navController, conversation)
+      ConversationScreenTopBar(navController, conversation, conversationsVM)
     },
     bottomBar = {
       MessageBar(conversationsVM, conversation)
@@ -51,7 +51,8 @@ fun ConversationScreen(
 @Composable
 private fun ConversationScreenTopBar(
   navController: NavHostController,
-  conversation: Conversation
+  conversation: Conversation,
+  conversationsVM: ConversationsViewModel
 ) {
   val user = conversation.otherParticipant
 
@@ -83,7 +84,9 @@ private fun ConversationScreenTopBar(
       }
     },
     actions = {
-      IconButton(onClick = {}) {
+      IconButton(onClick = {
+        conversationsVM.call(conversation)
+      }) {
         Icon(Icons.Filled.Videocam, "Video call")
       }
 
