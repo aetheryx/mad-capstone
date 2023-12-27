@@ -7,12 +7,14 @@ use crate::db::entities::user;
 #[typeshare]
 pub struct IncomingCallOffer {
   pub callee_id: i32,
+  pub conversation_id: i32,
 }
 
 #[derive(Serialize, Debug)]
 #[typeshare]
 pub struct OutgoingCallOffer {
   pub callee: user::Model,
+  pub conversation_id: i32,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]

@@ -9,20 +9,22 @@ import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
+import nl.hva.capstone.api.model.CallResponse
+import nl.hva.capstone.api.model.WebRTCPayload
 import nl.hva.capstone.api.model.input.IncomingCallOffer
 
 @Serializable
 sealed class ClientEvent {
   @Serializable
-  data class CallOffer(val data: IncomingCallOffer): ClientEvent()
+  data class CallOfferEvent(val data: IncomingCallOffer): ClientEvent()
   @Serializable
-  data class CallResponse(val data: CallResponse): ClientEvent()
+  data class CallResponseEvent(val data: CallResponse): ClientEvent()
   @Serializable
-  data class WebRTCPayload(val data: WebRTCPayload): ClientEvent()
+  data class WebRTCPayloadEvent(val data: WebRTCPayload): ClientEvent()
 
   fun toJSON() = buildJsonObject {
     val self = this@ClientEvent
-    put("event", self::class.simpleName!!)
+    put("event", self::class.simpleName!!.replace("Event", ""))
 
     val data = Json.encodeToJsonElement(self).jsonObject["data"]!!
     put("data", data)
