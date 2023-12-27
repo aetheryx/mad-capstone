@@ -31,7 +31,7 @@ async fn websocket(socket: WebSocket, state: SharedState, id: i32) {
   // TODO: auth, keepalive, handle close
 
   let mut clients = state.clients.lock().await;
-  clients.insert(id, sender);
+  clients.entry(id).or_default().push(sender);
 }
 
 
