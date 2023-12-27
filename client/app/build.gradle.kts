@@ -19,7 +19,7 @@ android {
 
   defaultConfig {
     applicationId = "nl.hva.capstone"
-    minSdk = 33
+    minSdk = 31
     targetSdk = 34
     versionCode = 1
     versionName = "1.0"
@@ -112,4 +112,10 @@ dependencies {
   // image loading
   implementation("io.coil-kt:coil:2.1.0")
   implementation("io.coil-kt:coil-compose:2.1.0")
+
+  // notifications
+  implementation("com.google.accompanist:accompanist-permissions:0.30.1")
+
+  // webrtc
+  implementation("io.getstream:stream-webrtc-android:1.1.0")
 }

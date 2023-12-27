@@ -1,5 +1,6 @@
 package nl.hva.capstone
 
+import android.Manifest
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -25,16 +26,29 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
 
+    requestPermissions(arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+
+//    val sessionManager: WebRtcSessionManager = WebRtcSessionManagerImpl(
+//      context = this,
+//      signalingClient = SignalingClient(),
+//      peerConnectionFactory = StreamPeerConnectionFactory(this)
+//    )
+
     val sessionVM = SessionViewModel(application)
+//    sessionVM.websocket.signalingClient = sessionManager.signalingClient
+//    sessionManager.signalingClient.cws = sessionVM.websocket
+
 
     setContent {
       CapstoneTheme {
-        Surface(
-          modifier = Modifier.fillMaxSize(),
-          color = MaterialTheme.colorScheme.surface,
-        ) {
-          CapstoneApp(sessionVM)
-        }
+//        CompositionLocalProvider(LocalWebRtcSessionManager provides sessionManager) {
+          Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.surface,
+          ) {
+            CapstoneApp(sessionVM)
+          }
+//        }
       }
     }
 

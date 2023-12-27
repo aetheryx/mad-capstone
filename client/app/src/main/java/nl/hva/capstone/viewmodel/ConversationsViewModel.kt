@@ -25,13 +25,14 @@ sealed class ConversationCreateState(val id: Int?) {
 
 class ConversationsViewModel(
   application: Application,
-  private val sessionVM: SessionViewModel
+  val sessionVM: SessionViewModel
 ) : AndroidViewModel(application) {
   private val capstoneApi get() = sessionVM.capstoneApi
   private val scope = CoroutineScope(Dispatchers.IO)
 
   val me get() = sessionVM.me.value!!
 
+  val callState = MutableLiveData<CallState>()
   val conversations = MutableLiveData<List<Conversation>>()
   val conversationMessages = HashMap<Int, SnapshotStateList<ConversationMessage>>()
 
@@ -66,9 +67,11 @@ class ConversationsViewModel(
   }
 
   fun call(conversation: Conversation) {
-    val offer = IncomingCallOffer(conversation.otherParticipant.id)
-    val message = ClientEvent.CallOffer(offer)
+    val offer = IncomingCallOffer(conversation.otherParticipant.id, conversation.id)
+    val message = ClientEvent.CallOfferEvent(offer)
     sessionVM.websocket.sendMessage(message)
+
+    callState.postValue(CallState.Ringing.Outgoing(conversation.id))
   }
 
   fun fetchConversations() {

@@ -3,6 +3,7 @@ package nl.hva.capstone
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -12,10 +13,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import nl.hva.capstone.ui.screens.AddUserScreen
+import nl.hva.capstone.ui.screens.callscreen.CallScreen
 import nl.hva.capstone.ui.screens.conversation.ConversationScreen
 import nl.hva.capstone.ui.screens.home.HomeScreen
 import nl.hva.capstone.ui.screens.LoginScreen
 import nl.hva.capstone.ui.screens.SignupScreen
+import nl.hva.capstone.viewmodel.CallState
 import nl.hva.capstone.viewmodel.SessionState
 import nl.hva.capstone.viewmodel.SessionViewModel
 
@@ -25,6 +28,14 @@ fun CapstoneApp(sessionVM: SessionViewModel) {
   val state by sessionVM.state.observeAsState()
 
   if (state == SessionState.INITIALISING) return
+
+  val callState by sessionVM.conversationsVM.callState.observeAsState(CallState.None())
+  LaunchedEffect(callState) {
+    if (callState is CallState.Ringing) {
+      val id = (callState as CallState.Ringing).conversationID
+      navController.navigate("/conversations/${id}/call")
+    }
+  }
 
   NavHost(
     navController,
@@ -57,6 +68,22 @@ fun CapstoneApp(sessionVM: SessionViewModel) {
     ) { entry ->
       val id = entry.arguments?.getInt("id")
       ConversationScreen(
+        navController,
+        conversationID = id!!,
+        sessionVM.conversationsVM
+      )
+    }
+
+    composable(
+      route = "/conversations/{id}/call",
+      arguments = listOf(
+        navArgument("id") {
+          type = NavType.IntType
+        }
+      )
+    ) { entry ->
+      val id = entry.arguments?.getInt("id")
+      CallScreen(
         navController,
         conversationID = id!!,
         sessionVM.conversationsVM

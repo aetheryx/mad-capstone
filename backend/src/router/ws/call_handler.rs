@@ -17,11 +17,14 @@ pub async fn handle_call_offer(
   call_offer: IncomingCallOffer,
   state: SharedState,
 ) -> Result<()> {
+  println!("got offer {call_offer:?} from {id}");
+  
   let outgoing_call_offer = OutgoingCallOffer {
     callee: user::Entity::find_by_id(id)
       .one(&state.db)
       .await?
       .context("callee not found")?,
+    conversation_id: call_offer.conversation_id
   };
 
   let event = ServerEvent::CallOffer(outgoing_call_offer);
