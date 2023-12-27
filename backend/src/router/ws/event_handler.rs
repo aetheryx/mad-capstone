@@ -4,7 +4,11 @@ use futures::{stream::SplitStream, StreamExt};
 use super::call_handler::*;
 use crate::{ws::ClientEvent, SharedState};
 
-pub fn register_event_handler(id: i32, mut receiver: SplitStream<WebSocket>, state: SharedState) {
+pub fn register_event_handler(
+  id: i32,
+  mut receiver: SplitStream<WebSocket>,
+  state: SharedState
+) {
   tokio::spawn(async move {
     while let Some(Ok(Message::Text(text))) = receiver.next().await {
       println!("got websocket event from: {id} {text:?}");
@@ -25,10 +29,15 @@ async fn handle_event(
   println!("got websocket event from: {id} {event:?}");
 
   match event {
-    ClientEvent::CallOffer(offer) => handle_call_offer(id, offer, state).await?,
-    ClientEvent::CallResponse(resp) => handle_call_response(id, resp, state).await?,
-    ClientEvent::WebRTCPayload(payload) => handle_webrtc_payload(id, payload, state).await?,
-  }
+    ClientEvent::CallOffer(offer) =>
+      handle_call_offer(id, offer, state).await?,
+
+    ClientEvent::CallResponse(resp) =>
+      handle_call_response(id, resp, state).await?,
+
+    ClientEvent::WebRTCPayload(payload) =>
+      handle_webrtc_payload(id, payload, state).await?,
+  };
 
   Ok(())
 }
