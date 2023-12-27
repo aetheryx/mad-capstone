@@ -1,9 +1,11 @@
 package nl.hva.capstone.viewmodel
 
 import android.app.Application
+import android.content.Context
 import android.net.Uri
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Firebase
@@ -17,8 +19,8 @@ import nl.hva.capstone.api.CapstoneApi
 import nl.hva.capstone.api.model.input.LoginInput
 import nl.hva.capstone.api.model.input.SignupInput
 import nl.hva.capstone.api.model.output.User
-import nl.hva.capstone.dataStore
 import nl.hva.capstone.BuildConfig
+import nl.hva.capstone.api.CapstoneWebsocket
 
 enum class SessionState {
   INITIALISING,
@@ -28,23 +30,26 @@ enum class SessionState {
   READY
 }
 
+val Context.sessionDataStore by preferencesDataStore(name = "session")
 val sessionTokenKey = stringPreferencesKey("session_token")
 
-class SessionViewModel(application: Application) : AndroidViewModel(application) {
-  private var token: String? = null
+class SessionViewModel(private val application: Application) : AndroidViewModel(application) {
   var capstoneApi = CapstoneApi.createApi("")
   private val scope = CoroutineScope(Dispatchers.IO)
-  private val dataStore = application.dataStore
   private val storage = Firebase.storage("gs://${BuildConfig.FIREBASE_BUCKET}")
-  val websocket = CapstoneWebsocketHandler(this)
-  val conversationsVM = ConversationsViewModel(application, this)
+
+  val conversationsVM by lazy {
+    ConversationsViewModel(application, this)
+  }
+
+  val websocket = CapstoneWebsocket()
 
   val state = MutableLiveData(SessionState.INITIALISING)
   val me: MutableLiveData<User> = MutableLiveData()
 
   init {
     scope.launch {
-      val data = dataStore.data.first()
+      val data = application.sessionDataStore.data.first()
       val isValid = data[sessionTokenKey]?.let { onReady(it) } ?: false
       if (!isValid) {
         state.postValue(SessionState.STALE)
@@ -87,7 +92,6 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
   }
 
   private suspend fun onReady(newToken: String): Boolean {
-    token = newToken
     capstoneApi = CapstoneApi.createApi(newToken)
 
     val user = try {
@@ -96,11 +100,11 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
       return false
     }
 
-    dataStore.edit { it[sessionTokenKey] = newToken }
+    application.sessionDataStore.edit { it[sessionTokenKey] = newToken }
     state.postValue(SessionState.READY)
     me.postValue(user)
 
-    websocket.connect(user)
+    websocket.start(user.id)
 
     return true
   }

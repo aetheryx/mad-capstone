@@ -25,18 +25,27 @@ sealed class ConversationCreateState(val id: Int?) {
 
 class ConversationsViewModel(
   application: Application,
-  val sessionVM: SessionViewModel
+  val sessionVM: SessionViewModel,
 ) : AndroidViewModel(application) {
-  private val capstoneApi get() = sessionVM.capstoneApi
   private val scope = CoroutineScope(Dispatchers.IO)
+  private var conversationsEventHandler: ConversationsEventHandler? = null
+  private val capstoneApi get() = sessionVM.capstoneApi
 
   val me get() = sessionVM.me.value!!
 
   val callState = MutableLiveData<CallState>()
   val conversations = MutableLiveData<List<Conversation>>()
   val conversationMessages = HashMap<Int, SnapshotStateList<ConversationMessage>>()
-
   val createState = MutableLiveData<ConversationCreateState>(ConversationCreateState.None())
+
+  fun listenForEvents() {
+    if (conversationsEventHandler != null) return
+
+    conversationsEventHandler = ConversationsEventHandler(this)
+    scope.launch {
+      conversationsEventHandler!!.collect()
+    }
+  }
 
   fun createConversation(username: String) {
     createState.value = ConversationCreateState.Creating()

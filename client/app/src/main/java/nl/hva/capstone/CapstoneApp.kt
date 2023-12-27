@@ -25,11 +25,17 @@ import nl.hva.capstone.viewmodel.SessionViewModel
 @Composable
 fun CapstoneApp(sessionVM: SessionViewModel) {
   val navController = rememberNavController()
+  val conversationsVM = sessionVM.conversationsVM
+
+  LaunchedEffect(Unit) {
+    conversationsVM.listenForEvents()
+  }
+
   val state by sessionVM.state.observeAsState()
 
   if (state == SessionState.INITIALISING) return
 
-  val callState by sessionVM.conversationsVM.callState.observeAsState(CallState.None())
+  val callState by conversationsVM.callState.observeAsState(CallState.None())
   LaunchedEffect(callState) {
     if (callState is CallState.Ringing) {
       val id = (callState as CallState.Ringing).conversationID
@@ -51,11 +57,11 @@ fun CapstoneApp(sessionVM: SessionViewModel) {
     }
 
     composable("/conversations") {
-      HomeScreen(navController, sessionVM)
+      HomeScreen(navController, conversationsVM)
     }
 
     composable("/conversations/add") {
-      AddUserScreen(navController, sessionVM)
+      AddUserScreen(navController, conversationsVM)
     }
 
     composable(
@@ -70,7 +76,7 @@ fun CapstoneApp(sessionVM: SessionViewModel) {
       ConversationScreen(
         navController,
         conversationID = id!!,
-        sessionVM.conversationsVM
+        conversationsVM
       )
     }
 
@@ -86,7 +92,7 @@ fun CapstoneApp(sessionVM: SessionViewModel) {
       CallScreen(
         navController,
         conversationID = id!!,
-        sessionVM.conversationsVM
+        conversationsVM
       )
     }
   }
