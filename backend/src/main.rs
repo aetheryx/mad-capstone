@@ -41,7 +41,7 @@ async fn main() -> Result<()> {
 
 struct AppState {
   db: DatabaseConnection,
-  clients: Mutex<HashMap<i32, SplitSink<WebSocket, Message>>>,
+  clients: Mutex<HashMap<i32, Vec<SplitSink<WebSocket, Message>>>>,
 }
 
 type SharedState = Arc<AppState>;

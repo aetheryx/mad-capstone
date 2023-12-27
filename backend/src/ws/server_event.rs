@@ -20,8 +20,10 @@ impl<'a> ServerEvent<'a> {
     let msg = Message::Binary(serde_json::to_vec(&self)?);
 
     let mut clients = state.clients.lock().await;
-    if let Some(client) = clients.get_mut(&id) {
-      client.send(msg).await?;
+    if let Some(client_list) = clients.get_mut(&id) {
+      for client in client_list.iter_mut() {
+        let _ = client.send(msg.clone()).await;
+      }
     }
 
     Ok(())
