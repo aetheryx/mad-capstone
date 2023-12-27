@@ -1,7 +1,6 @@
 package nl.hva.capstone
 
 import android.Manifest
-import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -14,15 +13,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import nl.hva.capstone.service.NotificationService
 import nl.hva.capstone.ui.theme.CapstoneTheme
 import nl.hva.capstone.viewmodel.SessionState
-import nl.hva.capstone.viewmodel.SessionViewModel
-
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +33,7 @@ class MainActivity : ComponentActivity() {
 //      peerConnectionFactory = StreamPeerConnectionFactory(this)
 //    )
 
-    val sessionVM = SessionViewModel(application)
+      val sessionVM = (application as CapstoneApplication).sessionVM
 //    sessionVM.websocket.signalingClient = sessionManager.signalingClient
 //    sessionManager.signalingClient.cws = sessionVM.websocket
 

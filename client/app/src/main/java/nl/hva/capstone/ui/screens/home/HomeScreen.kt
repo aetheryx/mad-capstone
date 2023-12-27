@@ -16,13 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import nl.hva.capstone.R
+import nl.hva.capstone.api.model.output.Conversation
+import nl.hva.capstone.viewmodel.ConversationsViewModel
 import nl.hva.capstone.viewmodel.SessionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavHostController, sessionVM: SessionViewModel) {
-  val conversationsVM = sessionVM.conversationsVM
-
+fun HomeScreen(navController: NavHostController, conversationsVM: ConversationsViewModel) {
   LaunchedEffect(Unit) {
     if (!conversationsVM.conversations.isInitialized) {
       conversationsVM.fetchConversations()

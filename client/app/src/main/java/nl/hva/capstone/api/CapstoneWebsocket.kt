@@ -1,29 +1,35 @@
 package nl.hva.capstone.api
 
 import android.util.Log
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.serialization.json.Json
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
 
-abstract class CapstoneWebsocket : WebSocketListener() {
+class CapstoneWebsocket : WebSocketListener() {
   private var ws: WebSocket? = null
   private val TAG = "CapstoneWebsocket"
   private val serializer = Json {
     ignoreUnknownKeys = true
   }
 
-  fun start(userID: Int) {
-    ws = CapstoneApi.createWebSocket(userID, this)
-  }
+  val websocketEvents = MutableSharedFlow<ServerEvent>(
+    replay = 0,
+    extraBufferCapacity = 50
+  )
 
-  abstract fun onMessage(event: ServerEvent)
+  fun start(userID: Int) {
+    if (ws == null) {
+      ws = CapstoneApi.createWebSocket(userID, this)
+    }
+  }
 
   override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
     val raw = bytes.utf8()
-    val decoded = serializer.decodeFromString(ServerEvent, raw)
-    onMessage(decoded)
+    val event = serializer.decodeFromString(ServerEvent, raw)
+    websocketEvents.tryEmit(event)
   }
 
   fun sendMessage(event: ClientEvent) {

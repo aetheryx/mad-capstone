@@ -31,11 +31,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import nl.hva.capstone.R
 import nl.hva.capstone.viewmodel.ConversationCreateState
+import nl.hva.capstone.viewmodel.ConversationsViewModel
 import nl.hva.capstone.viewmodel.SessionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddUserScreen(navController: NavHostController, sessionVM: SessionViewModel) {
+fun AddUserScreen(navController: NavHostController, conversationsVM: ConversationsViewModel) {
   Scaffold(
     topBar = {
       TopAppBar(
@@ -55,15 +56,13 @@ fun AddUserScreen(navController: NavHostController, sessionVM: SessionViewModel)
     }
   ) {
     Column(modifier = Modifier.padding(it)) {
-      AddUserView(navController, sessionVM)
+      AddUserView(navController, conversationsVM)
     }
   }
 }
 
 @Composable
-private fun AddUserView(navController: NavHostController, sessionVM: SessionViewModel) {
-  val conversationsVM = sessionVM.conversationsVM
-
+private fun AddUserView(navController: NavHostController, conversationsVM: ConversationsViewModel) {
   var username by remember { mutableStateOf("") }
   val createState by conversationsVM.createState.observeAsState()
   val isError = createState is ConversationCreateState.Errored

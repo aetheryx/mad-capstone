@@ -1,25 +1,32 @@
 package nl.hva.capstone.service
 
-import android.app.Service
-import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
-import android.os.IBinder
 import android.os.Process
-import android.util.Log
+import androidx.lifecycle.LifecycleService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.android.asCoroutineDispatcher
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import nl.hva.capstone.api.CapstoneApi
-import nl.hva.capstone.dataStore
-import nl.hva.capstone.viewmodel.sessionTokenKey
+import nl.hva.capstone.CapstoneApplication
+import nl.hva.capstone.viewmodel.SessionState
 
-class NotificationService : Service() {
+class NotificationService : LifecycleService() {
   private val TAG = "NotificationService"
-  private var ws: NotificationWebsocket? = null
+  private var ws: NotificationEventHandler? = null
 
   override fun onCreate() {
+    val sessionVM = (application as CapstoneApplication).sessionVM
+    sessionVM.state.observe(this) {
+      if (it == SessionState.INITIALISING) return@observe
+      if (it == SessionState.READY) initSocket()
+
+      sessionVM.state.removeObservers(this)
+    }
+
+    super.onCreate()
+  }
+
+  private fun initSocket() {
     val handlerThread = HandlerThread("notificationservice_t", Process.THREAD_PRIORITY_BACKGROUND)
     handlerThread.start()
 
@@ -27,25 +34,7 @@ class NotificationService : Service() {
     val scope = CoroutineScope(handler.asCoroutineDispatcher())
 
     scope.launch {
-      openSocket()
-    }
-  }
-
-  override fun onBind(intent: Intent?): IBinder? {
-    return null
-  }
-
-  private suspend fun openSocket() {
-    try {
-      val data = dataStore.data.first()
-      val token = data[sessionTokenKey]!!
-
-      val capstoneApi = CapstoneApi.createApi(token)
-
-      val user = capstoneApi.getMe()
-      ws = NotificationWebsocket(user.id, this)
-    } catch (err: Exception) {
-      Log.v(TAG, "$err ${err.stackTraceToString()}")
+      ws = NotificationEventHandler(application as CapstoneApplication)
     }
   }
 }

@@ -1,31 +1,23 @@
 package nl.hva.capstone.viewmodel
 
-import nl.hva.capstone.api.CapstoneWebsocket
 import nl.hva.capstone.api.ServerEvent
 import nl.hva.capstone.api.model.CallResponse
 import nl.hva.capstone.api.model.output.ConversationMessage
 import nl.hva.capstone.api.model.output.OutgoingCallOffer
-import nl.hva.capstone.api.model.output.User
-//import nl.hva.capstone.webrtc.SignalingClient
 
-class CapstoneWebsocketHandler(
-  private val sessionVM: SessionViewModel,
-) : CapstoneWebsocket() {
-  private val conversationsVM get() = sessionVM.conversationsVM
-  // var signalingClient: SignalingClient? = null
-
-  fun connect(user: User) {
-    super.start(user.id)
+class ConversationsEventHandler(private val conversationsVM: ConversationsViewModel) {
+  suspend fun collect() {
+    conversationsVM.sessionVM.websocket.websocketEvents.collect {
+      onServerEvent(it)
+    }
   }
 
-  override fun onMessage(event: ServerEvent) {
+  private fun onServerEvent(event: ServerEvent) {
     when (event) {
       is ServerEvent.MessageCreateEvent -> onMessageCreate(event.data)
       is ServerEvent.CallOfferEvent -> onCallOffer(event.data)
       is ServerEvent.CallResponseEvent -> onCallResponse(event.data)
       is ServerEvent.WebRTCPayloadEvent -> {} // signalingClient?.onWebRTCPayload(decoded.data.payload)
-      else -> {
-      }
     }
   }
 
@@ -42,4 +34,3 @@ class CapstoneWebsocketHandler(
     conversationsVM.callState.postValue(callState)
   }
 }
-
