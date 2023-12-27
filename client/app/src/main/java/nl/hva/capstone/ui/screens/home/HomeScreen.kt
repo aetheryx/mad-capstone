@@ -49,7 +49,7 @@ fun HomeScreen(navController: NavHostController, sessionVM: SessionViewModel) {
       }
     }
   ) {
-    ConversationsList(navController, conversationsVM, Modifier.padding(it))
+    ConversationsList(navController, conversationsVM, Modifier.padding(top = it.calculateTopPadding()))
   }
 }
 
