@@ -1,7 +1,9 @@
 package nl.hva.capstone
 
 import android.Manifest
+import android.app.ActivityManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver
@@ -15,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import nl.hva.capstone.service.NotificationService
 import nl.hva.capstone.ui.theme.CapstoneTheme
 import nl.hva.capstone.viewmodel.SessionState
 import nl.hva.capstone.viewmodel.SessionViewModel
@@ -27,6 +30,9 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
 
     requestPermissions(arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+
+    val intent = Intent(this, NotificationService::class.java)
+    startService(intent)
 
 //    val sessionManager: WebRtcSessionManager = WebRtcSessionManagerImpl(
 //      context = this,
