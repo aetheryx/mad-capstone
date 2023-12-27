@@ -1,9 +1,11 @@
 package nl.hva.capstone.api.model.output
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Immutable
 data class ConversationMessage(
   val id: Int,
   @SerialName("author_id") val authorID: Int,
