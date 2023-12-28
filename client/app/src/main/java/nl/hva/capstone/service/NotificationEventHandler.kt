@@ -8,19 +8,17 @@ import android.app.Person
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.core.app.NotificationCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import nl.hva.capstone.CapstoneApplication
 import nl.hva.capstone.R
-import nl.hva.capstone.activities.CallActivity
+import nl.hva.capstone.activities.IncomingCallActivity
+import nl.hva.capstone.activities.OngoingCallActivity
 import nl.hva.capstone.api.ServerEvent
-import nl.hva.capstone.api.model.input.IncomingCallOffer
 import nl.hva.capstone.api.model.output.ConversationMessage
 import nl.hva.capstone.api.model.output.OutgoingCallOffer
 import java.time.Instant
-import java.util.Date
 
 enum class NotificationChannelID {
   Message,
@@ -33,6 +31,7 @@ class NotificationEventHandler(
   private val scope = CoroutineScope(Dispatchers.IO)
   private val sessionVM = application.sessionVM
   private val conversationVM = sessionVM.conversationsVM
+  private val manager = application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
   init {
     scope.launch {
@@ -75,7 +74,8 @@ class NotificationEventHandler(
   }
 
   private fun handleCallOfferEvent(callOffer: OutgoingCallOffer) {
-    val manager = application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val id = Instant.now().epochSecond.toInt()
+    val ctx = application.applicationContext
 
     val channelID = NotificationChannelID.Call.toString()
     val channel = NotificationChannel(channelID, channelID, NotificationManager.IMPORTANCE_HIGH)
@@ -85,20 +85,24 @@ class NotificationEventHandler(
       .setName("bob")
       .build()
 
-    val callIntent = Intent(application, CallActivity::class.java)
+    val answerIntent = Intent(application, OngoingCallActivity::class.java)
+      .let {
+        it.putExtra("notification_id", id)
+        PendingIntent.getActivity(ctx, id, it, PendingIntent.FLAG_IMMUTABLE)
+      }
 
-    val answerIntent = PendingIntent.getActivity(application.applicationContext, 0, callIntent,
-      PendingIntent.FLAG_IMMUTABLE)
-
-    val declineIntent = PendingIntent.getActivity(application.applicationContext, 0, callIntent,
-      PendingIntent.FLAG_IMMUTABLE)
+    val declineIntent = Intent(application, IncomingCallActivity::class.java) // todo: decline call activity
+      .let { PendingIntent.getActivity(ctx, 0, it, PendingIntent.FLAG_IMMUTABLE) }
 
     val notification = Notification.Builder(application, channelID)
       .setSmallIcon(R.drawable.default_pfp)
-      .setStyle(Notification.CallStyle.forIncomingCall(person, answerIntent, declineIntent))
+      .setContentTitle("Incoming call")
+      .setContentText("Incoming call from ..")
+      .setStyle(Notification.CallStyle.forIncomingCall(person, declineIntent, answerIntent))
       .setFullScreenIntent(answerIntent, true)
+      .setCategory(Notification.CATEGORY_CALL)
       .build()
 
-    manager.notify(Instant.now().epochSecond.toInt(), notification)
+    manager.notify(id, notification)
   }
 }

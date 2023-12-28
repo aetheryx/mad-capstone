@@ -2,10 +2,8 @@ package nl.hva.capstone.viewmodel
 
 import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import nl.hva.capstone.CapstoneApplication
-import nl.hva.capstone.activities.CallActivity
+import nl.hva.capstone.activities.OngoingCallActivity
 import nl.hva.capstone.api.ClientEvent
 import nl.hva.capstone.api.model.input.IncomingCallOffer
 import nl.hva.capstone.api.model.output.Conversation
@@ -25,7 +23,7 @@ class CallViewModel(
 
 //    callState.value = CallState.Ringing.Outgoing(conversation.id)
 
-    val intent = Intent(application, CallActivity::class.java)
+    val intent = Intent(application, OngoingCallActivity::class.java)
     application.mainActivity!!.startActivity(intent)
   }
 }
