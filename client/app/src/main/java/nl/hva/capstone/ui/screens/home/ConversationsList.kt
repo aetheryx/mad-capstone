@@ -19,6 +19,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import nl.hva.capstone.api.model.output.Conversation
@@ -112,6 +113,7 @@ private fun ConversationDetails(conversation: Conversation, user: User) {
       Text(
         conversation.lastMessage?.content ?: "Say something!",
         style = MaterialTheme.typography.bodyMedium,
+        overflow = TextOverflow.Ellipsis
       )
     }
   }
