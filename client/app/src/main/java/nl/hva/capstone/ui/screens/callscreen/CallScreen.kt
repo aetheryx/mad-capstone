@@ -18,14 +18,14 @@ fun CallScreen(
   conversationID: Int,
   conversationsVM: ConversationsViewModel
 ) {
-  val callState by conversationsVM.callState.observeAsState()
+//  val callState by conversationsVM.callState.observeAsState()
 
-  when (callState) {
-    is CallState.Connected -> ConnectedCallScreen()
-    is CallState.Ringing.Incoming -> IncomingCallScreen(callState as CallState.Ringing.Incoming, navController, conversationsVM)
-    is CallState.Ringing.Outgoing -> OutgoingCallScreen(navController, conversationsVM)
-    else -> {}
-  }
+//  when (callState) {
+//    is CallState.Connected -> ConnectedCallScreen()
+//    is CallState.Ringing.Incoming -> IncomingCallScreen(callState as CallState.Ringing.Incoming, navController, conversationsVM)
+//    is CallState.Ringing.Outgoing -> OutgoingCallScreen(navController, conversationsVM)
+//    else -> {}
+//  }
 }
 
 @Composable
@@ -52,7 +52,7 @@ private fun IncomingCallScreen(
     val event = ClientEvent.CallResponseEvent(response)
     conversationsVM.sessionVM.websocket.sendMessage(event)
 
-    conversationsVM.callState.postValue(CallState.Connected())
+//    conversationsVM.callState.postValue(CallState.Connected())
   }
 
   Row() {

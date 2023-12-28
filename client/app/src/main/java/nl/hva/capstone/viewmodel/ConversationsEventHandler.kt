@@ -26,11 +26,11 @@ class ConversationsEventHandler(private val conversationsVM: ConversationsViewMo
   }
 
   private fun onCallOffer(offer: OutgoingCallOffer) {
-    conversationsVM.callState.postValue(CallState.Ringing.Incoming(offer.conversationID))
+//    conversationsVM.callState.postValue(CallState.Ringing.Incoming(offer.conversationID))
   }
 
   private fun onCallResponse(response: CallResponse) {
-    val callState = if (response.accepted) CallState.Connected() else CallState.None()
-    conversationsVM.callState.postValue(callState)
+//    val callState = if (response.accepted) CallState.Connected() else CallState.None()
+//    conversationsVM.callState.postValue(callState)
   }
 }

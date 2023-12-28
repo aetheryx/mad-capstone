@@ -1,6 +1,6 @@
 package nl.hva.capstone.viewmodel
 
-import android.app.Application
+import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -9,6 +9,8 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import nl.hva.capstone.CapstoneApplication
+import nl.hva.capstone.activities.CallActivity
 import nl.hva.capstone.api.ClientEvent
 import nl.hva.capstone.api.model.output.Conversation
 import nl.hva.capstone.api.model.output.ConversationMessage
@@ -24,7 +26,7 @@ sealed class ConversationCreateState(val id: Int?) {
 }
 
 class ConversationsViewModel(
-  application: Application,
+  private val application: CapstoneApplication,
   val sessionVM: SessionViewModel,
 ) : AndroidViewModel(application) {
   private val scope = CoroutineScope(Dispatchers.IO)
@@ -33,7 +35,7 @@ class ConversationsViewModel(
 
   val me get() = sessionVM.me.value!!
 
-  val callState = MutableLiveData<CallState>()
+  val callState = MutableLiveData<CallState>(CallState.None)
   val conversations = MutableLiveData<List<Conversation>>()
   val conversationMessages = HashMap<Int, SnapshotStateList<ConversationMessage>>()
   val createState = MutableLiveData<ConversationCreateState>(ConversationCreateState.None())
@@ -80,7 +82,10 @@ class ConversationsViewModel(
     val message = ClientEvent.CallOfferEvent(offer)
     sessionVM.websocket.sendMessage(message)
 
-    callState.postValue(CallState.Ringing.Outgoing(conversation.id))
+    callState.value = CallState.Ringing.Outgoing(conversation.id)
+
+    val intent = Intent(application, CallActivity::class.java)
+    application.mainActivity!!.startActivity(intent)
   }
 
   fun fetchConversations() {
