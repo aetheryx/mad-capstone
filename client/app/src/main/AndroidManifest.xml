@@ -37,7 +37,7 @@
         </activity>
 
         <activity
-            android:name=".activities.CallActivity"
+            android:name=".activities.OngoingCallActivity"
             android:exported="true"
             android:label="Call"
             android:theme="@style/Theme.Capstone"
