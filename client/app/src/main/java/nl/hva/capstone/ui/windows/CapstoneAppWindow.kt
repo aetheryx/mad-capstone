@@ -28,7 +28,7 @@ fun CapstoneAppWindow(sessionVM: SessionViewModel) {
   val conversationsVM = sessionVM.conversationsVM
 
   LaunchedEffect(Unit) {
-    conversationsVM.listenForEvents()
+    sessionVM.listenForEvents()
   }
 
   val state by sessionVM.state.observeAsState()

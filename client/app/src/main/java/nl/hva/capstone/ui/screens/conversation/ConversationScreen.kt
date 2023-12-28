@@ -55,6 +55,7 @@ private fun ConversationScreenTopBar(
   conversationsVM: ConversationsViewModel
 ) {
   val user = conversation.otherParticipant
+  val callVM = conversationsVM.sessionVM.callVM
 
   TopAppBar(
     colors = TopAppBarDefaults.topAppBarColors(),
@@ -85,7 +86,7 @@ private fun ConversationScreenTopBar(
     },
     actions = {
       IconButton(onClick = {
-        conversationsVM.call(conversation)
+        callVM.call(conversation)
       }) {
         Icon(Icons.Filled.Videocam, "Video call")
       }
