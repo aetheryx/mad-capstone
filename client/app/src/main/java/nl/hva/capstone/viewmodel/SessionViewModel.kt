@@ -20,6 +20,7 @@ import nl.hva.capstone.api.model.input.LoginInput
 import nl.hva.capstone.api.model.input.SignupInput
 import nl.hva.capstone.api.model.output.User
 import nl.hva.capstone.BuildConfig
+import nl.hva.capstone.CapstoneApplication
 import nl.hva.capstone.api.CapstoneWebsocket
 
 enum class SessionState {
@@ -33,7 +34,7 @@ enum class SessionState {
 val Context.sessionDataStore by preferencesDataStore(name = "session")
 val sessionTokenKey = stringPreferencesKey("session_token")
 
-class SessionViewModel(private val application: Application) : AndroidViewModel(application) {
+class SessionViewModel(private val application: CapstoneApplication) : AndroidViewModel(application) {
   var capstoneApi = CapstoneApi.createApi("")
   private val scope = CoroutineScope(Dispatchers.IO)
   private val storage = Firebase.storage("gs://${BuildConfig.FIREBASE_BUCKET}")
@@ -101,8 +102,8 @@ class SessionViewModel(private val application: Application) : AndroidViewModel(
     }
 
     application.sessionDataStore.edit { it[sessionTokenKey] = newToken }
-    state.postValue(SessionState.READY)
     me.postValue(user)
+    state.postValue(SessionState.READY)
 
     websocket.start(user.id)
 

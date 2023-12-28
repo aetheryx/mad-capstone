@@ -1,7 +1,6 @@
-package nl.hva.capstone
+package nl.hva.capstone.activities
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -13,44 +12,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import nl.hva.capstone.service.NotificationService
+import nl.hva.capstone.CapstoneApplication
 import nl.hva.capstone.ui.theme.CapstoneTheme
+import nl.hva.capstone.ui.windows.CapstoneAppWindow
 import nl.hva.capstone.viewmodel.SessionState
+
+private val permissions = arrayOf(
+  Manifest.permission.CAMERA,
+  Manifest.permission.RECORD_AUDIO,
+  Manifest.permission.POST_NOTIFICATIONS,
+)
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    val sessionVM = (application as CapstoneApplication).sessionVM
+
+    // enable edge-to-edge display
     enableEdgeToEdge()
 
-    requestPermissions(arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+    // request permissions
+    requestPermissions(permissions, 0)
 
-    val intent = Intent(this, NotificationService::class.java)
-    startService(intent)
-
-//    val sessionManager: WebRtcSessionManager = WebRtcSessionManagerImpl(
-//      context = this,
-//      signalingClient = SignalingClient(),
-//      peerConnectionFactory = StreamPeerConnectionFactory(this)
-//    )
-
-      val sessionVM = (application as CapstoneApplication).sessionVM
-//    sessionVM.websocket.signalingClient = sessionManager.signalingClient
-//    sessionManager.signalingClient.cws = sessionVM.websocket
-
-
-    setContent {
-      CapstoneTheme {
-//        CompositionLocalProvider(LocalWebRtcSessionManager provides sessionManager) {
-          Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.surface,
-          ) {
-            CapstoneApp(sessionVM)
-          }
-//        }
-      }
-    }
-
+    // set up pre draw listener
     val content: View = findViewById(android.R.id.content)
     content.viewTreeObserver.addOnPreDrawListener(
       object : ViewTreeObserver.OnPreDrawListener {
@@ -67,5 +51,17 @@ class MainActivity : ComponentActivity() {
         }
       }
     )
+
+    // set content
+    setContent {
+      CapstoneTheme {
+        Surface(
+          modifier = Modifier.fillMaxSize(),
+          color = MaterialTheme.colorScheme.surface,
+        ) {
+          CapstoneAppWindow(sessionVM)
+        }
+      }
+    }
   }
 }

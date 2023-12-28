@@ -86,7 +86,6 @@ private fun ConversationScreenTopBar(
     actions = {
       IconButton(onClick = {
         conversationsVM.call(conversation)
-        navController.navigate("/conversations/${conversation.id}/call")
       }) {
         Icon(Icons.Filled.Videocam, "Video call")
       }

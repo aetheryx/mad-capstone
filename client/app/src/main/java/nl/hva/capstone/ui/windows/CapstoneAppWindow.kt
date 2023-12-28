@@ -1,4 +1,4 @@
-package nl.hva.capstone
+package nl.hva.capstone.ui.windows
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -23,7 +23,7 @@ import nl.hva.capstone.viewmodel.SessionState
 import nl.hva.capstone.viewmodel.SessionViewModel
 
 @Composable
-fun CapstoneApp(sessionVM: SessionViewModel) {
+fun CapstoneAppWindow(sessionVM: SessionViewModel) {
   val navController = rememberNavController()
   val conversationsVM = sessionVM.conversationsVM
 
@@ -34,14 +34,6 @@ fun CapstoneApp(sessionVM: SessionViewModel) {
   val state by sessionVM.state.observeAsState()
 
   if (state == SessionState.INITIALISING) return
-
-  val callState by conversationsVM.callState.observeAsState(CallState.None())
-  LaunchedEffect(callState) {
-    if (callState is CallState.Ringing) {
-      val id = (callState as CallState.Ringing).conversationID
-      navController.navigate("/conversations/${id}/call")
-    }
-  }
 
   NavHost(
     navController,
@@ -74,22 +66,6 @@ fun CapstoneApp(sessionVM: SessionViewModel) {
     ) { entry ->
       val id = entry.arguments?.getInt("id")
       ConversationScreen(
-        navController,
-        conversationID = id!!,
-        conversationsVM
-      )
-    }
-
-    composable(
-      route = "/conversations/{id}/call",
-      arguments = listOf(
-        navArgument("id") {
-          type = NavType.IntType
-        }
-      )
-    ) { entry ->
-      val id = entry.arguments?.getInt("id")
-      CallScreen(
         navController,
         conversationID = id!!,
         conversationsVM
