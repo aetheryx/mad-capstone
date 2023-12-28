@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
-import nl.hva.capstone.activities.CallActivity
 import nl.hva.capstone.activities.MainActivity
 import nl.hva.capstone.service.NotificationService
 import nl.hva.capstone.viewmodel.SessionViewModel
@@ -23,23 +22,23 @@ class CapstoneApplication : Application(), Application.ActivityLifecycleCallback
   }
 
   override fun onActivityStarted(activity: Activity) {
-    if (activity is CallActivity) return
+    if (activity !is MainActivity) return
     activityIsOpen = true
-    mainActivity = (activity as MainActivity)
+    mainActivity = activity
   }
 
   override fun onActivityResumed(activity: Activity) {
-    if (activity is CallActivity) return
+    if (activity !is MainActivity) return
     activityIsOpen = true
   }
 
   override fun onActivityPaused(activity: Activity) {
-    if (activity is CallActivity) return
+    if (activity !is MainActivity) return
     activityIsOpen = false
   }
 
   override fun onActivityStopped(activity: Activity) {
-    if (activity is CallActivity) return
+    if (activity !is MainActivity) return
     activityIsOpen = false
   }
 

@@ -9,7 +9,7 @@ import nl.hva.capstone.viewmodel.SessionViewModel
 @Composable
 fun CallWindow(sessionVM: SessionViewModel) {
   val conversationsVM = sessionVM.conversationsVM
-  val callState by conversationsVM.callState.observeAsState(CallState.None)
+//  val callState by conversationsVM.callState.observeAsState(CallState.None)
 
 //  when (callState) {
 //    is

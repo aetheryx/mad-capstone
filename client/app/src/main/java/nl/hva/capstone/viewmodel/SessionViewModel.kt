@@ -22,6 +22,7 @@ import nl.hva.capstone.api.model.output.User
 import nl.hva.capstone.BuildConfig
 import nl.hva.capstone.CapstoneApplication
 import nl.hva.capstone.api.CapstoneWebsocket
+import nl.hva.capstone.api.ServerEvent
 
 enum class SessionState {
   INITIALISING,
@@ -39,9 +40,8 @@ class SessionViewModel(private val application: CapstoneApplication) : AndroidVi
   private val scope = CoroutineScope(Dispatchers.IO)
   private val storage = Firebase.storage("gs://${BuildConfig.FIREBASE_BUCKET}")
 
-  val conversationsVM by lazy {
-    ConversationsViewModel(application, this)
-  }
+  val conversationsVM by lazy { ConversationsViewModel(application) }
+  val callVM by lazy { CallViewModel(application) }
 
   val websocket = CapstoneWebsocket()
 
@@ -108,6 +108,24 @@ class SessionViewModel(private val application: CapstoneApplication) : AndroidVi
     websocket.start(user.id)
 
     return true
+  }
+
+  fun listenForEvents() = scope.launch {
+    websocket.websocketEvents.collect { event ->
+      when (event) {
+        is ServerEvent.MessageCreateEvent ->
+          conversationsVM.addConversationMessage(event.data)
+
+        is ServerEvent.CallOfferEvent ->
+          {}
+
+        is ServerEvent.CallResponseEvent ->
+          {}
+
+        is ServerEvent.WebRTCPayloadEvent ->
+          {}
+      }
+    }
   }
 }
 

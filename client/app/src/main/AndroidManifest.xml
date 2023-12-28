@@ -38,12 +38,17 @@
 
         <activity
             android:name=".activities.CallActivity"
-            android:exported="false"
+            android:exported="true"
             android:label="Call"
             android:theme="@style/Theme.Capstone"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize" />
 
-        </activity>
+        <activity
+            android:name=".activities.IncomingCallActivity"
+            android:exported="true"
+            android:label="Incoming Call"
+            android:theme="@style/Theme.Capstone"
+            android:windowSoftInputMode="adjustResize" />
 
         <service
             android:name=".service.NotificationService"
