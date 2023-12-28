@@ -21,8 +21,10 @@ class CapstoneWebsocket : WebSocketListener() {
   )
 
   fun start(userID: Int) {
-    if (ws == null) {
-      ws = CapstoneApi.createWebSocket(userID, this)
+    synchronized(this) {
+      if (ws == null) {
+        ws = CapstoneApi.createWebSocket(userID, this)
+      }
     }
   }
 
