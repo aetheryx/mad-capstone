@@ -1,10 +1,13 @@
 package nl.hva.capstone.ui.screens.callscreen
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CallEnd
+import androidx.compose.material.icons.filled.FlipCameraIos
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
-import androidx.core.graphics.toColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import nl.hva.capstone.R
 
 sealed class CallAction {
@@ -22,7 +25,7 @@ sealed class CallAction {
 }
 
 data class VideoCallControlAction(
-  val icon: Painter,
+  val icon: ImageVector,
   val iconTint: Color,
   val background: Color,
   val callAction: CallAction
@@ -32,22 +35,9 @@ data class VideoCallControlAction(
 fun buildDefaultCallControlActions(
   callMediaState: CallMediaState
 ): List<VideoCallControlAction> {
-  val microphoneIcon =
-    painterResource(
-      id = if (callMediaState.isMicrophoneEnabled) {
-        R.drawable.default_pfp
-      } else {
-        R.drawable.default_pfp
-      }
-    )
-
-  val cameraIcon = painterResource(
-    id = if (callMediaState.isCameraEnabled) {
-      R.drawable.default_pfp
-    } else {
-      R.drawable.default_pfp
-    }
-  )
+  val microphoneIcon = Icons.Filled.let {
+    if (callMediaState.isMicrophoneEnabled) it.Mic else it.MicOff
+  }
 
   return listOf(
     VideoCallControlAction(
@@ -57,19 +47,13 @@ fun buildDefaultCallControlActions(
       callAction = CallAction.ToggleMicroPhone(callMediaState.isMicrophoneEnabled)
     ),
     VideoCallControlAction(
-      icon = cameraIcon,
-      iconTint = Color.White,
-      background = Color(R.color.black),
-      callAction = CallAction.ToggleCamera(callMediaState.isCameraEnabled)
-    ),
-    VideoCallControlAction(
-      icon = painterResource(id = R.drawable.default_pfp),
+      icon = Icons.Filled.FlipCameraIos,
       iconTint = Color.White,
       background = Color(R.color.black),
       callAction = CallAction.FlipCamera
     ),
     VideoCallControlAction(
-      icon = painterResource(id = R.drawable.default_pfp),
+      icon = Icons.Filled.CallEnd,
       iconTint = Color.White,
       background = Color(R.color.black),
       callAction = CallAction.LeaveCall
