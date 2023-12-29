@@ -5,6 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class OutgoingCallOffer(
-  val callee: User,
   @SerialName("conversation_id") val conversationID: Int
 )

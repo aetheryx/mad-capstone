@@ -74,6 +74,8 @@ class NotificationEventHandler(
   }
 
   private fun handleCallOfferEvent(callOffer: OutgoingCallOffer) {
+    sessionVM.callVM.onCallOffer(callOffer)
+
     val id = Instant.now().epochSecond.toInt()
     val ctx = application.applicationContext
 

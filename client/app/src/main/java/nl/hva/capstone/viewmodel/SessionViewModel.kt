@@ -1,6 +1,5 @@
 package nl.hva.capstone.viewmodel
 
-import android.app.Application
 import android.content.Context
 import android.net.Uri
 import androidx.datastore.preferences.core.edit
@@ -116,14 +115,13 @@ class SessionViewModel(private val application: CapstoneApplication) : AndroidVi
         is ServerEvent.MessageCreateEvent ->
           conversationsVM.addConversationMessage(event.data)
 
-        is ServerEvent.CallOfferEvent ->
-          {}
-
         is ServerEvent.CallResponseEvent ->
-          {}
+          callVM.onCallResponse(event.data)
 
         is ServerEvent.WebRTCPayloadEvent ->
-          {}
+          callVM.onWebRTCPayload(event.data)
+
+        else -> Unit
       }
     }
   }
