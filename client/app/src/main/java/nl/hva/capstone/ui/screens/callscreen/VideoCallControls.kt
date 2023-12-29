@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Abc
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,12 +38,12 @@ fun VideoCallControls(
           .background(action.background)
       ) {
         Icon(
+          imageVector = action.icon,
           modifier = Modifier
             .padding(10.dp)
             .align(Alignment.Center)
             .clickable { onCallAction(action.callAction) },
           tint = action.iconTint,
-          painter = action.icon,
           contentDescription = null
         )
       }
