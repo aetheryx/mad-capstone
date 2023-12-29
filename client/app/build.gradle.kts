@@ -33,6 +33,8 @@ android {
       buildConfig = true
       buildConfigField("String", "FIREBASE_BUCKET", envProperties["FIREBASE_BUCKET"] as String)
       buildConfigField("String", "API_BASE_URL", envProperties["API_BASE_URL"] as String)
+      buildConfigField("String", "METERED_USERNAME", envProperties["METERED_USERNAME"] as String)
+      buildConfigField("String", "METERED_PASSWORD", envProperties["METERED_PASSWORD"] as String)
     }
   }
 
@@ -43,6 +45,7 @@ android {
         getDefaultProguardFile("proguard-android-optimize.txt"),
         "proguard-rules.pro"
       )
+      signingConfig = signingConfigs.getByName("debug")
     }
   }
   compileOptions {
