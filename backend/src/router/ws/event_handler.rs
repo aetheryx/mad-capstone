@@ -11,8 +11,6 @@ pub fn register_event_handler(
 ) {
   tokio::spawn(async move {
     while let Some(Ok(Message::Text(text))) = receiver.next().await {
-      println!("got websocket event from: {id} {text:?}");
-
       let event: ClientEvent = serde_json::from_str(text.as_str())?;
       handle_event(id, event, state.clone()).await?;
     }

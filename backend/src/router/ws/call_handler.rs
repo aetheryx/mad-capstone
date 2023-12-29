@@ -1,9 +1,7 @@
-use anyhow::{Context, Ok, Result};
+use anyhow::{Ok, Result};
 use futures::lock::Mutex;
-use sea_orm::EntityTrait;
 
 use crate::{
-  db::entities::user,
   ws::{call_state::*, ServerEvent},
   SharedState,
 };
@@ -17,13 +15,7 @@ pub async fn handle_call_offer(
   call_offer: IncomingCallOffer,
   state: SharedState,
 ) -> Result<()> {
-  println!("got offer {call_offer:?} from {id}");
-  
   let outgoing_call_offer = OutgoingCallOffer {
-    callee: user::Entity::find_by_id(id)
-      .one(&state.db)
-      .await?
-      .context("callee not found")?,
     conversation_id: call_offer.conversation_id
   };
 

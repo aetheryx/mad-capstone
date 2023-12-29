@@ -7,11 +7,13 @@ import android.os.Bundle
 import nl.hva.capstone.activities.MainActivity
 import nl.hva.capstone.service.NotificationService
 import nl.hva.capstone.viewmodel.SessionViewModel
+import nl.hva.capstone.webrtc.SignalingClient
 
 class CapstoneApplication : Application(), Application.ActivityLifecycleCallbacks {
   var activityIsOpen = false
   var mainActivity: MainActivity? = null
   val sessionVM by lazy { SessionViewModel(this) }
+  val signalingClient by lazy { SignalingClient(this) }
 
   override fun onCreate() {
     super.onCreate()

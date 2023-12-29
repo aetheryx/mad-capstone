@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
-use crate::db::entities::user;
-
 #[derive(Deserialize, Serialize, Debug, Clone, Copy)]
 #[typeshare]
 pub struct IncomingCallOffer {
@@ -13,7 +11,6 @@ pub struct IncomingCallOffer {
 #[derive(Serialize, Debug)]
 #[typeshare]
 pub struct OutgoingCallOffer {
-  pub callee: user::Model,
   pub conversation_id: i32,
 }
 
