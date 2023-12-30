@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import nl.hva.chatstone.ChatstoneApplication
 import nl.hva.chatstone.ui.theme.ChatstoneTheme
 import nl.hva.chatstone.ui.windows.ChatstoneAppWindow
@@ -25,14 +26,13 @@ private val permissions = arrayOf(
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    val sessionVM = (application as ChatstoneApplication).sessionVM
-
-    // enable edge-to-edge display
+    installSplashScreen()
     enableEdgeToEdge()
-
-    // request permissions
     requestPermissions(permissions, 0)
+
+    super.onCreate(savedInstanceState)
+
+    val sessionVM = (application as ChatstoneApplication).sessionVM
 
     // set up pre draw listener
     val content: View = findViewById(android.R.id.content)
@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
       }
     )
 
-    // set content
+    // set app content
     setContent {
       ChatstoneTheme {
         Surface(
