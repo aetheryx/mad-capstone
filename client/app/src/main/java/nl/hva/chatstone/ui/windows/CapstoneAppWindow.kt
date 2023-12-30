@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -25,17 +26,27 @@ fun ChatstoneAppWindow(sessionVM: SessionViewModel) {
   val navController = rememberNavController()
   val conversationsVM = sessionVM.conversationsVM
 
+  var targetURL by sessionVM.targetURL
+
   LaunchedEffect(Unit) {
     sessionVM.listenForEvents()
+    if (targetURL != null) {
+      navController.navigate(targetURL!!)
+      targetURL = null
+    }
   }
 
   val state by sessionVM.state.observeAsState()
 
-  if (state == SessionState.INITIALISING) return
+  val startDestination = when (state) {
+    SessionState.INITIALISING -> return
+    SessionState.READY -> "/conversations"
+    else -> "/login"
+  }
 
   NavHost(
     navController,
-    startDestination = if (state == SessionState.READY) "/conversations" else "/login",
+    startDestination = startDestination,
     modifier = Modifier.fillMaxSize().safeDrawingPadding()
   ) {
     composable("/login") {
