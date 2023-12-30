@@ -2,24 +2,27 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="ConversationScreenPreview">
-        <State />
-      </entry>
-      <entry key="app">
+      <entry key="MainActivity">
         <State>
-          <targetSelectedWithDropDown>
+          <runningDeviceTargetSelectedWithDropDown>
             <Target>
-              <type value="QUICK_BOOT_TARGET" />
+              <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
                 <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="$USER_HOME$/.android/avd/Pixel_3a_API_34_extension_level_7_arm64-v8a.avd" />
+                  <type value="SERIAL_NUMBER" />
+                  <value value="1A291FDEE005LU" />
                 </Key>
               </deviceKey>
             </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2023-12-22T15:29:19.801808Z" />
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2023-12-30T12:48:59.383880Z" />
         </State>
+      </entry>
+      <entry key="MainActivityOld">
+        <State />
+      </entry>
+      <entry key="app">
+        <State />
       </entry>
     </value>
   </component>
