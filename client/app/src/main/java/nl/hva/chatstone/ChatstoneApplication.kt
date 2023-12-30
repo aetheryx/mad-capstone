@@ -5,7 +5,7 @@ import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import nl.hva.chatstone.activities.MainActivity
-import nl.hva.chatstone.service.NotificationService
+import nl.hva.chatstone.service.ChatstoneService
 import nl.hva.chatstone.viewmodel.SessionViewModel
 import nl.hva.chatstone.webrtc.SignalingClient
 
@@ -19,7 +19,7 @@ class ChatstoneApplication : Application(), Application.ActivityLifecycleCallbac
     super.onCreate()
     registerActivityLifecycleCallbacks(this)
 
-    val intent = Intent(this, NotificationService::class.java)
+    val intent = Intent(this, ChatstoneService::class.java)
     startService(intent)
   }
 

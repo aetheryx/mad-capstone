@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import nl.hva.chatstone.api.model.output.Conversation
-import nl.hva.chatstone.ui.components.UserProfilePicture
+import nl.hva.chatstone.ui.composables.UserProfilePicture
 import nl.hva.chatstone.viewmodel.ConversationsViewModel
 
 @Composable

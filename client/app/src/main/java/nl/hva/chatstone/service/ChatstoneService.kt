@@ -10,9 +10,9 @@ import kotlinx.coroutines.launch
 import nl.hva.chatstone.ChatstoneApplication
 import nl.hva.chatstone.viewmodel.SessionState
 
-class NotificationService : LifecycleService() {
-  private val TAG = "NotificationService"
-  private var ws: NotificationEventHandler? = null
+class ChatstoneService : LifecycleService() {
+  private val TAG = "ChatstoneService"
+  private var ws: ChatstoneEventHandler? = null
 
   override fun onCreate() {
     val sessionVM = (application as ChatstoneApplication).sessionVM
@@ -27,14 +27,14 @@ class NotificationService : LifecycleService() {
   }
 
   private fun initSocket() {
-    val handlerThread = HandlerThread("notificationservice_t", Process.THREAD_PRIORITY_BACKGROUND)
+    val handlerThread = HandlerThread("chatstoneservice_t", Process.THREAD_PRIORITY_BACKGROUND)
     handlerThread.start()
 
     val handler = Handler(handlerThread.looper)
     val scope = CoroutineScope(handler.asCoroutineDispatcher())
 
     scope.launch {
-      ws = NotificationEventHandler(application as ChatstoneApplication)
+      ws = ChatstoneEventHandler(application as ChatstoneApplication)
     }
   }
 }
