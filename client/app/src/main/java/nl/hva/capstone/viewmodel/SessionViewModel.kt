@@ -105,6 +105,7 @@ class SessionViewModel(private val application: CapstoneApplication) : AndroidVi
     state.postValue(SessionState.READY)
 
     websocket.start(user.id)
+    conversationsVM.fetchConversations()
 
     return true
   }

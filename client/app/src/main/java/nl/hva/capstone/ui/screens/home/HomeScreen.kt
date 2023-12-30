@@ -11,24 +11,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import nl.hva.capstone.R
-import nl.hva.capstone.api.model.output.Conversation
 import nl.hva.capstone.viewmodel.ConversationsViewModel
-import nl.hva.capstone.viewmodel.SessionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavHostController, conversationsVM: ConversationsViewModel) {
-  LaunchedEffect(Unit) {
-    if (!conversationsVM.conversations.isInitialized) {
-      conversationsVM.fetchConversations()
-    }
-  }
-
   Scaffold(
     topBar = {
       TopAppBar(
