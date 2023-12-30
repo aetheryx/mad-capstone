@@ -14,11 +14,11 @@ plugins {
 }
 
 android {
-  namespace = "nl.hva.capstone"
+  namespace = "nl.hva.chatstone"
   compileSdk = 34
 
   defaultConfig {
-    applicationId = "nl.hva.capstone"
+    applicationId = "nl.hva.chatstone"
     minSdk = 31
     targetSdk = 34
     versionCode = 1
