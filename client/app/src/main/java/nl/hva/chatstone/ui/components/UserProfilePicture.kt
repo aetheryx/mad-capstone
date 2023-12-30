@@ -13,10 +13,7 @@ import nl.hva.chatstone.api.model.output.User
 
 @Composable
 fun UserProfilePicture(user: User, modifier: Modifier) {
-  val model = ImageRequest.Builder(LocalContext.current)
-    .data(user.avatarURL)
-    .fallback(R.drawable.default_pfp)
-    .build()
+  val model = user.avatarModel(LocalContext.current)
 
   AsyncImage(
     model,

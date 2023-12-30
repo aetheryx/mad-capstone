@@ -38,11 +38,11 @@ class NotificationEventHandler(
   private val application: ChatstoneApplication,
 ) {
   private val ctx = application.applicationContext
-  private val loader = ImageLoader(ctx)
   private val scope = CoroutineScope(Dispatchers.IO)
   private val sessionVM = application.sessionVM
   private val conversationVM = sessionVM.conversationsVM
-  private val manager = application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+  private val notificationManager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+  private val shortcutManager = ctx.getSystemService(Context.SHORTCUT_SERVICE) as ShortcutManager
 
   init {
     scope.launch {
@@ -53,7 +53,7 @@ class NotificationEventHandler(
     }
   }
 
-  private fun onServerEvent(event: ServerEvent) {
+  private suspend fun onServerEvent(event: ServerEvent) {
     Log.v("NotificationEventHandler", "$event")
     when (event) {
       is ServerEvent.MessageCreateEvent -> handleMessageCreate(event.data)
@@ -62,23 +62,19 @@ class NotificationEventHandler(
     }
   }
 
-  private fun handleMessageCreate(message: ConversationMessage) {
+  private suspend fun handleMessageCreate(message: ConversationMessage) {
     if (application.activityIsOpen) return
-
-    val manager = application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     val channelID = NotificationChannelID.Message.toString()
     val channel = NotificationChannel(channelID, channelID, NotificationManager.IMPORTANCE_HIGH)
-    manager.createNotificationChannel(channel)
+    notificationManager.createNotificationChannel(channel)
 
     val user = conversationVM.conversations.value!!
       .find { it.id == message.conversationID }!!
       .otherParticipant
 
-    val request = ImageRequest.Builder(ctx)
-      .data(user.avatarURL)
-      .transformations(CircleCropTransformation())
-      .build()
+    val icon = user.getIcon(ctx)
+    val person = user.toPerson(ctx)
 
     val shortcutIntent = Intent(application, MainActivity::class.java)
       .setAction("action")
@@ -89,87 +85,61 @@ class NotificationEventHandler(
         PendingIntent.getActivity(ctx, message.id, it, PendingIntent.FLAG_IMMUTABLE)
       }
 
-    scope.launch {
-      val result = loader.execute(request)
-      val bitmap = result.drawable?.toBitmap()
-      val icon = Icon.createWithBitmap(bitmap)
+    val style = Notification.MessagingStyle(person)
+      .addMessage(message.content, message.createdAt.toEpochSecond() * 1000L, person)
 
-      val person = Person.Builder()
-        .setName(user.username)
-        .setIcon(icon)
-        .build()
+    val shortcut = ShortcutInfo.Builder(ctx, "shid")
+      .setLongLived(true)
+      .setIcon(icon)
+      .setShortLabel(user.username)
+      .setPerson(person)
+      .setIntent(shortcutIntent)
+      .build()
 
-      val style = Notification.MessagingStyle(person)
-        .addMessage(message.content, message.createdAt.toEpochSecond() * 1000L, person)
+    shortcutManager.pushDynamicShortcut(shortcut)
 
-      val shortcut = ShortcutInfo.Builder(ctx, "shid")
-        .setLongLived(true)
-        .setIcon(icon)
-        .setShortLabel(user.username)
-        .setPerson(person)
-        .setIntent(shortcutIntent)
-        .build()
+    val notification = Notification.Builder(application, channelID)
+      .setStyle(style)
+      .setSmallIcon(R.drawable.hva)
+      .setShortcutId(shortcut.id)
+      .setAutoCancel(true)
+      .setContentIntent(notificationIntent)
+      .build()
 
-      val shortcutManager = ctx.getSystemService(Context.SHORTCUT_SERVICE) as ShortcutManager
-      shortcutManager.pushDynamicShortcut(shortcut)
-
-      val notification = Notification.Builder(application, channelID)
-        .setStyle(style)
-        .setSmallIcon(R.drawable.hva)
-        .setShortcutId(shortcut.id)
-        .setAutoCancel(true)
-        .setContentIntent(notificationIntent)
-        .build()
-
-      manager.notify(message.id, notification)
-    }
+    notificationManager.notify(message.id, notification)
   }
 
-  private fun handleCallOfferEvent(callOffer: OutgoingCallOffer) {
+  private suspend fun handleCallOfferEvent(callOffer: OutgoingCallOffer) {
     sessionVM.callVM.onCallOffer(callOffer)
 
     val id = Instant.now().epochSecond.toInt()
 
     val channelID = NotificationChannelID.Call.toString()
     val channel = NotificationChannel(channelID, channelID, NotificationManager.IMPORTANCE_HIGH)
-    manager.createNotificationChannel(channel)
+    notificationManager.createNotificationChannel(channel)
 
     val user = conversationVM.conversations.value!!
       .find { it.id == callOffer.conversationID }!!
       .otherParticipant
 
-    val request = ImageRequest.Builder(ctx)
-      .data(user.avatarURL)
-      .transformations(CircleCropTransformation())
+    val person = user.toPerson(ctx)
+
+    val answerIntent = Intent(application, OngoingCallActivity::class.java)
+      .let {
+        it.putExtra("notification_id", id)
+        PendingIntent.getActivity(ctx, id, it, PendingIntent.FLAG_IMMUTABLE)
+      }
+
+    val declineIntent = Intent(application, IncomingCallActivity::class.java) // todo: decline call activity
+      .let { PendingIntent.getActivity(ctx, 0, it, PendingIntent.FLAG_IMMUTABLE) }
+
+    val notification = Notification.Builder(application, channelID)
+      .setSmallIcon(R.drawable.hva)
+      .setStyle(Notification.CallStyle.forIncomingCall(person, declineIntent, answerIntent))
+      .setFullScreenIntent(answerIntent, true)
+      .setCategory(Notification.CATEGORY_CALL)
       .build()
 
-    scope.launch {
-      val result = loader.execute(request)
-      val bitmap = result.drawable?.toBitmap()
-      val icon = Icon.createWithBitmap(bitmap)
-
-      val person = Person.Builder()
-        .setName(user.username)
-        .setIcon(icon)
-        .build()
-
-      val answerIntent = Intent(application, OngoingCallActivity::class.java)
-        .let {
-          it.putExtra("notification_id", id)
-          PendingIntent.getActivity(ctx, id, it, PendingIntent.FLAG_IMMUTABLE)
-        }
-
-      val declineIntent = Intent(application, IncomingCallActivity::class.java) // todo: decline call activity
-        .let { PendingIntent.getActivity(ctx, 0, it, PendingIntent.FLAG_IMMUTABLE) }
-
-      val notification = Notification.Builder(application, channelID)
-        .setSmallIcon(R.drawable.hva)
-        .setStyle(Notification.CallStyle.forIncomingCall(person, declineIntent, answerIntent))
-        .setFullScreenIntent(answerIntent, true)
-        .setCategory(Notification.CATEGORY_CALL)
-        .build()
-
-      manager.notify(id, notification)
-    }
+    notificationManager.notify(id, notification)
   }
 }
