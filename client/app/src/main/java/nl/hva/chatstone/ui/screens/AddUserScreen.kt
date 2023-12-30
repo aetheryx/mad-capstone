@@ -1,6 +1,7 @@
 package nl.hva.chatstone.ui.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import nl.hva.chatstone.R
+import nl.hva.chatstone.ui.composables.BackButton
 import nl.hva.chatstone.viewmodel.ConversationCreateState
 import nl.hva.chatstone.viewmodel.ConversationsViewModel
 
@@ -41,20 +43,16 @@ fun AddUserScreen(navController: NavHostController, conversationsVM: Conversatio
       TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(),
         title = { Text("Add by Username") },
-        navigationIcon = {
-          IconButton(
-            onClick = navController::popBackStack
-          ) {
-            Icon(
-              Icons.Default.ArrowBack,
-              contentDescription = "Go back"
-            )
-          }
-        },
+        navigationIcon = { BackButton(navController) },
       )
     }
   ) {
-    Column(modifier = Modifier.padding(it)) {
+    Column(
+      modifier = Modifier
+        .padding(it)
+        .padding(horizontal = 16.dp)
+        .fillMaxSize()
+    ) {
       AddUserView(navController, conversationsVM)
     }
   }
