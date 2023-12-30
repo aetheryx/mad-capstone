@@ -2,6 +2,8 @@ package nl.hva.chatstone.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -34,10 +36,13 @@ enum class SessionState {
 val Context.sessionDataStore by preferencesDataStore(name = "session")
 val sessionTokenKey = stringPreferencesKey("session_token")
 
-class SessionViewModel(private val application: ChatstoneApplication) : AndroidViewModel(application) {
+class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel(application) {
   var chatstoneApi = ChatstoneApi.createApi("")
   private val scope = CoroutineScope(Dispatchers.IO)
   private val storage = Firebase.storage("gs://${BuildConfig.FIREBASE_BUCKET}")
+  private var listening = false
+
+  val targetURL = mutableStateOf<String?>(null)
 
   val conversationsVM by lazy { ConversationsViewModel(application) }
   val callVM by lazy { CallViewModel(application) }
@@ -111,6 +116,11 @@ class SessionViewModel(private val application: ChatstoneApplication) : AndroidV
   }
 
   fun listenForEvents() = scope.launch {
+    synchronized(this) {
+      if (listening) return@launch
+      listening = true
+    }
+
     websocket.websocketEvents.collect { event ->
       when (event) {
         is ServerEvent.MessageCreateEvent ->

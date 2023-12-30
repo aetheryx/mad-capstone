@@ -39,6 +39,11 @@
         </activity>
 
         <activity
+            android:name=".activities.ToURLActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity" />
+
+        <activity
             android:name=".activities.OngoingCallActivity"
             android:exported="true"
             android:label="Call"

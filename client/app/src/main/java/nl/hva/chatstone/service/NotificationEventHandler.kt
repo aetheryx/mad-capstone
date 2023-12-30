@@ -23,6 +23,7 @@ import nl.hva.chatstone.R
 import nl.hva.chatstone.activities.IncomingCallActivity
 import nl.hva.chatstone.activities.MainActivity
 import nl.hva.chatstone.activities.OngoingCallActivity
+import nl.hva.chatstone.activities.ToURLActivity
 import nl.hva.chatstone.api.ServerEvent
 import nl.hva.chatstone.api.model.output.ConversationMessage
 import nl.hva.chatstone.api.model.output.OutgoingCallOffer
@@ -79,8 +80,14 @@ class NotificationEventHandler(
       .transformations(CircleCropTransformation())
       .build()
 
-    val intent = Intent(application, MainActivity::class.java)
+    val shortcutIntent = Intent(application, MainActivity::class.java)
       .setAction("action")
+
+    val notificationIntent = Intent(application, ToURLActivity::class.java)
+      .let {
+        it.putExtra("target_url", "/conversations/${message.conversationID}")
+        PendingIntent.getActivity(ctx, message.id, it, PendingIntent.FLAG_IMMUTABLE)
+      }
 
     scope.launch {
       val result = loader.execute(request)
@@ -100,7 +107,7 @@ class NotificationEventHandler(
         .setIcon(icon)
         .setShortLabel(user.username)
         .setPerson(person)
-        .setIntent(intent)
+        .setIntent(shortcutIntent)
         .build()
 
       val shortcutManager = ctx.getSystemService(Context.SHORTCUT_SERVICE) as ShortcutManager
@@ -108,8 +115,10 @@ class NotificationEventHandler(
 
       val notification = Notification.Builder(application, channelID)
         .setStyle(style)
-        .setSmallIcon(R.drawable.baseline_message_24)
+        .setSmallIcon(R.drawable.hva)
         .setShortcutId(shortcut.id)
+        .setAutoCancel(true)
+        .setContentIntent(notificationIntent)
         .build()
 
       manager.notify(message.id, notification)
@@ -154,7 +163,7 @@ class NotificationEventHandler(
         .let { PendingIntent.getActivity(ctx, 0, it, PendingIntent.FLAG_IMMUTABLE) }
 
       val notification = Notification.Builder(application, channelID)
-        .setSmallIcon(R.drawable.baseline_message_24)
+        .setSmallIcon(R.drawable.hva)
         .setStyle(Notification.CallStyle.forIncomingCall(person, declineIntent, answerIntent))
         .setFullScreenIntent(answerIntent, true)
         .setCategory(Notification.CATEGORY_CALL)
