@@ -18,15 +18,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import nl.hva.chatstone.R
 import nl.hva.chatstone.api.model.output.Conversation
 import nl.hva.chatstone.api.model.output.User
 import nl.hva.chatstone.ui.components.UserProfilePicture
 import nl.hva.chatstone.viewmodel.ConversationsViewModel
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
@@ -122,19 +125,18 @@ private fun ConversationDetails(conversation: Conversation, user: User) {
 val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yy")
 
-private fun conversationDate(createdAt: String?): String {
-  if (createdAt == null) return "Never"
+@Composable
+private fun conversationDate( date: ZonedDateTime?): String {
+  if (date == null) return stringResource(R.string.never)
 
-  val date = LocalDateTime.parse(createdAt)
-
-  val today = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS)
+  val today = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS)
   if (today.isBefore(date)) {
     return timeFormatter.format(date)
   }
 
   val yesterday = today.minusDays(1)
   if (yesterday.isBefore(date)) {
-    return "Yesterday"
+    return stringResource(R.string.yesterday)
   }
 
   return dateFormatter.format(date)
