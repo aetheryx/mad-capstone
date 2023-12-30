@@ -10,6 +10,7 @@ import okio.ByteString
 
 class ChatstoneWebsocket : WebSocketListener() {
   private var ws: WebSocket? = null
+  private var userID: Int? = null
   private val TAG = "ChatstoneWebsocket"
   private val serializer = Json {
     ignoreUnknownKeys = true
@@ -21,6 +22,8 @@ class ChatstoneWebsocket : WebSocketListener() {
   )
 
   fun start(userID: Int) {
+    this.userID = userID
+    Log.v(TAG, "starting")
     synchronized(this) {
       if (ws == null) {
         ws = ChatstoneApi.createWebSocket(userID, this)
@@ -40,8 +43,13 @@ class ChatstoneWebsocket : WebSocketListener() {
     ws!!.send(text)
   }
 
-  fun reconnect() {
-
+  private fun reconnect() {
+    synchronized(this) {
+      Log.v(TAG, "reconnecting")
+      ws?.cancel()
+      ws = null
+      ws = ChatstoneApi.createWebSocket(userID!!, this)
+    }
   }
 
   override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
@@ -50,6 +58,7 @@ class ChatstoneWebsocket : WebSocketListener() {
 
   override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
     Log.v(TAG, "received close event: $code, $reason")
+    reconnect()
   }
 
   override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -58,5 +67,6 @@ class ChatstoneWebsocket : WebSocketListener() {
 
   override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
     Log.v(TAG, "failure: ${t.stackTraceToString()} ${response}")
+    reconnect()
   }
 }
