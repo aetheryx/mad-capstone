@@ -11,7 +11,6 @@ lazy_static! {
 }
 
 pub async fn handle_call_offer(
-  id: i32,
   call_offer: IncomingCallOffer,
   state: SharedState,
 ) -> Result<()> {
@@ -24,7 +23,7 @@ pub async fn handle_call_offer(
 }
 
 pub async fn handle_call_response(
-  id: i32,
+  user_id: i32,
   call_response: CallResponse,
   state: SharedState,
 ) -> Result<()> {
@@ -32,7 +31,7 @@ pub async fn handle_call_response(
     let mut call = CALL.lock().await;
     *call = Some(Call {
       caller: call_response.caller_id,
-      callee: id,
+      callee: user_id,
     });
   }
 
@@ -41,7 +40,7 @@ pub async fn handle_call_response(
 }
 
 pub async fn handle_webrtc_payload(
-  id: i32,
+  user_id: i32,
   payload: WebRTCPayload,
   state: SharedState,
 ) -> Result<()> {
@@ -49,7 +48,7 @@ pub async fn handle_webrtc_payload(
     return Ok(());
   };
 
-  let target_id = if id == call.callee { call.caller } else { call.callee };
+  let target_id = if user_id == call.callee { call.caller } else { call.callee };
 
   let event = ServerEvent::WebRTCPayload(payload);
   event.send_to(&state, target_id).await?;

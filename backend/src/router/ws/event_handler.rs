@@ -1,40 +1,71 @@
 use axum::extract::ws::{Message, WebSocket};
-use futures::{stream::SplitStream, StreamExt};
+use futures::{stream::SplitStream, StreamExt, SinkExt};
 
 use super::call_handler::*;
 use crate::{ws::ClientEvent, SharedState};
 
 pub fn register_event_handler(
-  id: i32,
+  user_id: i32,
+  connection_id: u64,
   mut receiver: SplitStream<WebSocket>,
   state: SharedState
 ) {
   tokio::spawn(async move {
-    while let Some(Ok(Message::Text(text))) = receiver.next().await {
-      let event: ClientEvent = serde_json::from_str(text.as_str())?;
-      handle_event(id, event, state.clone()).await?;
+    while let Some(result) = receiver.next().await {
+      match result {
+        Ok(Message::Text(text)) =>
+          handle_event(user_id, text, state.clone()).await?,
+
+        Ok(Message::Close(_)) | Err(_) =>
+          handle_close(user_id, connection_id, state.clone()).await?,
+
+        Ok(_) => (),
+      }
     }
 
     anyhow::Ok(())
   });
 }
 
+async fn handle_close(
+  user_id: i32,
+  connection_id: u64,
+  state: SharedState
+) -> anyhow::Result<()> {
+  println!("handling close {user_id} {connection_id}");
+
+  let mut users = state.users.lock().await;
+  let Some(user_connections) = users.get_mut(&user_id) else {
+    return Ok(());
+  };
+
+  let Some(connection) = user_connections.get_mut(&connection_id) else {
+    return Ok(());
+  };
+
+  connection.close().await?;
+  user_connections.remove(&connection_id);
+
+  Ok(())
+}
+
 async fn handle_event(
-  id: i32,
-  event: ClientEvent,
+  user_id: i32,
+  text: String,
   state: SharedState,
 ) -> anyhow::Result<()> {
-  println!("got websocket event from: {id} {event:?}");
+  let event: ClientEvent = serde_json::from_str(text.as_str())?;
+  println!("got websocket event from: {user_id} {event:?}");
 
   match event {
     ClientEvent::CallOffer(offer) =>
-      handle_call_offer(id, offer, state).await?,
+      handle_call_offer(offer, state).await?,
 
     ClientEvent::CallResponse(resp) =>
-      handle_call_response(id, resp, state).await?,
+      handle_call_response(user_id, resp, state).await?,
 
     ClientEvent::WebRTCPayload(payload) =>
-      handle_webrtc_payload(id, payload, state).await?,
+      handle_webrtc_payload(user_id, payload, state).await?,
   };
 
   Ok(())

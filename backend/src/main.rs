@@ -28,9 +28,9 @@ async fn main() -> Result<()> {
   println!("listening on {}", listener.local_addr().unwrap());
 
   let db = db::init_db::init_db().await?;
-  let clients = Mutex::default();
+  let users = Mutex::default();
 
-  let app_state = AppState { db, clients };
+  let app_state = AppState { db, users };
   let shared_state = Arc::new(app_state);
 
   let app = router::get_router().with_state(shared_state);
@@ -39,9 +39,11 @@ async fn main() -> Result<()> {
   Ok(())
 }
 
+type Sender = SplitSink<WebSocket, Message>;
+type UserConnections = HashMap<u64, Sender>;
 struct AppState {
   db: DatabaseConnection,
-  clients: Mutex<HashMap<i32, Vec<SplitSink<WebSocket, Message>>>>,
+  users: Mutex<HashMap<i32, UserConnections>>,
 }
 
 type SharedState = Arc<AppState>;
