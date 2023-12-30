@@ -26,9 +26,8 @@ import androidx.navigation.NavHostController
 import nl.hva.chatstone.R
 import nl.hva.chatstone.api.model.output.Conversation
 import nl.hva.chatstone.api.model.output.User
-import nl.hva.chatstone.ui.components.UserProfilePicture
+import nl.hva.chatstone.ui.composables.UserProfilePicture
 import nl.hva.chatstone.viewmodel.ConversationsViewModel
-import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit

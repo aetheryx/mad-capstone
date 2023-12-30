@@ -1,4 +1,4 @@
-package nl.hva.chatstone.ui.components
+package nl.hva.chatstone.ui.composables
 
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
@@ -7,8 +7,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import nl.hva.chatstone.R
 import nl.hva.chatstone.api.model.output.User
 
 @Composable
