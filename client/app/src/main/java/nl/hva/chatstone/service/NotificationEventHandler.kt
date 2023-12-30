@@ -100,7 +100,7 @@ class NotificationEventHandler(
         .build()
 
       val style = Notification.MessagingStyle(person)
-        .addMessage(message.content, Instant.parse("${message.createdAt}Z").toEpochMilli(), person)
+        .addMessage(message.content, message.createdAt.toEpochSecond() * 1000L, person)
 
       val shortcut = ShortcutInfo.Builder(ctx, "shid")
         .setLongLived(true)

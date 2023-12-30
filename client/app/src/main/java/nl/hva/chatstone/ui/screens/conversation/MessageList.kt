@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import nl.hva.chatstone.api.model.output.Conversation
 import nl.hva.chatstone.api.model.output.ConversationMessage
 import nl.hva.chatstone.viewmodel.ConversationsViewModel
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.max
 
@@ -123,9 +122,8 @@ private fun MessageComponent(
           }
         )
 
-        val timestamp = LocalDateTime.parse(message.createdAt)
         Text(
-          dateTimeFormatter.format(timestamp),
+          dateTimeFormatter.format(message.createdAt),
           style = MaterialTheme.typography.labelSmall,
           modifier = Modifier
             .alpha(0.7f)
