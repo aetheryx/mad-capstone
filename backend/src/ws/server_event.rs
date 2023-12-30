@@ -19,11 +19,13 @@ impl<'a> ServerEvent<'a> {
   pub async fn send_to(&self, state: &SharedState, id: i32) -> anyhow::Result<()> {
     let msg = Message::Binary(serde_json::to_vec(&self)?);
 
-    let mut clients = state.clients.lock().await;
-    if let Some(client_list) = clients.get_mut(&id) {
-      for client in client_list.iter_mut() {
-        let _ = client.send(msg.clone()).await;
-      }
+    let mut users = state.users.lock().await;
+    let Some(connections) = users.get_mut(&id) else {
+      return Ok(());
+    };
+
+    for client in connections.values_mut() {
+      let _ = client.send(msg.clone()).await;
     }
 
     Ok(())
