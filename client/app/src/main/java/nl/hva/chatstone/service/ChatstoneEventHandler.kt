@@ -49,7 +49,6 @@ class ChatstoneEventHandler(
   }
 
   private suspend fun onServerEvent(event: ServerEvent) {
-    Log.v("NotificationEventHandler", "$event")
     when (event) {
       is ServerEvent.MessageCreateEvent -> handleMessageCreate(event.data)
       is ServerEvent.CallOfferEvent -> handleCallOfferEvent(event.data)
