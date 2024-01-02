@@ -33,28 +33,37 @@ pub async fn create_conversation(
           conversation_id: ActiveValue::Set(new_conversation.id),
           user_id: ActiveValue::Set(id),
         })
-        .exec_with_returning(&db)
-        .await?;
+          .exec_with_returning(&db)
+          .await?;
+
+        let user = user::Entity::find_by_id(new_participant.user_id)
+          .one(&db)
+          .await?
+          .expect("user missing");
   
-        anyhow::Ok(new_participant)
+        anyhow::Ok(user)
       }
     });
 
-  futures::future::join_all(participants).await;
-
-  let other_participant = user::Entity::find_by_id(input.other_user)
-    .one(&state.db)
-    .await?
-    .expect("user missing");
+  let mut users = futures::future::join_all(participants).await
+    .into_iter()
+    .filter_map(|s| s.ok())
+    .collect::<Vec<_>>();
 
   let full_conversation = FullConversation {
-    conversation: new_conversation,
+    conversation: new_conversation.clone(),
     last_message: None,
-    other_participant,
+    other_participant: users.remove(0),
   };
 
   let event = ServerEvent::ConversationCreate(&full_conversation);
   event.send_to(&state, input.other_user).await?;
+
+  let full_conversation = FullConversation {
+    conversation: full_conversation.conversation,
+    last_message: None,
+    other_participant: users.remove(0)
+  };
 
   Ok(Json(full_conversation))
 }
