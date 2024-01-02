@@ -76,7 +76,7 @@ class ConversationsViewModel(
 
   fun onDeleteConversation(id: Int) = scope.launch {
     sessionVM.targetURL.value = "/conversations"
-    delay(250)
+    delay(50)
 
     val newConversations = conversations.value!!.filter { it.id != id }
     conversations.postValue(newConversations)
