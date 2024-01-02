@@ -40,6 +40,7 @@ class ChatstoneEventHandler(
 
   init {
     scope.launch {
+      sessionVM.listenForEvents()
       sessionVM.websocket.start(conversationVM.me.id)
       sessionVM.websocket.websocketEvents.collect {
         onServerEvent(it)
