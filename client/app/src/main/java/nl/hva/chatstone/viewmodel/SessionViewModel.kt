@@ -2,7 +2,6 @@ package nl.hva.chatstone.viewmodel
 
 import android.content.Context
 import android.net.Uri
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -89,8 +88,11 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
         .continueWithTask { ref.downloadUrl }
         .addOnCompleteListener { it.result }  // TODO: uri encoding
         .await()
+        .toString()
+        .split("/o/")[1]
+        .let { Uri.encode(it) }
 
-      val signupInput = SignupInput(username, password, imageURI.toString())
+      val signupInput = SignupInput(username, password, imageURI)
       val resp = chatstoneApi.signUp(signupInput)
       onReady(resp.token)
     }
