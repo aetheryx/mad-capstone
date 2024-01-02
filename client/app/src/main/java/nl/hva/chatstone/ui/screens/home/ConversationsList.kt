@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -104,6 +105,8 @@ private fun ConversationDetails(conversation: Conversation, user: User) {
 
       Text(
         conversationDate(conversation.lastMessage?.createdAt),
+        style = MaterialTheme.typography.labelMedium,
+        modifier = Modifier.alpha(0.7f)
       )
     }
 
@@ -115,7 +118,8 @@ private fun ConversationDetails(conversation: Conversation, user: User) {
       Text(
         conversation.lastMessage?.content ?: "Say something!",
         style = MaterialTheme.typography.bodyMedium,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.alpha(0.7f)
       )
     }
   }
