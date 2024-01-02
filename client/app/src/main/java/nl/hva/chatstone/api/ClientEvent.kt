@@ -14,8 +14,13 @@ import nl.hva.chatstone.api.model.input.IncomingCallOffer
 sealed class ClientEvent {
   @Serializable
   data class CallOfferEvent(val data: IncomingCallOffer): ClientEvent()
+
   @Serializable
   data class CallResponseEvent(val data: CallResponse): ClientEvent()
+
+  @Serializable
+  class CallHangupEvent(): ClientEvent()
+
   @Serializable
   data class WebRTCPayloadEvent(val data: WebRTCPayload): ClientEvent()
 

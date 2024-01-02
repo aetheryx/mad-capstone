@@ -66,6 +66,9 @@ async fn handle_event(
 
     ClientEvent::WebRTCPayload(payload) =>
       handle_webrtc_payload(user_id, payload, state).await?,
+
+    ClientEvent::CallHangUp() =>
+      handle_call_hangup(user_id, state).await?,
   };
 
   Ok(())

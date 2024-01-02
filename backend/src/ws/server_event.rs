@@ -15,7 +15,8 @@ pub enum ServerEvent<'a> {
   ConversationDelete(i32),
   CallOffer(OutgoingCallOffer),
   CallResponse(CallResponse),
-  WebRTCPayload(WebRTCPayload)
+  WebRTCPayload(WebRTCPayload),
+  CallHangUp(),
 }
 
 impl<'a> ServerEvent<'a> {

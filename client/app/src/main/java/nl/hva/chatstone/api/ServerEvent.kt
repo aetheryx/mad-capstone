@@ -15,14 +15,22 @@ import nl.hva.chatstone.api.model.output.OutgoingCallOffer
 sealed class ServerEvent {
   @Serializable
   data class MessageCreateEvent(val data: ConversationMessage) : ServerEvent()
+
   @Serializable
   data class ConversationCreateEvent(val data: Conversation) : ServerEvent()
+
   @Serializable
   data class ConversationDeleteEvent(val data: Int): ServerEvent()
+
   @Serializable
   data class CallOfferEvent(val data: OutgoingCallOffer): ServerEvent()
+
   @Serializable
   data class CallResponseEvent(val data: CallResponse): ServerEvent()
+
+  @Serializable
+  class CallHangupEvent(): ServerEvent()
+
   @Serializable
   data class WebRTCPayloadEvent(val data: WebRTCPayload): ServerEvent()
 

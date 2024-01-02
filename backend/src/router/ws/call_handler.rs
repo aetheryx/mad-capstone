@@ -10,12 +10,9 @@ lazy_static! {
   static ref CALL: Mutex<Option<Call>> = Mutex::from(None);
 }
 
-pub async fn handle_call_offer(
-  call_offer: IncomingCallOffer,
-  state: SharedState,
-) -> Result<()> {
+pub async fn handle_call_offer(call_offer: IncomingCallOffer, state: SharedState) -> Result<()> {
   let outgoing_call_offer = OutgoingCallOffer {
-    conversation_id: call_offer.conversation_id
+    conversation_id: call_offer.conversation_id,
   };
 
   let event = ServerEvent::CallOffer(outgoing_call_offer);
@@ -39,16 +36,28 @@ pub async fn handle_call_response(
   event.send_to(&state, call_response.caller_id).await
 }
 
+pub async fn handle_call_hangup(
+  user_id: i32,
+  state: SharedState,
+) -> Result<()> {
+  let Some(target_id) = get_target_id(user_id).await else {
+    return Ok(());
+  };
+
+  let event = ServerEvent::CallHangUp();
+  event.send_to(&state, target_id).await?;
+
+  Ok(())
+}
+
 pub async fn handle_webrtc_payload(
   user_id: i32,
   payload: WebRTCPayload,
   state: SharedState,
 ) -> Result<()> {
-  let Some(call) = CALL.lock().await.clone() else {
+  let Some(target_id) = get_target_id(user_id).await else {
     return Ok(());
   };
-
-  let target_id = if user_id == call.callee { call.caller } else { call.callee };
 
   let event = ServerEvent::WebRTCPayload(payload);
   event.send_to(&state, target_id).await?;
@@ -56,6 +65,18 @@ pub async fn handle_webrtc_payload(
   println!("sent {event:?} to {target_id}");
 
   Ok(())
+}
+
+async fn get_target_id(user_id: i32) -> Option<i32> {
+  let Some(call) = CALL.lock().await.clone() else {
+    return None;
+  };
+
+  if user_id == call.callee {
+    Some(call.caller)
+  } else {
+    Some(call.callee)
+  }
 }
 
 #[derive(Clone, Copy, Debug)]
