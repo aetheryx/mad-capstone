@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,6 +38,7 @@ fun MessageBar(
   conversation: Conversation
 ) {
   var messageContent by remember { mutableStateOf("") }
+  val reconnecting by conversationsVM.sessionVM.websocket.reconnecting.observeAsState(false)
 
   Row(
     modifier = Modifier
@@ -53,6 +55,7 @@ fun MessageBar(
     BasicTextField(
       messageContent,
       onValueChange = { messageContent = it },
+      enabled = !reconnecting,
       textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onSurface),
       cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
       modifier = Modifier
@@ -60,7 +63,7 @@ fun MessageBar(
         .padding(horizontal = 16.dp)
     )
 
-    val enabled = messageContent.isNotBlank()
+    val enabled = messageContent.isNotBlank() && !reconnecting
 
     IconButton(
       modifier = Modifier

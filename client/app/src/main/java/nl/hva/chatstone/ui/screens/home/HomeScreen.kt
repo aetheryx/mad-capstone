@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import nl.hva.chatstone.R
+import nl.hva.chatstone.ui.composables.ChatstoneSnackbarHost
 import nl.hva.chatstone.ui.theme.surfaceContainer
 import nl.hva.chatstone.viewmodel.ConversationsViewModel
 
@@ -36,6 +37,9 @@ fun HomeScreen(
   Scaffold(
     topBar = {
       HomeScreenTopAppBar(conversationsVM)
+    },
+    snackbarHost = {
+      ChatstoneSnackbarHost(conversationsVM)
     },
     floatingActionButton = {
       FloatingActionButton(
