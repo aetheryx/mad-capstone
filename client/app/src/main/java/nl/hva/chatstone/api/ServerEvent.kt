@@ -7,6 +7,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import nl.hva.chatstone.api.model.CallResponse
 import nl.hva.chatstone.api.model.WebRTCPayload
+import nl.hva.chatstone.api.model.output.Conversation
 import nl.hva.chatstone.api.model.output.ConversationMessage
 import nl.hva.chatstone.api.model.output.OutgoingCallOffer
 
@@ -14,6 +15,8 @@ import nl.hva.chatstone.api.model.output.OutgoingCallOffer
 sealed class ServerEvent {
   @Serializable
   data class MessageCreateEvent(val data: ConversationMessage) : ServerEvent()
+  @Serializable
+  data class ConversationCreateEvent(val data: Conversation) : ServerEvent()
   @Serializable
   data class CallOfferEvent(val data: OutgoingCallOffer): ServerEvent()
   @Serializable
@@ -25,6 +28,7 @@ sealed class ServerEvent {
     override fun selectDeserializer(element: JsonElement) =
       when (element.jsonObject["event"]?.jsonPrimitive?.content) {
         "MessageCreate" -> MessageCreateEvent.serializer()
+        "ConversationCreate" -> ConversationCreateEvent.serializer()
         "CallOffer" -> CallOfferEvent.serializer()
         "CallResponse" -> CallResponseEvent.serializer()
         "WebRTCPayload" -> WebRTCPayloadEvent.serializer()
