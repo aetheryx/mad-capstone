@@ -42,6 +42,7 @@ class ChatstoneWebsocket : WebSocketListener() {
   override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
     val raw = bytes.utf8()
     val event = serializer.decodeFromString(ServerEvent, raw)
+    Log.v(TAG, "received: $event")
     websocketEvents.tryEmit(event)
   }
 
