@@ -28,7 +28,7 @@ model Participant {
   user   User @relation(fields: [userID], references: [id])
   userID Int  @map("user_id")
 
-  conversation   Conversation @relation(fields: [conversationID], references: [id])
+  conversation   Conversation @relation(fields: [conversationID], references: [id], onDelete: Cascade)
   conversationID Int          @map("conversation_id")
 
   @@id([userID, conversationID])
@@ -42,7 +42,7 @@ model ConversationMessage {
   author   User @relation(fields: [authorID], references: [id])
   authorID Int  @map("author_id")
 
-  conversation   Conversation @relation(fields: [conversationID], references: [id])
+  conversation   Conversation @relation(fields: [conversationID], references: [id], onDelete: Cascade)
   conversationID Int          @map("conversation_id")
 
   createdAt DateTime @default(now()) @map("created_at")
