@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import nl.hva.chatstone.api.model.output.Conversation
+import nl.hva.chatstone.ui.composables.ChatstoneSnackbarHost
 import nl.hva.chatstone.ui.composables.UserProfilePicture
 import nl.hva.chatstone.ui.theme.surfaceContainer
 import nl.hva.chatstone.viewmodel.ConversationsViewModel
@@ -44,6 +45,9 @@ fun ConversationScreen(
     bottomBar = {
       MessageBar(conversationsVM, conversation)
     },
+    snackbarHost = {
+      ChatstoneSnackbarHost(conversationsVM)
+    }
   ) {
     MessageList(conversationsVM, conversation, Modifier.padding(it))
   }

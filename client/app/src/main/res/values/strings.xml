@@ -15,4 +15,5 @@
     <string name="log_out">Log out</string>
     <string name="edit_profile">Edit profile</string>
     <string name="more">More</string>
+    <string name="no_connection">Internet connection lost. Reconnecting...</string>
 </resources>
