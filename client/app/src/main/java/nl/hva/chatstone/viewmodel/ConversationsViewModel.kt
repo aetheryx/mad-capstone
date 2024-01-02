@@ -74,10 +74,7 @@ class ConversationsViewModel(
     chatstoneApi.deleteConversation(conversation.id)
   }
 
-  fun onDeleteConversation(id: Int) = scope.launch {
-    sessionVM.targetURL.value = "/conversations"
-    delay(50)
-
+  fun onDeleteConversation(id: Int) {
     val newConversations = conversations.value!!.filter { it.id != id }
     conversations.postValue(newConversations)
     conversationMessages[id]!!.clear()
