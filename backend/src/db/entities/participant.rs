@@ -20,7 +20,7 @@ pub enum Relation {
     from = "Column::ConversationId",
     to = "super::conversation::Column::Id",
     on_update = "Cascade",
-    on_delete = "Restrict"
+    on_delete = "Cascade"
   )]
   Conversation,
   #[sea_orm(
