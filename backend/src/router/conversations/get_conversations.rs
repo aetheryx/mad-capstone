@@ -8,8 +8,7 @@ use crate::util::{
   authed_user::*, 
   app_error::*
 };
-
-use super::FullConversation;
+use crate::ws::conversation::FullConversation;
 
 pub async fn get_conversations(
   AuthedUser(user): AuthedUser,
