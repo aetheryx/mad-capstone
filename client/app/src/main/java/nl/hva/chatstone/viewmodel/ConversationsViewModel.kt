@@ -40,8 +40,9 @@ class ConversationsViewModel(
       try {
         val user = chatstoneApi.findUser(username)
         val conversation = chatstoneApi.createConversation(CreateConversationInput(user.id))
-        conversations.postValue(chatstoneApi.getConversations())
         createState.postValue(ConversationCreateState.Created(conversation.id))
+
+        addConversation(conversation)
       } catch (err: Exception) {
         Log.v("conversationvm", "failed to find user $username $err")
         createState.postValue(ConversationCreateState.Errored())
@@ -52,6 +53,20 @@ class ConversationsViewModel(
   fun addConversationMessage(message: ConversationMessage) {
     val messages = conversationMessages[message.conversationID] ?: return
     messages.add(0, message)
+
+    val newConversations = ArrayList(conversations.value!!)
+    val conversation = newConversations.find { it.id == message.conversationID }!!
+    val index = newConversations.indexOf(conversation)
+
+    val newConversation = conversation.copy(lastMessage = message)
+    newConversations[index] = newConversation
+    conversations.postValue(newConversations)
+  }
+
+  fun addConversation(conversation: Conversation) {
+    conversationMessages[conversation.id] = mutableStateListOf()
+    val newConversations = conversations.value!!.plus(conversation)
+    conversations.postValue(newConversations)
   }
 
   fun sendMessage(conversation: Conversation, content: String) {
