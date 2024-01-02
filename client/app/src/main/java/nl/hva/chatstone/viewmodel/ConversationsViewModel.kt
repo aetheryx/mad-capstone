@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import nl.hva.chatstone.ChatstoneApplication
 import nl.hva.chatstone.api.model.output.Conversation
@@ -67,6 +68,19 @@ class ConversationsViewModel(
     conversationMessages[conversation.id] = mutableStateListOf()
     val newConversations = conversations.value!!.plus(conversation)
     conversations.postValue(newConversations)
+  }
+
+  fun deleteConversation(conversation: Conversation) = scope.launch {
+    chatstoneApi.deleteConversation(conversation.id)
+  }
+
+  fun onDeleteConversation(id: Int) = scope.launch {
+    sessionVM.targetURL.value = "/conversations"
+    delay(250)
+
+    val newConversations = conversations.value!!.filter { it.id != id }
+    conversations.postValue(newConversations)
+    conversationMessages[id]!!.clear()
   }
 
   fun sendMessage(conversation: Conversation, content: String) {
