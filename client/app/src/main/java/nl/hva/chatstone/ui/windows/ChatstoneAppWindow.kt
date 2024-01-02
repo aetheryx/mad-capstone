@@ -80,7 +80,12 @@ fun ChatstoneAppWindow(sessionVM: SessionViewModel) {
       )
     ) { entry ->
       val id = entry.arguments?.getInt("id")
-      val conversation = conversations.find { it.conversation.id == id } ?: return@composable
+      val conversation = conversations.find { it.conversation.id == id }
+
+      if (conversation == null) {
+        navController.navigate("/conversations")
+        return@composable
+      }
 
       ConversationScreen(
         navController,
