@@ -1,7 +1,12 @@
 package nl.hva.chatstone.api
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -9,12 +14,15 @@ import okhttp3.WebSocketListener
 import okio.ByteString
 
 class ChatstoneWebsocket : WebSocketListener() {
+  private val scope = CoroutineScope(Dispatchers.IO)
   private var ws: WebSocket? = null
   private var userID: Int? = null
   private val TAG = "ChatstoneWebsocket"
   private val serializer = Json {
     ignoreUnknownKeys = true
   }
+
+  val reconnecting = MutableLiveData(false)
 
   val websocketEvents = MutableSharedFlow<ServerEvent>(
     replay = 0,
@@ -53,8 +61,12 @@ class ChatstoneWebsocket : WebSocketListener() {
 
   private fun reconnect() {
     synchronized(this) {
-      destroy()
-      ws = ChatstoneApi.createWebSocket(userID!!, this)
+      scope.launch {
+        reconnecting.postValue(true)
+        destroy()
+        delay(1000)
+        ws = ChatstoneApi.createWebSocket(userID!!, this@ChatstoneWebsocket)
+      }
     }
   }
 
@@ -68,6 +80,7 @@ class ChatstoneWebsocket : WebSocketListener() {
   }
 
   override fun onOpen(webSocket: WebSocket, response: Response) {
+    reconnecting.postValue(false)
     Log.v(TAG, "open")
   }
 
