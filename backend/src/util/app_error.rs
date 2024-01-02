@@ -24,10 +24,14 @@ where
 impl IntoResponse for HttpError {
   fn into_response(self) -> Response {
     let (code, message) = match self {
-      Self::InternalServerError(e) => (
-        StatusCode::INTERNAL_SERVER_ERROR,
-        format!("Something went wrong: {}", e),
-      ),
+      Self::InternalServerError(e) => {
+        println!("error: {e:?}");
+        
+        (
+          StatusCode::INTERNAL_SERVER_ERROR,
+          format!("Something went wrong: {}", e),
+        )
+      },
       Self::Status(code) => (
         code,
         code.canonical_reason().unwrap_or("Unknown").into()
