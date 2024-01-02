@@ -16,7 +16,7 @@ pub async fn create_conversation(
   AuthedUser(user): AuthedUser,
   State(state): State<SharedState>,
   Json(input): Json<CreateConversationInput>,
-) -> HttpResult<conversation::Model> {
+) -> HttpResult<FullConversation> {
   let new_conversation = conversation::Entity::insert(conversation::ActiveModel {
     ..Default::default()
   })
@@ -48,7 +48,7 @@ pub async fn create_conversation(
     .expect("user missing");
 
   let full_conversation = FullConversation {
-    conversation: new_conversation.clone(),
+    conversation: new_conversation,
     last_message: None,
     other_participant,
   };
@@ -56,7 +56,7 @@ pub async fn create_conversation(
   let event = ServerEvent::ConversationCreate(&full_conversation);
   event.send_to(&state, input.other_user).await?;
 
-  Ok(Json(new_conversation))
+  Ok(Json(full_conversation))
 }
 
 #[derive(Deserialize)]
