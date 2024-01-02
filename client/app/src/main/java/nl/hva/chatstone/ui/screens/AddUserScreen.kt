@@ -72,10 +72,13 @@ private fun AddUserView(navController: NavHostController, conversationsVM: Conve
   val isError = createState is ConversationCreateState.Errored
 
   LaunchedEffect(createState) {
-    if (createState is ConversationCreateState.Created) {
-      navController.navigate("/conversations/${createState!!.id}") {
-        popUpTo("/conversations")
-      }
+    if (createState !is ConversationCreateState.Created) {
+      return@LaunchedEffect
+    }
+
+    conversationsVM.createState.postValue(ConversationCreateState.None())
+    navController.navigate("/conversations/${createState!!.id}") {
+      popUpTo("/conversations")
     }
   }
 
