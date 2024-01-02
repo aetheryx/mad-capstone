@@ -9,4 +9,5 @@ pub enum ClientEvent {
   CallOffer(IncomingCallOffer),
   CallResponse(CallResponse),
   WebRTCPayload(WebRTCPayload),
+  CallHangUp(),
 }
