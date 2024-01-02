@@ -4,12 +4,14 @@ use futures::SinkExt;
 use serde::Serialize;
 
 use super::call_state::{CallResponse, WebRTCPayload, OutgoingCallOffer};
+use super::conversation::FullConversation;
 
 #[derive(Serialize, Debug)]
 #[serde(tag = "event", content = "data")]
 #[typeshare::typeshare]
 pub enum ServerEvent<'a> {
   MessageCreate(&'a conversation_message::Model),
+  ConversationCreate(&'a FullConversation),
   CallOffer(OutgoingCallOffer),
   CallResponse(CallResponse),
   WebRTCPayload(WebRTCPayload)

@@ -4,6 +4,8 @@ use serde::Deserialize;
 use typeshare::typeshare;
 
 use crate::SharedState;
+use crate::ws::ServerEvent;
+use crate::ws::conversation::FullConversation;
 use crate::db::entities::*;
 use crate::util::{
   authed_user::*, 
@@ -39,6 +41,20 @@ pub async fn create_conversation(
     });
 
   futures::future::join_all(participants).await;
+
+  let other_participant = user::Entity::find_by_id(input.other_user)
+    .one(&state.db)
+    .await?
+    .expect("user missing");
+
+  let full_conversation = FullConversation {
+    conversation: new_conversation.clone(),
+    last_message: None,
+    other_participant,
+  };
+
+  let event = ServerEvent::ConversationCreate(&full_conversation);
+  event.send_to(&state, input.other_user).await?;
 
   Ok(Json(new_conversation))
 }
