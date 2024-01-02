@@ -3,8 +3,9 @@ package nl.hva.chatstone.api.model.output
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.time.Instant
+import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 
 @Serializable
 @Immutable
@@ -16,5 +17,6 @@ data class ConversationMessage(
   @SerialName("created_at") val createdAtRaw: String
 ) {
   val createdAt: ZonedDateTime
-    get() = ZonedDateTime.parse("${createdAtRaw}Z", DateTimeFormatter.ISO_DATE_TIME)
+    get() = Instant.parse("${createdAtRaw}Z")
+      .atZone(ZoneId.systemDefault())
 }
