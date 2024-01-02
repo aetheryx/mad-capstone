@@ -1,18 +1,13 @@
 package nl.hva.chatstone.ui.screens
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,26 +27,32 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import nl.hva.chatstone.R
 import nl.hva.chatstone.ui.composables.BackButton
+import nl.hva.chatstone.ui.theme.surfaceContainer
 import nl.hva.chatstone.viewmodel.ConversationCreateState
 import nl.hva.chatstone.viewmodel.ConversationsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddUserScreen(navController: NavHostController, conversationsVM: ConversationsViewModel) {
+fun AddUserScreen(
+  navController: NavHostController,
+  conversationsVM: ConversationsViewModel,
+  modifier: Modifier
+) {
   Scaffold(
     topBar = {
       TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(),
+        colors = TopAppBarDefaults.topAppBarColors(
+          containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
         title = { Text("Add by Username") },
         navigationIcon = { BackButton(navController) },
       )
     }
   ) {
     Column(
-      modifier = Modifier
+      modifier = modifier
         .padding(it)
         .padding(horizontal = 16.dp)
-        .fillMaxSize()
     ) {
       AddUserView(navController, conversationsVM)
     }

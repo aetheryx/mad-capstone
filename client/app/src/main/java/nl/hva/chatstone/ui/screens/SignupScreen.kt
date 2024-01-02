@@ -40,7 +40,8 @@ import nl.hva.chatstone.viewmodel.SessionViewModel
 @Composable
 fun SignupScreen(
   navController: NavHostController,
-  sessionVM: SessionViewModel
+  sessionVM: SessionViewModel,
+  modifier: Modifier
 ) {
   var imageUri: Uri? by remember { mutableStateOf(null) }
   val state by sessionVM.state.observeAsState()
@@ -60,9 +61,7 @@ fun SignupScreen(
     .build()
 
   Column(
-    modifier = Modifier
-      .fillMaxSize()
-      .padding(16.dp),
+    modifier = modifier.padding(16.dp),
     verticalArrangement = Arrangement.SpaceBetween
   ) {
     // TODO: fix layout

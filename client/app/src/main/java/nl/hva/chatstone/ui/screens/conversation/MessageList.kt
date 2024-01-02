@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -52,11 +52,21 @@ fun MessageList(
     contentPadding = PaddingValues(horizontal = 16.dp),
     verticalArrangement = Arrangement.spacedBy(4.dp)
   ) {
-    items(
-      items = messages,
-      key = ConversationMessage::id
-    ) { message ->
-      MessageComponent(conversationsVM, message)
+    itemsIndexed(
+      items = messages as List<ConversationMessage>,
+      key = { _, message -> message.id },
+    ) { idx, message ->
+      var messageModifier = Modifier.fillMaxWidth()
+
+      if (idx > 0 && messages[idx - 1].authorID != message.authorID) {
+        messageModifier = messageModifier.padding(bottom = 4.dp)
+      }
+
+      if (idx == 0) {
+        messageModifier = messageModifier.padding(bottom = 8.dp)
+      }
+
+      MessageComponent(conversationsVM, message, messageModifier)
     }
   }
 }
@@ -66,13 +76,14 @@ val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 @Composable
 private fun MessageComponent(
   conversationsVM: ConversationsViewModel,
-  message: ConversationMessage
+  message: ConversationMessage,
+  modifier: Modifier
 ) {
   val isAuthor = message.authorID == conversationsVM.me.id
 
   val arrangement = Arrangement.let { if (isAuthor) it.End else it.Start }
   val color = MaterialTheme.colorScheme.let {
-    if (isAuthor) it.primaryContainer else it.secondaryContainer
+    if (isAuthor) it.primaryContainer else it.outlineVariant
   }
 
   var outerPadding by remember { mutableIntStateOf(0) }
@@ -82,7 +93,7 @@ private fun MessageComponent(
 
   Row(
     horizontalArrangement = arrangement,
-    modifier = Modifier.fillMaxWidth(),
+    modifier = modifier.fillMaxWidth(),
   ) {
     Row(
       modifier = Modifier.fillMaxWidth(0.8f),
