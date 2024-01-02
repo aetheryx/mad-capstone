@@ -46,10 +46,10 @@ fun MessageList(
   }
 
   LazyColumn(
-    modifier = modifier.padding(bottom = 4.dp),
+    modifier = modifier,
     reverseLayout = true,
     state = state,
-    contentPadding = PaddingValues(horizontal = 16.dp),
+    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
     verticalArrangement = Arrangement.spacedBy(4.dp)
   ) {
     itemsIndexed(
@@ -60,10 +60,6 @@ fun MessageList(
 
       if (idx > 0 && messages[idx - 1].authorID != message.authorID) {
         messageModifier = messageModifier.padding(bottom = 4.dp)
-      }
-
-      if (idx == 0) {
-        messageModifier = messageModifier.padding(bottom = 8.dp)
       }
 
       MessageComponent(conversationsVM, message, messageModifier)

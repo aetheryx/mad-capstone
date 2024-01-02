@@ -96,6 +96,13 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
     }
   }
 
+  fun signOut() = scope.launch {
+    application.sessionDataStore.edit { it.remove(sessionTokenKey) }
+    state.postValue(SessionState.STALE)
+    me.postValue(null)
+    websocket.destroy()
+  }
+
   private suspend fun onReady(newToken: String): Boolean {
     chatstoneApi = ChatstoneApi.createApi(newToken)
 

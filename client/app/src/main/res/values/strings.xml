@@ -12,4 +12,7 @@
     <string name="start_conversation">Start conversation</string>
     <string name="never">Never</string>
     <string name="yesterday">Yesterday</string>
+    <string name="log_out">Log out</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="more">More</string>
 </resources>
