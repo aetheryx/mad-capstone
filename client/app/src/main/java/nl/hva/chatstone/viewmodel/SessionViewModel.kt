@@ -138,6 +138,9 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
         is ServerEvent.ConversationCreateEvent ->
           conversationsVM.addConversation(event.data)
 
+        is ServerEvent.ConversationDeleteEvent ->
+          conversationsVM.onDeleteConversation(event.data)
+
         is ServerEvent.CallResponseEvent ->
           callVM.onCallResponse(event.data)
 

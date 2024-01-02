@@ -18,6 +18,8 @@ sealed class ServerEvent {
   @Serializable
   data class ConversationCreateEvent(val data: Conversation) : ServerEvent()
   @Serializable
+  data class ConversationDeleteEvent(val data: Int): ServerEvent()
+  @Serializable
   data class CallOfferEvent(val data: OutgoingCallOffer): ServerEvent()
   @Serializable
   data class CallResponseEvent(val data: CallResponse): ServerEvent()
@@ -29,6 +31,7 @@ sealed class ServerEvent {
       when (element.jsonObject["event"]?.jsonPrimitive?.content) {
         "MessageCreate" -> MessageCreateEvent.serializer()
         "ConversationCreate" -> ConversationCreateEvent.serializer()
+        "ConversationDelete" -> ConversationDeleteEvent.serializer()
         "CallOffer" -> CallOfferEvent.serializer()
         "CallResponse" -> CallResponseEvent.serializer()
         "WebRTCPayload" -> WebRTCPayloadEvent.serializer()
