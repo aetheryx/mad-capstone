@@ -47,22 +47,24 @@ fun ChatstoneAppWindow(sessionVM: SessionViewModel) {
   NavHost(
     navController,
     startDestination = startDestination,
-    modifier = Modifier.fillMaxSize().safeDrawingPadding()
+    modifier = Modifier.fillMaxSize()
   ) {
+    val modifier = Modifier.fillMaxSize().safeDrawingPadding()
+
     composable("/login") {
-      LoginScreen(navController, sessionVM)
+      LoginScreen(navController, sessionVM, modifier)
     }
 
     composable("/signup") {
-      SignupScreen(navController, sessionVM)
+      SignupScreen(navController, sessionVM, modifier)
     }
 
     composable("/conversations") {
-      HomeScreen(navController, conversationsVM)
+      HomeScreen(navController, conversationsVM, modifier)
     }
 
     composable("/conversations/add") {
-      AddUserScreen(navController, conversationsVM)
+      AddUserScreen(navController, conversationsVM, modifier)
     }
 
     composable(

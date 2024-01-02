@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import nl.hva.chatstone.api.model.output.Conversation
 import nl.hva.chatstone.ui.composables.UserProfilePicture
+import nl.hva.chatstone.ui.theme.surfaceContainer
 import nl.hva.chatstone.viewmodel.ConversationsViewModel
 
 @Composable
@@ -41,7 +43,7 @@ fun ConversationScreen(
     },
     bottomBar = {
       MessageBar(conversationsVM, conversation)
-    }
+    },
   ) {
     MessageList(conversationsVM, conversation, Modifier.padding(it))
   }
@@ -58,7 +60,9 @@ private fun ConversationScreenTopBar(
   val callVM = conversationsVM.sessionVM.callVM
 
   TopAppBar(
-    colors = TopAppBarDefaults.topAppBarColors(),
+    colors = TopAppBarDefaults.topAppBarColors(
+      containerColor = MaterialTheme.colorScheme.surfaceContainer
+    ),
     title = {
       Row(
         verticalAlignment = Alignment.CenterVertically,

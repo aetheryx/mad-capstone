@@ -3,17 +3,20 @@ package nl.hva.chatstone.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
@@ -81,6 +84,9 @@ private val DarkColorScheme = darkColorScheme(
   scrim = md_theme_dark_scrim,
 )
 
+val ColorScheme.surfaceContainer: Color
+  get() = surfaceColorAtElevation(1.dp)
+
 @Composable
 fun ChatstoneTheme(
   darkTheme: Boolean = isSystemInDarkTheme(),
@@ -100,7 +106,7 @@ fun ChatstoneTheme(
   if (!view.isInEditMode) {
     SideEffect {
       val window = (view.context as Activity).window
-      window.statusBarColor = colorScheme.surface.toArgb()
+      window.statusBarColor = colorScheme.surfaceContainer.toArgb()
       WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
     }
   }

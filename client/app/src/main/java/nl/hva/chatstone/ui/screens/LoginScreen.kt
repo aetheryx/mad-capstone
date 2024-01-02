@@ -3,7 +3,6 @@ package nl.hva.chatstone.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,7 +36,8 @@ import nl.hva.chatstone.viewmodel.SessionViewModel
 @Composable
 fun LoginScreen(
   navController: NavHostController,
-  sessionVM: SessionViewModel
+  sessionVM: SessionViewModel,
+  modifier: Modifier
 ) {
   val state by sessionVM.state.observeAsState()
   val error =
@@ -49,9 +49,7 @@ fun LoginScreen(
   }
 
   Column(
-    modifier = Modifier
-      .fillMaxSize()
-      .padding(16.dp),
+    modifier = modifier.padding(16.dp),
     verticalArrangement = Arrangement.SpaceBetween
   ) {
     Column {}
