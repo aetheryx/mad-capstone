@@ -25,11 +25,15 @@ import nl.hva.chatstone.viewmodel.SessionViewModel
 fun ChatstoneAppWindow(sessionVM: SessionViewModel) {
   val navController = rememberNavController()
   val conversationsVM = sessionVM.conversationsVM
+  val conversations by conversationsVM.conversations.observeAsState(emptyList())
 
   var targetURL by sessionVM.targetURL
 
   LaunchedEffect(Unit) {
     sessionVM.listenForEvents()
+  }
+
+  LaunchedEffect(targetURL) {
     if (targetURL != null) {
       navController.navigate(targetURL!!)
       targetURL = null
@@ -76,10 +80,12 @@ fun ChatstoneAppWindow(sessionVM: SessionViewModel) {
       )
     ) { entry ->
       val id = entry.arguments?.getInt("id")
+      val conversation = conversations.find { it.conversation.id == id } ?: return@composable
+
       ConversationScreen(
         navController,
-        conversationID = id!!,
-        conversationsVM
+        conversationsVM,
+        conversation
       )
     }
   }

@@ -16,4 +16,5 @@
     <string name="edit_profile">Edit profile</string>
     <string name="more">More</string>
     <string name="no_connection">Internet connection lost. Reconnecting...</string>
+    <string name="delete_conversation">Delete conversation</string>
 </resources>
