@@ -12,6 +12,7 @@ use super::conversation::FullConversation;
 pub enum ServerEvent<'a> {
   MessageCreate(&'a conversation_message::Model),
   ConversationCreate(&'a FullConversation),
+  ConversationDelete(i32),
   CallOffer(OutgoingCallOffer),
   CallResponse(CallResponse),
   WebRTCPayload(WebRTCPayload)
