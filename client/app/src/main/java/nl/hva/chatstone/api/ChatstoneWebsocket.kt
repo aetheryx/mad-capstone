@@ -43,11 +43,17 @@ class ChatstoneWebsocket : WebSocketListener() {
     ws!!.send(text)
   }
 
+  fun destroy() {
+    synchronized(this) {
+      Log.v(TAG, "destroying")
+      runCatching { ws?.cancel() }
+      ws = null
+    }
+  }
+
   private fun reconnect() {
     synchronized(this) {
-      Log.v(TAG, "reconnecting")
-      ws?.cancel()
-      ws = null
+      destroy()
       ws = ChatstoneApi.createWebSocket(userID!!, this)
     }
   }
