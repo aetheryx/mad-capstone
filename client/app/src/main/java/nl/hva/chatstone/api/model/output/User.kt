@@ -24,6 +24,8 @@ data class User (
   fun avatarModel(context: Context) = ImageRequest.Builder(context)
     .data(avatarURL)
     .transformations(CircleCropTransformation())
+    .crossfade(true)
+    .placeholder(R.drawable.default_pfp)
     .fallback(R.drawable.default_pfp)
     .build()
 
