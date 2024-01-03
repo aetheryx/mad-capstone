@@ -29,7 +29,7 @@ sealed class ServerEvent {
   data class CallResponseEvent(val data: CallResponse): ServerEvent()
 
   @Serializable
-  class CallHangupEvent(): ServerEvent()
+  data class CallHangUpEvent(val data: Int): ServerEvent()
 
   @Serializable
   data class WebRTCPayloadEvent(val data: WebRTCPayload): ServerEvent()
@@ -42,6 +42,7 @@ sealed class ServerEvent {
         "ConversationDelete" -> ConversationDeleteEvent.serializer()
         "CallOffer" -> CallOfferEvent.serializer()
         "CallResponse" -> CallResponseEvent.serializer()
+        "CallHangUp" -> CallHangUpEvent.serializer()
         "WebRTCPayload" -> WebRTCPayloadEvent.serializer()
 
         else -> error("unable to select serializer for $element")
