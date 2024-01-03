@@ -11,7 +11,6 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-
     <uses-feature android:name="android.hardware.camera" />
 
     <application
@@ -51,10 +50,10 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".activities.IncomingCallActivity"
+            android:name=".activities.DeclineCallActivity"
             android:exported="true"
             android:label="Incoming Call"
-            android:theme="@style/Theme.Chatstone"
+            android:theme="@android:style/Theme.NoDisplay"
             android:windowSoftInputMode="adjustResize" />
 
         <service
