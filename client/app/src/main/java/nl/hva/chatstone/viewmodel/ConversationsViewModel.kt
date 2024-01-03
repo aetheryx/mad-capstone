@@ -56,6 +56,7 @@ class ConversationsViewModel(
 
   fun addConversation(conversation: Conversation) {
     conversations.add(conversation)
+    messagesVM.messages[conversation.id] = mutableStateListOf()
   }
 
   fun updateConversation(conversation: Conversation) {
