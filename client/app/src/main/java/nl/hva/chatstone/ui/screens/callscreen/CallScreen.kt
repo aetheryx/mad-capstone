@@ -46,9 +46,9 @@ private fun IncomingCallScreen(
   conversationsVM: ConversationsViewModel
 ) {
   val onClick = { accepted: Boolean ->
-    val response = CallResponse(callState.conversationID, accepted)
-    val event = ClientEvent.CallResponseEvent(response)
-    conversationsVM.sessionVM.websocket.sendMessage(event)
+//    val response = CallResponse(callState.conversationID, accepted)
+//    val event = ClientEvent.CallResponseEvent(response)
+//    conversationsVM.sessionVM.websocket.sendMessage(event)
 
 //    conversationsVM.callState.postValue(CallState.Connected())
   }

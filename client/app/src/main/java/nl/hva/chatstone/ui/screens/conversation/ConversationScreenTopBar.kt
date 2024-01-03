@@ -76,6 +76,7 @@ fun ConversationScreenTopBar(
     actions = {
       IconButton(onClick = {
         callVM.call(conversation)
+        callVM.launchActivity()
       }) {
         Icon(Icons.Filled.Videocam, "Video call")
       }

@@ -1,18 +1,26 @@
 package nl.hva.chatstone.viewmodel
 
 sealed class CallState() {
-  sealed class Ringing() : CallState() {
-    data class Incoming(
-      val conversationID: Int,
-      val callID: Int
-    ) : Ringing()
+  sealed class Ringing(
+    val conversationID: Int,
+    val callID: Int
+  ) : CallState() {
+    class Incoming(
+      conversationID: Int,
+      callID: Int
+    ) : Ringing(conversationID, callID)
 
-    data class Outgoing(
-      val conversationID: Int,
-      val declined: Boolean,
-      val callID: Int
-    ) : Ringing()
+    class Outgoing(
+      conversationID: Int,
+      callID: Int
+    ) : Ringing(conversationID, callID)
+
+    class Declined(
+      conversationID: Int,
+      callID: Int
+    ) : Ringing(conversationID, callID)
   }
+
   data class Connected(val callID: Int) : CallState()
   object None : CallState()
 }
