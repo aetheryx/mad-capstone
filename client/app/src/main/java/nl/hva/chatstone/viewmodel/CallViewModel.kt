@@ -18,7 +18,7 @@ import nl.hva.chatstone.api.model.output.OutgoingCallOffer
 import java.time.Instant
 
 class CallViewModel(
-  private val application: ChatstoneApplication,
+  val application: ChatstoneApplication,
 ) : AndroidViewModel(application) {
   private val scope = CoroutineScope(Dispatchers.IO)
   private val sessionVM = application.sessionVM
@@ -38,12 +38,8 @@ class CallViewModel(
 
     callState.value = CallState.Ringing.Outgoing(
       conversationID = conversation.id,
-      declined = false,
       callID = callID
     )
-
-    val intent = Intent(application, OngoingCallActivity::class.java)
-    application.mainActivity!!.startActivity(intent)
   }
 
   fun hangUpCall() {
@@ -55,7 +51,15 @@ class CallViewModel(
 
     val event = ClientEvent.CallHangUpEvent(callID)
     sessionVM.websocket.sendMessage(event)
+    exitActivity()
+  }
 
+  fun launchActivity() {
+    val intent = Intent(application, OngoingCallActivity::class.java)
+    application.mainActivity!!.startActivity(intent)
+  }
+
+  fun exitActivity() {
     application.callActivity?.finish()
     callState.postValue(CallState.None)
   }
@@ -79,7 +83,12 @@ class CallViewModel(
       callState.postValue(CallState.Connected(data.callID))
     } else {
       val state = callState.value as CallState.Ringing.Outgoing
-      callState.postValue(state.copy(declined = true))
+      val newState = CallState.Ringing.Declined(
+        conversationID = state.conversationID,
+        callID = state.callID
+      )
+
+      callState.postValue(newState)
     }
   }
 
