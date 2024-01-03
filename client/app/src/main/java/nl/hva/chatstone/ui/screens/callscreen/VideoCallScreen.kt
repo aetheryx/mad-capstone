@@ -1,6 +1,5 @@
 package nl.hva.chatstone.ui.screens.callscreen
 
-import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,13 +17,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import nl.hva.chatstone.viewmodel.SessionViewModel
 import nl.hva.chatstone.webrtc.LocalWebRtcSessionManager
 
 @Composable
-fun VideoCallScreen() {
+fun VideoCallScreen(
+  sessionVM: SessionViewModel
+) {
+  val callVM = sessionVM.callVM
   val sessionManager = LocalWebRtcSessionManager.current
 
   LaunchedEffect(key1 = Unit) {
@@ -65,8 +67,6 @@ fun VideoCallScreen() {
       )
     }
 
-    val activity = (LocalContext.current as? Activity)
-
     VideoCallControls(
       modifier = Modifier
         .fillMaxWidth()
@@ -87,7 +87,8 @@ fun VideoCallScreen() {
           CallAction.FlipCamera -> sessionManager.flipCamera()
           CallAction.LeaveCall -> {
             sessionManager.disconnect()
-            activity?.finish()
+            callVM.hangUpCall()
+            callVM.exitActivity()
           }
         }
       }

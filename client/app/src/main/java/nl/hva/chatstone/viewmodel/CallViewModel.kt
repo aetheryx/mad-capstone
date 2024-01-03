@@ -74,6 +74,8 @@ class CallViewModel(
   }
 
   fun onCallHangUp() {
+    exitActivity()
+    application.webRtcSessionManager.disconnect()
   }
 
   fun onCallResponse(data: CallResponse) = scope.launch {

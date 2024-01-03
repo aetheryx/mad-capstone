@@ -6,19 +6,8 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 
-interface AudioHandler {
-  /**
-   * Called when a room is started.
-   */
-  fun start()
 
-  /**
-   * Called when a room is disconnected.
-   */
-  fun stop()
-}
-
-class AudioSwitchHandler constructor(private val context: Context) : AudioHandler {
+class AudioSwitchHandler(private val context: Context) {
   private var audioDeviceChangeListener: AudioDeviceChangeListener? = null
   private var onAudioFocusChangeListener: AudioManager.OnAudioFocusChangeListener? = null
   private var preferredDeviceList: List<Class<out AudioDevice>>? = null
@@ -28,7 +17,7 @@ class AudioSwitchHandler constructor(private val context: Context) : AudioHandle
   // AudioSwitch is not threadsafe, so all calls should be done on the main thread.
   private val handler = Handler(Looper.getMainLooper())
 
-  override fun start() {
+  fun start() {
     if (audioSwitch == null) {
       handler.removeCallbacksAndMessages(null)
       handler.post {
@@ -45,7 +34,7 @@ class AudioSwitchHandler constructor(private val context: Context) : AudioHandle
     }
   }
 
-  override fun stop() {
+  fun stop() {
     handler.removeCallbacksAndMessages(null)
     handler.post {
       audioSwitch?.stop()
