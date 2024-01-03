@@ -1,4 +1,4 @@
-package nl.hva.chatstone.webrtc.sessions
+package nl.hva.chatstone.webrtc
 
 import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
@@ -13,10 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
-import nl.hva.chatstone.webrtc.SignalingClient
-import nl.hva.chatstone.webrtc.SignalingCommand
 import nl.hva.chatstone.webrtc.audio.AudioHandler
 import nl.hva.chatstone.webrtc.audio.AudioSwitchHandler
 import nl.hva.chatstone.webrtc.peer.StreamPeerConnection
@@ -41,20 +38,17 @@ private const val ICE_SEPARATOR = '$'
 val LocalWebRtcSessionManager: ProvidableCompositionLocal<WebRtcSessionManager> =
   staticCompositionLocalOf { error("WebRtcSessionManager was not initialized!") }
 
-class WebRtcSessionManagerImpl(
+class WebRtcSessionManager(
   private val context: Context,
-  override val signalingClient: SignalingClient,
-  override val peerConnectionFactory: StreamPeerConnectionFactory
-) : WebRtcSessionManager {
+  val signalingClient: SignalingClient,
+  val peerConnectionFactory: StreamPeerConnectionFactory
+) {
   private val sessionManagerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-  // used to send local video track to the fragment
-  private val _localVideoTrackFlow = MutableSharedFlow<VideoTrack>()
-  override val localVideoTrackFlow: SharedFlow<VideoTrack> = _localVideoTrackFlow
+  val localVideoTrackFlow = MutableSharedFlow<VideoTrack>()
 
   // used to send remote video track to the sender
-  private val _remoteVideoTrackFlow = MutableSharedFlow<VideoTrack>()
-  override val remoteVideoTrackFlow: SharedFlow<VideoTrack> = _remoteVideoTrackFlow
+  val remoteVideoTrackFlow = MutableSharedFlow<VideoTrack>()
 
   // declaring video constraints and setting OfferToReceiveVideo to true
   // this step is mandatory to create valid offer and answer
@@ -149,7 +143,7 @@ class WebRtcSessionManagerImpl(
         if (track.kind() == MediaStreamTrack.VIDEO_TRACK_KIND) {
           val videoTrack = track as VideoTrack
           sessionManagerScope.launch {
-            _remoteVideoTrackFlow.emit(videoTrack)
+            remoteVideoTrackFlow.emit(videoTrack)
           }
         }
       }
@@ -170,13 +164,13 @@ class WebRtcSessionManagerImpl(
     }
   }
 
-  override fun onSessionScreenReady() {
+  fun onSessionScreenReady() {
     setupAudio()
     peerConnection.connection.addTrack(localVideoTrack)
     peerConnection.connection.addTrack(localAudioTrack)
     sessionManagerScope.launch {
       // sending local video track to show local video from start
-      _localVideoTrackFlow.emit(localVideoTrack)
+      localVideoTrackFlow.emit(localVideoTrack)
 
       if (offer != null) {
         sendAnswer()
@@ -186,15 +180,15 @@ class WebRtcSessionManagerImpl(
     }
   }
 
-  override fun flipCamera() {
+  fun flipCamera() {
     (videoCapturer as? Camera2Capturer)?.switchCamera(null)
   }
 
-  override fun enableMicrophone(enabled: Boolean) {
+  fun enableMicrophone(enabled: Boolean) {
     audioManager?.isMicrophoneMute = !enabled
   }
 
-  override fun enableCamera(enabled: Boolean) {
+  fun enableCamera(enabled: Boolean) {
     if (enabled) {
       videoCapturer.startCapture(resolution.width, resolution.height, 30)
     } else {
@@ -202,7 +196,7 @@ class WebRtcSessionManagerImpl(
     }
   }
 
-  override fun disconnect() {
+  fun disconnect() {
     // dispose audio & video tracks.
     remoteVideoTrackFlow.replayCache.forEach { videoTrack ->
       videoTrack.dispose()

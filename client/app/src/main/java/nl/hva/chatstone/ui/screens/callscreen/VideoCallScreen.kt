@@ -21,7 +21,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import nl.hva.chatstone.webrtc.sessions.LocalWebRtcSessionManager
+import nl.hva.chatstone.webrtc.LocalWebRtcSessionManager
 
 @Composable
 fun VideoCallScreen() {
