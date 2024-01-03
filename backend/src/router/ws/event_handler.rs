@@ -59,16 +59,16 @@ async fn handle_event(
 
   match event {
     ClientEvent::CallOffer(offer) =>
-      handle_call_offer(offer, state).await?,
+      handle_call_offer(user_id, offer, state).await?,
 
     ClientEvent::CallResponse(resp) =>
-      handle_call_response(user_id, resp, state).await?,
+      handle_call_response(resp, state).await?,
 
     ClientEvent::WebRTCPayload(payload) =>
       handle_webrtc_payload(user_id, payload, state).await?,
 
-    ClientEvent::CallHangUp() =>
-      handle_call_hangup(user_id, state).await?,
+    ClientEvent::CallHangUp(call_id) =>
+      handle_call_hangup(user_id, call_id, state).await?,
   };
 
   Ok(())
