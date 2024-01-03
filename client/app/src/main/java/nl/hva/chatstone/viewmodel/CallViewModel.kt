@@ -53,9 +53,8 @@ class CallViewModel(
     Log.v("CallViewModel", "accepting $state")
     if (state !is CallState.Ringing.Incoming) return
 
-    val callerID = conversationsVM.conversations.value!!
-      .find { it.id == state.conversationID }!!
-      .otherParticipant.id
+    val conversation = conversationsVM.getConversation(state.conversationID) ?: return
+    val callerID = conversation.otherParticipant.id
 
     val response = CallResponse(callerID, accepted = true)
     val event = ClientEvent.CallResponseEvent(response)

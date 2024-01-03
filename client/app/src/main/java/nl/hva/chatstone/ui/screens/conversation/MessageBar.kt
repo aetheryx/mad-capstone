@@ -37,6 +37,7 @@ fun MessageBar(
   conversationsVM: ConversationsViewModel,
   conversation: Conversation
 ) {
+  val messagesVM = conversationsVM.messagesVM
   var messageContent by remember { mutableStateOf("") }
   val reconnecting by conversationsVM.sessionVM.websocket.reconnecting.observeAsState(false)
 
@@ -71,7 +72,7 @@ fun MessageBar(
         .alpha(if (enabled) 1.0f else 0.38f),
       enabled = enabled,
       onClick = {
-        conversationsVM.sendMessage(conversation, messageContent)
+        messagesVM.sendMessage(conversation, messageContent)
         messageContent = ""
       }
     ) {

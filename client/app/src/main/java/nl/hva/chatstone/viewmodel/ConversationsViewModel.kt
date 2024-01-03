@@ -26,13 +26,13 @@ class ConversationsViewModel(
   private val application: ChatstoneApplication,
 ) : AndroidViewModel(application) {
   val sessionVM = application.sessionVM
+  val messagesVM by lazy { MessagesViewModel(application) }
   private val scope = CoroutineScope(Dispatchers.IO)
   private val chatstoneApi get() = sessionVM.chatstoneApi
 
   val me get() = sessionVM.me.value!!
 
-  val conversations = MutableLiveData<List<Conversation>>()
-  val conversationMessages = HashMap<Int, SnapshotStateList<ConversationMessage>>()
+  val conversations = mutableStateListOf<Conversation>()
   val createState = MutableLiveData<ConversationCreateState>(ConversationCreateState.None())
 
   fun createConversation(username: String) {
@@ -51,23 +51,16 @@ class ConversationsViewModel(
     }
   }
 
-  fun addConversationMessage(message: ConversationMessage) {
-    val messages = conversationMessages[message.conversationID] ?: return
-    messages.add(0, message)
-
-    val newConversations = ArrayList(conversations.value!!)
-    val conversation = newConversations.find { it.id == message.conversationID }!!
-    val index = newConversations.indexOf(conversation)
-
-    val newConversation = conversation.copy(lastMessage = message)
-    newConversations[index] = newConversation
-    conversations.postValue(newConversations)
-  }
+  fun getConversation(id: Int) =
+    conversations.find { it.id == id }
 
   fun addConversation(conversation: Conversation) {
-    conversationMessages[conversation.id] = mutableStateListOf()
-    val newConversations = conversations.value!!.plus(conversation)
-    conversations.postValue(newConversations)
+    conversations.add(conversation)
+  }
+
+  fun updateConversation(conversation: Conversation) {
+    val index = conversations.indexOfFirst { it.id == conversation.id }
+    conversations[index] = conversation
   }
 
   fun deleteConversation(conversation: Conversation) = scope.launch {
@@ -75,37 +68,20 @@ class ConversationsViewModel(
   }
 
   fun onDeleteConversation(id: Int) {
-    val newConversations = conversations.value!!.filter { it.id != id }
-    conversations.postValue(newConversations)
-    conversationMessages[id]!!.clear()
-  }
-
-  fun sendMessage(conversation: Conversation, content: String) {
-    scope.launch {
-      val input = CreateMessageInput(content)
-      val message = chatstoneApi.createMessage(conversation.id, input)
-      addConversationMessage(message)
-    }
+    val idx = conversations.indexOfFirst { it.id == id }
+    conversations.removeAt(idx)
+    messagesVM.messages[id]?.clear()
   }
 
   fun fetchConversations() {
     scope.launch {
       val fullConversations = chatstoneApi.getConversations()
-      conversations.postValue(fullConversations)
+      conversations.clear()
+      conversations.addAll(fullConversations)
 
-      fullConversations.forEach { fetchConversationMessages(it) }
+      fullConversations.forEach {
+        messagesVM.fetchConversationMessages(it)
+      }
     }
-  }
-
-  private suspend fun fetchConversationMessages(conversation: Conversation) {
-    val data = mutableStateListOf<ConversationMessage>()
-    conversationMessages[conversation.id] = data
-
-    val messages = chatstoneApi.getConversationMessages(
-      conversationID = conversation.id,
-      limit = 50,
-      offset = 0
-    )
-    data.addAll(messages)
   }
 }

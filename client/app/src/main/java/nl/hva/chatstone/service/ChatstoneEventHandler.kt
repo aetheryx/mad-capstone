@@ -63,9 +63,8 @@ class ChatstoneEventHandler(
     val channel = NotificationChannel(channelID, channelID, NotificationManager.IMPORTANCE_HIGH)
     notificationManager.createNotificationChannel(channel)
 
-    val user = conversationVM.conversations.value!!
-      .find { it.id == message.conversationID }!!
-      .otherParticipant
+    val user = conversationVM.getConversation(message.conversationID)?.otherParticipant
+      ?: return
 
     val icon = user.getIcon(ctx)
     val person = user.toPerson(ctx)
@@ -112,9 +111,8 @@ class ChatstoneEventHandler(
     val channel = NotificationChannel(channelID, channelID, NotificationManager.IMPORTANCE_HIGH)
     notificationManager.createNotificationChannel(channel)
 
-    val user = conversationVM.conversations.value!!
-      .find { it.id == callOffer.conversationID }!!
-      .otherParticipant
+    val user = conversationVM.getConversation(callOffer.conversationID)?.otherParticipant
+      ?: return
 
     val person = user.toPerson(ctx)
 
