@@ -17,8 +17,8 @@ import nl.hva.chatstone.ChatstoneApplication
 import nl.hva.chatstone.ui.theme.ChatstoneTheme
 import nl.hva.chatstone.ui.windows.OngoingCallWindow
 import nl.hva.chatstone.webrtc.peer.StreamPeerConnectionFactory
-import nl.hva.chatstone.webrtc.sessions.LocalWebRtcSessionManager
-import nl.hva.chatstone.webrtc.sessions.WebRtcSessionManagerImpl
+import nl.hva.chatstone.webrtc.LocalWebRtcSessionManager
+import nl.hva.chatstone.webrtc.WebRtcSessionManager
 
 private val permissions = arrayOf(
   Manifest.permission.CAMERA,
@@ -34,7 +34,7 @@ class OngoingCallActivity : ComponentActivity() {
     // request permissions
     requestPermissions(permissions, 0)
 
-    val sessionManager = WebRtcSessionManagerImpl(
+    val sessionManager = WebRtcSessionManager(
       context = this,
       signalingClient = (application as ChatstoneApplication).signalingClient,
       StreamPeerConnectionFactory(this)
