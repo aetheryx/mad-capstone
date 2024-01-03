@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -44,6 +45,10 @@ fun ConversationsList(
   Column(
     modifier = modifier
   ) {
+    if (conversations.isEmpty()) {
+      NoConversations()
+    }
+
     LazyColumn() {
       items(
         items = conversations,
@@ -52,6 +57,27 @@ fun ConversationsList(
         Conversation(navController, it)
       }
     }
+  }
+}
+
+@Composable
+private fun NoConversations() {
+  Column(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(16.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(8.dp)
+  ) {
+    Text(
+      stringResource(R.string.no_conversations),
+      style = MaterialTheme.typography.headlineMedium
+    )
+
+    Text(
+      stringResource(R.string.click_plus),
+      textAlign = TextAlign.Center
+    )
   }
 }
 

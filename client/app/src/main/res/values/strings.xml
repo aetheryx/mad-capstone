@@ -17,4 +17,6 @@
     <string name="more">More</string>
     <string name="no_connection">Internet connection lost. Reconnecting...</string>
     <string name="delete_conversation">Delete conversation</string>
+    <string name="no_conversations">You have no conversations</string>
+    <string name="click_plus">Click the \'+\' icon at the bottom of your screen to create a conversation</string>
 </resources>
