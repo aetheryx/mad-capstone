@@ -30,19 +30,13 @@ class OngoingCallActivity : CallActivity() {
     // request permissions
     requestPermissions(permissions, 0)
 
-    val sessionManager = WebRtcSessionManager(
-      context = this,
-      signalingClient = application.signalingClient,
-      StreamPeerConnectionFactory(this)
-    )
-
     val sessionVM = application.sessionVM
     Log.v("OngoingCallActivity", "accepting")
     sessionVM.callVM.acceptCall()
 
     setContent {
       ChatstoneTheme {
-        CompositionLocalProvider(LocalWebRtcSessionManager provides sessionManager) {
+        CompositionLocalProvider(LocalWebRtcSessionManager provides application.webRtcSessionManager) {
           Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.surface,

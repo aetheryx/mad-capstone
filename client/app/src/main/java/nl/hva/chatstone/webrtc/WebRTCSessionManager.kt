@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-import nl.hva.chatstone.webrtc.audio.AudioHandler
 import nl.hva.chatstone.webrtc.audio.AudioSwitchHandler
 import nl.hva.chatstone.webrtc.peer.StreamPeerConnection
 import nl.hva.chatstone.webrtc.peer.StreamPeerConnectionFactory
@@ -101,7 +100,7 @@ class WebRtcSessionManager(
 
   /** Audio properties */
 
-  private val audioHandler: AudioHandler by lazy {
+  private val audioHandler by lazy {
     AudioSwitchHandler(context)
   }
 
@@ -185,7 +184,7 @@ class WebRtcSessionManager(
   }
 
   fun enableMicrophone(enabled: Boolean) {
-    audioManager?.isMicrophoneMute = !enabled
+    localAudioTrack.setEnabled(enabled)
   }
 
   fun enableCamera(enabled: Boolean) {
@@ -204,8 +203,10 @@ class WebRtcSessionManager(
     localVideoTrackFlow.replayCache.forEach { videoTrack ->
       videoTrack.dispose()
     }
+
     localAudioTrack.dispose()
     localVideoTrack.dispose()
+    peerConnection.connection.dispose()
 
     // dispose audio handler and video capturer.
     audioHandler.stop()

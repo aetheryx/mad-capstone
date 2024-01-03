@@ -11,9 +11,9 @@ internal class AudioFocusRequestWrapper {
       .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
       .build()
 
-    return AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+    return AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
       .setAudioAttributes(playbackAttributes)
-      .setAcceptsDelayedFocusGain(true)
+      .setAcceptsDelayedFocusGain(false)
       .setOnAudioFocusChangeListener(audioFocusChangeListener)
       .build()
   }

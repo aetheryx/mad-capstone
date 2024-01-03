@@ -9,6 +9,8 @@ import nl.hva.chatstone.activities.OngoingCallActivity
 import nl.hva.chatstone.service.ChatstoneService
 import nl.hva.chatstone.viewmodel.SessionViewModel
 import nl.hva.chatstone.webrtc.SignalingClient
+import nl.hva.chatstone.webrtc.WebRtcSessionManager
+import nl.hva.chatstone.webrtc.peer.StreamPeerConnectionFactory
 
 class ChatstoneApplication : Application(), Application.ActivityLifecycleCallbacks {
   var activityIsOpen = false
@@ -16,6 +18,13 @@ class ChatstoneApplication : Application(), Application.ActivityLifecycleCallbac
   var callActivity: OngoingCallActivity? = null
   val sessionVM by lazy { SessionViewModel(this) }
   val signalingClient by lazy { SignalingClient(this) }
+  val webRtcSessionManager by lazy {
+    WebRtcSessionManager(
+      context = this,
+      signalingClient = signalingClient,
+      StreamPeerConnectionFactory(this)
+    )
+  }
 
   override fun onCreate() {
     super.onCreate()

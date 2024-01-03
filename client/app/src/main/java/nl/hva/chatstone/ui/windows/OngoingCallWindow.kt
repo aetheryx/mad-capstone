@@ -35,7 +35,7 @@ private fun OngoingCallWindowContent(sessionVM: SessionViewModel) {
       RingingCallScreen(sessionVM, callState as CallState.Ringing)
 
     is CallState.Connected ->
-      VideoCallScreen()
+      VideoCallScreen(sessionVM)
 
     is CallState.None, null ->
       Unit

@@ -42,6 +42,7 @@ internal class AudioManagerAdapterImpl(
     audioRequest = audioFocusRequest.buildRequest(audioFocusChangeListener)
     audioRequest?.let {
       val result = audioManager.requestAudioFocus(it)
+      Log.v(TAG, "[setAudioFocus] $result")
     }
     /*
      * Start by setting MODE_IN_COMMUNICATION as default audio mode. It is
@@ -81,8 +82,8 @@ internal class AudioManagerAdapterImpl(
     mute(savedIsMicrophoneMuted)
     enableSpeakerphone(savedSpeakerphoneEnabled)
     audioRequest?.let {
-      Log.v(TAG, "[abandonAudioFocusRequest]: $it")
-      audioManager.abandonAudioFocusRequest(it)
+      val result = audioManager.abandonAudioFocusRequest(it)
+      Log.v(TAG, "[abandonAudioFocusRequest]: $it $result")
     }
   }
 }
