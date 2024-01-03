@@ -16,7 +16,7 @@ pub enum ServerEvent<'a> {
   CallOffer(OutgoingCallOffer),
   CallResponse(CallResponse),
   WebRTCPayload(WebRTCPayload),
-  CallHangUp(),
+  CallHangUp(u32),
 }
 
 impl<'a> ServerEvent<'a> {
@@ -27,6 +27,8 @@ impl<'a> ServerEvent<'a> {
     let Some(connections) = users.get_mut(&id) else {
       return Ok(());
     };
+
+    println!("sending event {self:?} to {id:?}");
 
     for client in connections.values_mut() {
       let _ = client.send(msg.clone()).await;

@@ -38,7 +38,6 @@ async fn websocket(socket: WebSocket, state: SharedState, user_id: i32) {
   let mut users = state.users.lock().await;
   let user = users.entry(user_id).or_default();
   user.insert(connection_id, sender);
-  println!("users: {users:?}");
 }
 
 

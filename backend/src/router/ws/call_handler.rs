@@ -10,41 +10,46 @@ lazy_static! {
   static ref CALL: Mutex<Option<Call>> = Mutex::from(None);
 }
 
-pub async fn handle_call_offer(call_offer: IncomingCallOffer, state: SharedState) -> Result<()> {
+pub async fn handle_call_offer(
+  user_id: i32,
+  call_offer: IncomingCallOffer,
+  state: SharedState
+) -> Result<()> {
   let outgoing_call_offer = OutgoingCallOffer {
     conversation_id: call_offer.conversation_id,
+    call_id: call_offer.call_id,
   };
 
   let event = ServerEvent::CallOffer(outgoing_call_offer);
-  event.send_to(&state, call_offer.callee_id).await
+  event.send_to(&state, call_offer.callee_id).await?;
+
+  let mut call = CALL.lock().await;
+  *call = Some(Call {
+    caller: user_id,
+    callee: call_offer.callee_id,
+  });
+
+  Ok(())
 }
 
 pub async fn handle_call_response(
-  user_id: i32,
   call_response: CallResponse,
   state: SharedState,
 ) -> Result<()> {
-  if call_response.accepted {
-    let mut call = CALL.lock().await;
-    *call = Some(Call {
-      caller: call_response.caller_id,
-      callee: user_id,
-    });
-  }
-
   let event = ServerEvent::CallResponse(call_response);
   event.send_to(&state, call_response.caller_id).await
 }
 
 pub async fn handle_call_hangup(
   user_id: i32,
+  call_id: u32,
   state: SharedState,
 ) -> Result<()> {
   let Some(target_id) = get_target_id(user_id).await else {
     return Ok(());
   };
 
-  let event = ServerEvent::CallHangUp();
+  let event = ServerEvent::CallHangUp(call_id);
   event.send_to(&state, target_id).await?;
 
   Ok(())
