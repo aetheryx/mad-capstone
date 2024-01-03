@@ -2,6 +2,7 @@ package nl.hva.chatstone.api
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
@@ -19,7 +20,7 @@ sealed class ClientEvent {
   data class CallResponseEvent(val data: CallResponse): ClientEvent()
 
   @Serializable
-  class CallHangupEvent(): ClientEvent()
+  data class CallHangUpEvent(val data: Int): ClientEvent()
 
   @Serializable
   data class WebRTCPayloadEvent(val data: WebRTCPayload): ClientEvent()
@@ -28,7 +29,7 @@ sealed class ClientEvent {
     val self = this@ClientEvent
     put("event", self::class.simpleName!!.replace("Event", ""))
 
-    val data = Json.encodeToJsonElement(self).jsonObject["data"]!!
+    val data = Json.encodeToJsonElement(self).jsonObject["data"] ?: JsonNull
     put("data", data)
   }
 }

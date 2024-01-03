@@ -7,4 +7,5 @@ import kotlinx.serialization.Serializable
 data class IncomingCallOffer(
   @SerialName("callee_id") val calleeID: Int,
   @SerialName("conversation_id") val conversationID: Int,
+  @SerialName("call_id") val callID: Int,
 )
