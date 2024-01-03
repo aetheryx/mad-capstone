@@ -44,6 +44,7 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
   val targetURL = mutableStateOf<String?>(null)
 
   val conversationsVM by lazy { ConversationsViewModel(application) }
+  val messagesVM by lazy { conversationsVM.messagesVM }
   val callVM by lazy { CallViewModel(application) }
 
   val websocket = ChatstoneWebsocket()
@@ -133,7 +134,7 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
     websocket.websocketEvents.collect { event ->
       when (event) {
         is ServerEvent.MessageCreateEvent ->
-          conversationsVM.addConversationMessage(event.data)
+          messagesVM.addConversationMessage(event.data)
 
         is ServerEvent.ConversationCreateEvent ->
           conversationsVM.addConversation(event.data)

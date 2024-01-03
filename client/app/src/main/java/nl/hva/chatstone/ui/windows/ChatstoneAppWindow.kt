@@ -75,7 +75,7 @@ fun ChatstoneAppWindow(sessionVM: SessionViewModel) {
         }
       )
     ) { entry ->
-      val conversations by conversationsVM.conversations.observeAsState(emptyList())
+      val conversations = conversationsVM.conversations
       val id = entry.arguments?.getInt("id")
       val conversation = conversations.find { it.conversation.id == id }
 

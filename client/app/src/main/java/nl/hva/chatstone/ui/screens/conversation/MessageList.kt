@@ -38,7 +38,7 @@ fun MessageList(
   conversation: Conversation,
   modifier: Modifier,
 ) {
-  val messages = conversationsVM.conversationMessages[conversation.id]!!
+  val messages = conversationsVM.messagesVM.messages[conversation.id]!!
   val state = remember { LazyListState() }
 
   LaunchedEffect(messages.size) {

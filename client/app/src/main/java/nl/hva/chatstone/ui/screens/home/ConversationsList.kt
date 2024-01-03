@@ -39,7 +39,7 @@ fun ConversationsList(
   conversationsVM: ConversationsViewModel,
   modifier: Modifier
 ) {
-  val conversations by conversationsVM.conversations.observeAsState(emptyList())
+  val conversations = conversationsVM.conversations
 
   Column(
     modifier = modifier
