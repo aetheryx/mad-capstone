@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import nl.hva.chatstone.activities.MainActivity
+import nl.hva.chatstone.activities.OngoingCallActivity
 import nl.hva.chatstone.service.ChatstoneService
 import nl.hva.chatstone.viewmodel.SessionViewModel
 import nl.hva.chatstone.webrtc.SignalingClient
@@ -12,6 +13,7 @@ import nl.hva.chatstone.webrtc.SignalingClient
 class ChatstoneApplication : Application(), Application.ActivityLifecycleCallbacks {
   var activityIsOpen = false
   var mainActivity: MainActivity? = null
+  var callActivity: OngoingCallActivity? = null
   val sessionVM by lazy { SessionViewModel(this) }
   val signalingClient by lazy { SignalingClient(this) }
 
@@ -24,6 +26,8 @@ class ChatstoneApplication : Application(), Application.ActivityLifecycleCallbac
   }
 
   override fun onActivityStarted(activity: Activity) {
+    if (activity is OngoingCallActivity) callActivity = activity
+
     if (activity !is MainActivity) return
     activityIsOpen = true
     mainActivity = activity

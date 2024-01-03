@@ -1,7 +1,6 @@
 package nl.hva.chatstone.viewmodel
 
 import android.content.Intent
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +15,7 @@ import nl.hva.chatstone.api.model.WebRTCPayload
 import nl.hva.chatstone.api.model.input.IncomingCallOffer
 import nl.hva.chatstone.api.model.output.Conversation
 import nl.hva.chatstone.api.model.output.OutgoingCallOffer
+import java.time.Instant
 
 class CallViewModel(
   private val application: ChatstoneApplication,
@@ -27,40 +27,92 @@ class CallViewModel(
   val callState = MutableLiveData<CallState>(CallState.None)
 
   fun call(conversation: Conversation) {
-    val offer = IncomingCallOffer(conversation.otherParticipant.id, conversation.id)
+    val callID = Instant.now().epochSecond.toInt()
+    val offer = IncomingCallOffer(
+      calleeID = conversation.otherParticipant.id,
+      conversationID = conversation.id,
+      callID = callID
+    )
     val event = ClientEvent.CallOfferEvent(offer)
     sessionVM.websocket.sendMessage(event)
 
-    callState.value = CallState.Ringing.Outgoing(conversation.id)
+    callState.value = CallState.Ringing.Outgoing(
+      conversationID = conversation.id,
+      declined = false,
+      callID = callID
+    )
 
     val intent = Intent(application, OngoingCallActivity::class.java)
     application.mainActivity!!.startActivity(intent)
   }
 
-  fun onCallOffer(callOffer: OutgoingCallOffer) {
-    callState.postValue(CallState.Ringing.Incoming(callOffer.conversationID))
+  fun hangUpCall() {
+    val callID = when (val callState = callState.value) {
+      is CallState.Connected -> callState.callID
+      is CallState.Ringing.Outgoing -> callState.callID
+      else -> return
+    }
+
+    val event = ClientEvent.CallHangUpEvent(callID)
+    sessionVM.websocket.sendMessage(event)
+
+    application.callActivity?.finish()
+    callState.postValue(CallState.None)
   }
 
-  fun onCallResponse(data: CallResponse) {
-    scope.launch {
-      delay(1000)
-      callState.postValue(CallState.Connected)
+  fun onCallOffer(callOffer: OutgoingCallOffer) {
+    val state = CallState.Ringing.Incoming(
+      conversationID = callOffer.conversationID,
+      callID = callOffer.callID
+    )
+
+    callState.postValue(state)
+  }
+
+  fun onCallHangUp() {
+  }
+
+  fun onCallResponse(data: CallResponse) = scope.launch {
+    delay(1000)
+
+    if (data.accepted) {
+      callState.postValue(CallState.Connected(data.callID))
+    } else {
+      val state = callState.value as CallState.Ringing.Outgoing
+      callState.postValue(state.copy(declined = true))
     }
   }
 
   fun acceptCall() {
     val state = callState.value
-    Log.v("CallViewModel", "accepting $state")
+    val callID = when (state) {
+      is CallState.Ringing.Incoming -> state.callID
+      else -> return
+    }
+
+    sendCallResponse(true, CallState.Connected(callID))
+  }
+
+  fun declineCall() {
+    sendCallResponse(false, CallState.None)
+  }
+
+  private fun sendCallResponse(accepted: Boolean, newCallState: CallState) {
+    val state = callState.value
     if (state !is CallState.Ringing.Incoming) return
 
     val conversation = conversationsVM.getConversation(state.conversationID) ?: return
     val callerID = conversation.otherParticipant.id
 
-    val response = CallResponse(callerID, accepted = true)
+    val response = CallResponse(
+      callerID = callerID,
+      accepted = accepted,
+      callID = state.callID
+    )
     val event = ClientEvent.CallResponseEvent(response)
     sessionVM.websocket.sendMessage(event)
 
-    callState.value = CallState.Connected
+    callState.value = newCallState
   }
 
   fun onWebRTCPayload(data: WebRTCPayload) {

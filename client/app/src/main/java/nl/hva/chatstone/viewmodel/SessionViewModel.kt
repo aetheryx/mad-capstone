@@ -145,6 +145,9 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
         is ServerEvent.CallResponseEvent ->
           callVM.onCallResponse(event.data)
 
+        is ServerEvent.CallHangUpEvent ->
+          callVM.onCallHangUp()
+
         is ServerEvent.WebRTCPayloadEvent ->
           callVM.onWebRTCPayload(event.data)
 

@@ -8,20 +8,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import nl.hva.chatstone.ChatstoneApplication
 import nl.hva.chatstone.R
-import nl.hva.chatstone.activities.IncomingCallActivity
+import nl.hva.chatstone.activities.DeclineCallActivity
 import nl.hva.chatstone.activities.MainActivity
 import nl.hva.chatstone.activities.OngoingCallActivity
 import nl.hva.chatstone.activities.ToURLActivity
 import nl.hva.chatstone.api.ServerEvent
 import nl.hva.chatstone.api.model.output.ConversationMessage
 import nl.hva.chatstone.api.model.output.OutgoingCallOffer
-import java.time.Instant
 
 enum class NotificationChannelID {
   Message,
@@ -52,6 +50,7 @@ class ChatstoneEventHandler(
     when (event) {
       is ServerEvent.MessageCreateEvent -> handleMessageCreate(event.data)
       is ServerEvent.CallOfferEvent -> handleCallOfferEvent(event.data)
+      is ServerEvent.CallHangUpEvent -> handleCallHangupEvent(event.data)
       else -> {}
     }
   }
@@ -104,8 +103,7 @@ class ChatstoneEventHandler(
 
   private suspend fun handleCallOfferEvent(callOffer: OutgoingCallOffer) {
     sessionVM.callVM.onCallOffer(callOffer)
-
-    val id = Instant.now().epochSecond.toInt()
+    val id = callOffer.callID
 
     val channelID = NotificationChannelID.Call.toString()
     val channel = NotificationChannel(channelID, channelID, NotificationManager.IMPORTANCE_HIGH)
@@ -122,8 +120,11 @@ class ChatstoneEventHandler(
         PendingIntent.getActivity(ctx, id, it, PendingIntent.FLAG_IMMUTABLE)
       }
 
-    val declineIntent = Intent(application, IncomingCallActivity::class.java) // todo: decline call activity
-      .let { PendingIntent.getActivity(ctx, 0, it, PendingIntent.FLAG_IMMUTABLE) }
+    val declineIntent = Intent(application, DeclineCallActivity::class.java) // todo: decline call activity
+      .let {
+        it.putExtra("notification_id", id)
+        PendingIntent.getActivity(ctx, id, it, PendingIntent.FLAG_IMMUTABLE)
+      }
 
     val notification = Notification.Builder(application, channelID)
       .setSmallIcon(R.drawable.hva)
@@ -133,5 +134,9 @@ class ChatstoneEventHandler(
       .build()
 
     notificationManager.notify(id, notification)
+  }
+
+  private fun handleCallHangupEvent(callID: Int) {
+    notificationManager.cancel(callID)
   }
 }
