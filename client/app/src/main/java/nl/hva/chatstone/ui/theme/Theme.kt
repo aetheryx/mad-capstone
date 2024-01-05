@@ -89,24 +89,18 @@ val ColorScheme.surfaceContainer: Color
 
 @Composable
 fun ChatstoneTheme(
-  darkTheme: Boolean = isSystemInDarkTheme(),
-// Dynamic color is available on Android 12+
-  dynamicColor: Boolean = true, content: @Composable() () -> Unit
+  statusBarColor: (ColorScheme) -> Color,
+  content: @Composable() () -> Unit
 ) {
-  val colorScheme = when {
-    dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-      val context = LocalContext.current
-      if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-    }
+  val context = LocalContext.current
+  val darkTheme = isSystemInDarkTheme()
+  val colorScheme = if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
 
-    darkTheme -> DarkColorScheme
-    else -> LightColorScheme
-  }
   val view = LocalView.current
   if (!view.isInEditMode) {
     SideEffect {
       val window = (view.context as Activity).window
-      window.statusBarColor = colorScheme.surfaceContainer.toArgb()
+      window.statusBarColor = statusBarColor(colorScheme).toArgb()
       WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
     }
   }

@@ -24,7 +24,7 @@ fun VideoCallControls(
   onCallAction: (CallAction) -> Unit
 ) {
   LazyRow(
-    modifier = modifier.padding(bottom = 12.dp),
+    modifier = modifier.padding(vertical = 16.dp),
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.SpaceEvenly
   ) {

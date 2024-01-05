@@ -1,11 +1,15 @@
 package nl.hva.chatstone.ui.screens.callscreen
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -19,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -42,7 +47,7 @@ fun VideoCallScreen(
   }
 
   Box(
-    modifier = Modifier.fillMaxSize()
+    modifier = Modifier.fillMaxSize().statusBarsPadding()
   ) {
     var parentSize: IntSize by remember { mutableStateOf(IntSize(0, 0)) }
 
@@ -80,7 +85,8 @@ fun VideoCallScreen(
     VideoCallControls(
       modifier = Modifier
         .fillMaxWidth()
-        .align(Alignment.BottomCenter),
+        .align(Alignment.BottomCenter)
+        .navigationBarsPadding(),
       callMediaState = callMediaState,
       onCallAction = {
         when (it) {
