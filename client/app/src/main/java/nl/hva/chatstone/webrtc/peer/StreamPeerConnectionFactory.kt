@@ -2,6 +2,7 @@ package nl.hva.chatstone.webrtc.peer
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import nl.hva.chatstone.BuildConfig
 import org.webrtc.AudioSource
@@ -22,10 +23,10 @@ import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
 import org.webrtc.audio.JavaAudioDeviceModule
 
-class StreamPeerConnectionFactory constructor(
+class StreamPeerConnectionFactory (
   private val context: Context
 ) {
-
+  private val TAG = "StreamPeerConnectionFactory"
   val eglBaseContext: EglBase.Context by lazy {
     EglBase.create().eglBaseContext
   }
@@ -76,27 +77,11 @@ class StreamPeerConnectionFactory constructor(
    * the hood.
    */
   private val factory by lazy {
+    Log.v(TAG, "initializing factory")
     PeerConnectionFactory.initialize(
       PeerConnectionFactory.InitializationOptions.builder(context)
         .setInjectableLogger({ message, severity, label ->
-          when (severity) {
-            Logging.Severity.LS_VERBOSE -> {
-//              webRtcLogger.v { "[onLogMessage] label: $label, message: $message" }
-            }
-            Logging.Severity.LS_INFO -> {
-//              webRtcLogger.i { "[onLogMessage] label: $label, message: $message" }
-            }
-            Logging.Severity.LS_WARNING -> {
-//              webRtcLogger.w { "[onLogMessage] label: $label, message: $message" }
-            }
-            Logging.Severity.LS_ERROR -> {
-//              webRtcLogger.e { "[onLogMessage] label: $label, message: $message" }
-            }
-            Logging.Severity.LS_NONE -> {
-//              webRtcLogger.d { "[onLogMessage] label: $label, message: $message" }
-            }
-            else -> {}
-          }
+          Log.v(TAG, "$message, $severity, $label")
         }, Logging.Severity.LS_VERBOSE)
         .createInitializationOptions()
     )
@@ -107,8 +92,8 @@ class StreamPeerConnectionFactory constructor(
       .setAudioDeviceModule(
         JavaAudioDeviceModule
           .builder(context)
-          .setUseHardwareAcousticEchoCanceler(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-          .setUseHardwareNoiseSuppressor(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+          .setUseHardwareAcousticEchoCanceler(true)
+          .setUseHardwareNoiseSuppressor(true)
           .setAudioRecordErrorCallback(object :
             JavaAudioDeviceModule.AudioRecordErrorCallback {
             override fun onWebRtcAudioRecordInitError(p0: String?) {
