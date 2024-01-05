@@ -9,6 +9,7 @@ import android.media.AudioManager
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.core.content.getSystemService
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -44,10 +45,8 @@ class WebRtcSessionManager(
 ) {
   private val sessionManagerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-  val localVideoTrackFlow = MutableSharedFlow<VideoTrack>()
-
-  // used to send remote video track to the sender
-  val remoteVideoTrackFlow = MutableSharedFlow<VideoTrack>()
+  val localVideoTrackData = MutableLiveData<VideoTrack>()
+  val remoteVideoTrackData = MutableLiveData<VideoTrack>()
 
   // declaring video constraints and setting OfferToReceiveVideo to true
   // this step is mandatory to create valid offer and answer
@@ -142,7 +141,7 @@ class WebRtcSessionManager(
         if (track.kind() == MediaStreamTrack.VIDEO_TRACK_KIND) {
           val videoTrack = track as VideoTrack
           sessionManagerScope.launch {
-            remoteVideoTrackFlow.emit(videoTrack)
+            remoteVideoTrackData.postValue(videoTrack)
           }
         }
       }
@@ -169,7 +168,7 @@ class WebRtcSessionManager(
     peerConnection.connection.addTrack(localAudioTrack)
     sessionManagerScope.launch {
       // sending local video track to show local video from start
-      localVideoTrackFlow.emit(localVideoTrack)
+      localVideoTrackData.postValue(localVideoTrack)
 
       if (offer != null) {
         sendAnswer()
@@ -197,13 +196,6 @@ class WebRtcSessionManager(
 
   fun disconnect() {
     // dispose audio & video tracks.
-    remoteVideoTrackFlow.replayCache.forEach { videoTrack ->
-      videoTrack.dispose()
-    }
-    localVideoTrackFlow.replayCache.forEach { videoTrack ->
-      videoTrack.dispose()
-    }
-
     localAudioTrack.dispose()
     localVideoTrack.dispose()
     peerConnection.connection.dispose()
