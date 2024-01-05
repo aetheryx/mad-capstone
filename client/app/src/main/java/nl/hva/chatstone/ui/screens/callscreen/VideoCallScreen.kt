@@ -1,5 +1,6 @@
 package nl.hva.chatstone.ui.screens.callscreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,7 +31,7 @@ fun VideoCallScreen(
   val callVM = sessionVM.callVM
   val sessionManager = LocalWebRtcSessionManager.current
 
-  LaunchedEffect(key1 = Unit) {
+  LaunchedEffect(Unit) {
     sessionManager.onSessionScreenReady()
   }
 
@@ -38,30 +40,28 @@ fun VideoCallScreen(
   ) {
     var parentSize: IntSize by remember { mutableStateOf(IntSize(0, 0)) }
 
-    val remoteVideoTrackState by sessionManager.remoteVideoTrackFlow.collectAsState(null)
-    val remoteVideoTrack = remoteVideoTrackState
-
-    val localVideoTrackState by sessionManager.localVideoTrackFlow.collectAsState(null)
-    val localVideoTrack = localVideoTrackState
+    val remoteVideoTrack by sessionManager.remoteVideoTrackData.observeAsState()
+    val localVideoTrack by sessionManager.localVideoTrackData.observeAsState()
 
     var callMediaState by remember { mutableStateOf(CallMediaState()) }
 
     if (remoteVideoTrack != null) {
       VideoRenderer(
-        videoTrack = remoteVideoTrack,
+        videoTrack = remoteVideoTrack!!,
         modifier = Modifier
           .fillMaxSize()
           .onSizeChanged { parentSize = it }
       )
     }
 
+    Log.v("VideoCallScreen", "$localVideoTrack ${callMediaState.isCameraEnabled}")
     if (localVideoTrack != null && callMediaState.isCameraEnabled) {
       FloatingVideoRenderer(
         modifier = Modifier
           .size(width = 150.dp, height = 210.dp)
           .clip(RoundedCornerShape(16.dp))
           .align(Alignment.TopEnd),
-        videoTrack = localVideoTrack,
+        videoTrack = localVideoTrack!!,
         parentBounds = parentSize,
         paddingValues = PaddingValues(0.dp)
       )
