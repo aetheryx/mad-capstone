@@ -32,12 +32,12 @@ class OngoingCallActivity : CallActivity() {
 
     setContent {
       ChatstoneTheme {
-          Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.surface,
-          ) {
-            OngoingCallWindow(sessionVM)
-          }
+        Surface(
+          modifier = Modifier.fillMaxSize(),
+          color = MaterialTheme.colorScheme.surface,
+        ) {
+          OngoingCallWindow(sessionVM)
+        }
       }
     }
   }
