@@ -16,13 +16,8 @@ import nl.hva.chatstone.viewmodel.SessionViewModel
 
 @Composable
 fun OngoingCallWindow(sessionVM: SessionViewModel) {
-  Scaffold(
-    modifier = Modifier.safeDrawingPadding().fillMaxSize()
-  ) {
-    val modifier = Modifier.fillMaxSize().padding(it)
-    Column(modifier) {
-      OngoingCallWindowContent(sessionVM)
-    }
+  Column(Modifier.fillMaxSize()) {
+    OngoingCallWindowContent(sessionVM)
   }
 }
 

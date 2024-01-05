@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,8 +35,9 @@ fun RingingCallScreen(
 
   Column(
     modifier = Modifier
-      .fillMaxSize()
-      .padding(16.dp),
+      .safeDrawingPadding()
+      .padding(16.dp, 40.dp)
+      .fillMaxSize(),
     verticalArrangement = Arrangement.SpaceBetween
   ) {
     CallParticipant(conversation.otherParticipant, ringing)

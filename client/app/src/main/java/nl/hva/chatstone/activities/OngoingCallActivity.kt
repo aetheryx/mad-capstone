@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import nl.hva.chatstone.ui.theme.ChatstoneTheme
+import nl.hva.chatstone.ui.theme.surfaceContainer
 import nl.hva.chatstone.ui.windows.OngoingCallWindow
 
 private val permissions = arrayOf(
@@ -20,8 +21,8 @@ private val permissions = arrayOf(
 
 class OngoingCallActivity : CallActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
     enableEdgeToEdge()
+    super.onCreate(savedInstanceState)
 
     // request permissions
     requestPermissions(permissions, 0)
@@ -31,7 +32,9 @@ class OngoingCallActivity : CallActivity() {
     sessionVM.callVM.acceptCall()
 
     setContent {
-      ChatstoneTheme {
+      ChatstoneTheme(
+        statusBarColor = { it.surface }
+      ) {
         Surface(
           modifier = Modifier.fillMaxSize(),
           color = MaterialTheme.colorScheme.surface,

@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import nl.hva.chatstone.ChatstoneApplication
 import nl.hva.chatstone.ui.theme.ChatstoneTheme
+import nl.hva.chatstone.ui.theme.surfaceContainer
 import nl.hva.chatstone.ui.windows.ChatstoneAppWindow
 import nl.hva.chatstone.viewmodel.SessionState
 
@@ -54,7 +55,9 @@ class MainActivity : ComponentActivity() {
 
     // set app content
     setContent {
-      ChatstoneTheme {
+      ChatstoneTheme(
+        statusBarColor = { it.surfaceContainer }
+      ) {
         Surface(
           modifier = Modifier.fillMaxSize(),
           color = MaterialTheme.colorScheme.surface,
