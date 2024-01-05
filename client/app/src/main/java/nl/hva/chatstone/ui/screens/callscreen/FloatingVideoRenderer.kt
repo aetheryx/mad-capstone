@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import nl.hva.chatstone.webrtc.WebRtcSessionManager
 import org.webrtc.VideoTrack
 
 /**
@@ -36,6 +37,7 @@ import org.webrtc.VideoTrack
  */
 @Composable
 fun FloatingVideoRenderer(
+  sessionManager: WebRtcSessionManager,
   videoTrack: VideoTrack,
   parentBounds: IntSize,
   paddingValues: PaddingValues,
@@ -98,10 +100,11 @@ fun FloatingVideoRenderer(
     shape = RoundedCornerShape(16.dp)
   ) {
     VideoRenderer(
+      sessionManager,
       modifier = Modifier
         .fillMaxSize()
         .clip(RoundedCornerShape(16.dp)),
-      videoTrack = videoTrack
+      videoTrack = videoTrack,
     )
   }
 }

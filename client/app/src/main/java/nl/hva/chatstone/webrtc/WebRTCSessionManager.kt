@@ -6,19 +6,21 @@ import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CameraMetadata
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.staticCompositionLocalOf
+import android.os.Handler
+import android.os.HandlerThread
+import android.os.Process
+import android.util.Log
 import androidx.core.content.getSystemService
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.launch
+import nl.hva.chatstone.ChatstoneApplication
 import nl.hva.chatstone.webrtc.audio.AudioSwitchHandler
 import nl.hva.chatstone.webrtc.peer.StreamPeerConnection
 import nl.hva.chatstone.webrtc.peer.StreamPeerConnectionFactory
 import nl.hva.chatstone.webrtc.peer.StreamPeerType
+import nl.hva.chatstone.webrtc.utils.stringify
 import org.webrtc.AudioTrack
 import org.webrtc.Camera2Capturer
 import org.webrtc.Camera2Enumerator
@@ -35,15 +37,22 @@ import java.util.UUID
 
 private const val ICE_SEPARATOR = '$'
 
-val LocalWebRtcSessionManager: ProvidableCompositionLocal<WebRtcSessionManager> =
-  staticCompositionLocalOf { error("WebRtcSessionManager was not initialized!") }
-
 class WebRtcSessionManager(
   private val context: Context,
   val signalingClient: SignalingClient,
   val peerConnectionFactory: StreamPeerConnectionFactory
 ) {
-  private val sessionManagerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+  private val TAG = "WebRTCSessionManager"
+
+  private val handlerThread by lazy {
+    val handlerThread = HandlerThread("webrtc_t", Process.THREAD_PRIORITY_BACKGROUND)
+    handlerThread.start()
+    handlerThread
+  }
+  private val sessionManagerScope by lazy {
+    val handler = Handler(handlerThread.looper)
+    CoroutineScope(handler.asCoroutineDispatcher())
+  }
 
   val localVideoTrackData = MutableLiveData<VideoTrack>()
   val remoteVideoTrackData = MutableLiveData<VideoTrack>()
@@ -137,8 +146,10 @@ class WebRtcSessionManager(
         )
       },
       onVideoTrack = { rtpTransceiver ->
+        Log.v(TAG, "ontrack")
         val track = rtpTransceiver?.receiver?.track() ?: return@makePeerConnection
         if (track.kind() == MediaStreamTrack.VIDEO_TRACK_KIND) {
+          Log.v(TAG, "ontrack inner")
           val videoTrack = track as VideoTrack
           sessionManagerScope.launch {
             remoteVideoTrackData.postValue(videoTrack)
@@ -150,6 +161,7 @@ class WebRtcSessionManager(
 
   init {
     sessionManagerScope.launch {
+      Log.v(TAG, "init")
       signalingClient.signalingCommandFlow
         .collect { commandToValue ->
           when (commandToValue.first) {
@@ -207,6 +219,12 @@ class WebRtcSessionManager(
 
     // dispose signaling clients and socket.
     signalingClient.dispose()
+
+    // kill the handler thread
+    handlerThread.quit()
+
+    // delete the reference to the current instance
+    (context as? ChatstoneApplication)?.resetWebRTCManager()
   }
 
   private suspend fun sendOffer() {
@@ -215,7 +233,7 @@ class WebRtcSessionManager(
     result.onSuccess {
       signalingClient.sendCommand(SignalingCommand.OFFER, offer.description)
     }
-//    logger.d { "[SDP] send offer: ${offer.stringify()}" }
+    Log.v(TAG, "[SDP] send offer: ${offer.stringify()}")
   }
 
   private suspend fun sendAnswer() {
@@ -227,16 +245,16 @@ class WebRtcSessionManager(
     result.onSuccess {
       signalingClient.sendCommand(SignalingCommand.ANSWER, answer.description)
     }
-//    logger.d { "[SDP] send answer: ${answer.stringify()}" }
+    Log.v(TAG, "[SDP] send answer: ${answer.stringify()}")
   }
 
   private fun handleOffer(sdp: String) {
-//    logger.d { "[SDP] handle offer: $sdp" }
+    Log.v(TAG, "[SDP] handle offer: $sdp")
     offer = sdp
   }
 
   private suspend fun handleAnswer(sdp: String) {
-//    logger.d { "[SDP] handle answer: $sdp" }
+    Log.d(TAG, "[SDP] handle answer: $sdp")
     peerConnection.setRemoteDescription(
       SessionDescription(SessionDescription.Type.ANSWER, sdp)
     )

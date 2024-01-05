@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,17 +23,22 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import nl.hva.chatstone.viewmodel.SessionViewModel
-import nl.hva.chatstone.webrtc.LocalWebRtcSessionManager
 
 @Composable
 fun VideoCallScreen(
   sessionVM: SessionViewModel
 ) {
   val callVM = sessionVM.callVM
-  val sessionManager = LocalWebRtcSessionManager.current
+  val sessionManager = sessionVM.application.webRtcSessionManager
 
-  LaunchedEffect(Unit) {
+  DisposableEffect(Unit) {
+    Log.v("VideoCallScreen", "onready")
     sessionManager.onSessionScreenReady()
+
+    onDispose {
+      Log.v("VideoCallScreen", "onreadyondispose")
+      sessionVM.application.resetManager()
+    }
   }
 
   Box(
@@ -43,10 +49,13 @@ fun VideoCallScreen(
     val remoteVideoTrack by sessionManager.remoteVideoTrackData.observeAsState()
     val localVideoTrack by sessionManager.localVideoTrackData.observeAsState()
 
+    Log.v("VideoCallScreen", "$remoteVideoTrack $localVideoTrack")
+
     var callMediaState by remember { mutableStateOf(CallMediaState()) }
 
     if (remoteVideoTrack != null) {
       VideoRenderer(
+        sessionManager,
         videoTrack = remoteVideoTrack!!,
         modifier = Modifier
           .fillMaxSize()
@@ -57,6 +66,7 @@ fun VideoCallScreen(
     Log.v("VideoCallScreen", "$localVideoTrack ${callMediaState.isCameraEnabled}")
     if (localVideoTrack != null && callMediaState.isCameraEnabled) {
       FloatingVideoRenderer(
+        sessionManager,
         modifier = Modifier
           .size(width = 150.dp, height = 210.dp)
           .clip(RoundedCornerShape(16.dp))
@@ -86,9 +96,7 @@ fun VideoCallScreen(
           }
           CallAction.FlipCamera -> sessionManager.flipCamera()
           CallAction.LeaveCall -> {
-            sessionManager.disconnect()
             callVM.hangUpCall()
-            callVM.exitActivity()
           }
         }
       }

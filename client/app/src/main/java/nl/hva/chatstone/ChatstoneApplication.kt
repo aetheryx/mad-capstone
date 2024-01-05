@@ -18,12 +18,30 @@ class ChatstoneApplication : Application(), Application.ActivityLifecycleCallbac
   var callActivity: OngoingCallActivity? = null
   val sessionVM by lazy { SessionViewModel(this) }
   val signalingClient by lazy { SignalingClient(this) }
-  val webRtcSessionManager by lazy {
-    WebRtcSessionManager(
-      context = this,
-      signalingClient = signalingClient,
-      StreamPeerConnectionFactory(this)
-    )
+  val connectionFactory by lazy { StreamPeerConnectionFactory(this) }
+
+  private var _webRtcSessionManager: WebRtcSessionManager? = null
+  val webRtcSessionManager: WebRtcSessionManager
+    get() {
+      synchronized(this) {
+        if (_webRtcSessionManager != null) {
+          return _webRtcSessionManager!!
+        }
+
+        _webRtcSessionManager = WebRtcSessionManager(
+          this,
+          signalingClient,
+          connectionFactory,
+        )
+        return _webRtcSessionManager!!
+      }
+    }
+
+  fun resetWebRTCManager() {
+    synchronized(this) {
+      _webRtcSessionManager?.disconnect()
+      _webRtcSessionManager = null
+    }
   }
 
   override fun onCreate() {

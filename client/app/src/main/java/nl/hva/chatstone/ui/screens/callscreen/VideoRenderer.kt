@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import nl.hva.chatstone.webrtc.LocalWebRtcSessionManager
+import nl.hva.chatstone.webrtc.WebRtcSessionManager
 import org.webrtc.RendererCommon
 import org.webrtc.VideoTrack
 
@@ -21,6 +21,7 @@ import org.webrtc.VideoTrack
  */
 @Composable
 fun VideoRenderer(
+  sessionManager: WebRtcSessionManager,
   videoTrack: VideoTrack,
   modifier: Modifier = Modifier
 ) {
@@ -33,7 +34,6 @@ fun VideoRenderer(
     }
   }
 
-  val sessionManager = LocalWebRtcSessionManager.current
   AndroidView(
     factory = { context ->
       VideoTextureViewRenderer(context).apply {
