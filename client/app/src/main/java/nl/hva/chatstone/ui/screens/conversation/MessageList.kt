@@ -1,16 +1,23 @@
 package nl.hva.chatstone.ui.screens.conversation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FixedThreshold
+import androidx.compose.material.SwipeableDefaults
+import androidx.compose.material.rememberSwipeableState
+import androidx.compose.material.swipeable
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,12 +32,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import nl.hva.chatstone.api.model.output.Conversation
 import nl.hva.chatstone.api.model.output.ConversationMessage
 import nl.hva.chatstone.viewmodel.ConversationsViewModel
 import java.time.format.DateTimeFormatter
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 @Composable
 fun MessageList(
@@ -69,6 +78,7 @@ fun MessageList(
 
 val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MessageComponent(
   conversationsVM: ConversationsViewModel,
@@ -76,6 +86,7 @@ private fun MessageComponent(
   modifier: Modifier
 ) {
   val isAuthor = message.authorID == conversationsVM.me.id
+  val messagesVM = conversationsVM.messagesVM
 
   val arrangement = Arrangement.let { if (isAuthor) it.End else it.Start }
   val color = MaterialTheme.colorScheme.let {
@@ -87,9 +98,35 @@ private fun MessageComponent(
 
   val outerDp = LocalDensity.current.run { outerPadding.toDp() }
 
+  val swipeModifier = if (!isAuthor) {
+    val sizePx = LocalDensity.current.run { 64.dp.toPx() }
+    val anchors = mapOf(0f to 0, sizePx to 1)
+    val swipeableState = rememberSwipeableState(
+      initialValue = 0,
+      confirmStateChange = { state ->
+        if (state == 1) {
+          messagesVM.messageReply.value = message
+        }
+        false
+      }
+    )
+
+    Modifier
+      .swipeable(
+        state =  swipeableState,
+        anchors = anchors,
+        thresholds = { _, _ -> FixedThreshold(64.dp) },
+        resistance = SwipeableDefaults.resistanceConfig(anchors.keys, 0f, 7.5f),
+        orientation = Orientation.Horizontal
+      )
+      .offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) }
+  } else {
+    Modifier
+  }
+
   Row(
     horizontalArrangement = arrangement,
-    modifier = modifier.fillMaxWidth(),
+    modifier = modifier.fillMaxWidth().then(swipeModifier),
   ) {
     Row(
       modifier = Modifier.fillMaxWidth(0.8f),

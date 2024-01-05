@@ -1,6 +1,7 @@
 package nl.hva.chatstone.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -21,6 +22,7 @@ class MessagesViewModel(
   private val chatstoneApi get() = sessionVM.chatstoneApi
 
   val messages = HashMap<Int, SnapshotStateList<ConversationMessage>>()
+  val messageReply = mutableStateOf<ConversationMessage?>(null)
 
   fun addConversationMessage(message: ConversationMessage) {
     val messages = messages[message.conversationID] ?: return
