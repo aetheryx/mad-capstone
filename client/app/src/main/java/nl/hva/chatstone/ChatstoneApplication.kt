@@ -37,11 +37,8 @@ class ChatstoneApplication : Application(), Application.ActivityLifecycleCallbac
       }
     }
 
-  fun resetWebRTCManager() {
-    synchronized(this) {
-      _webRtcSessionManager?.disconnect()
-      _webRtcSessionManager = null
-    }
+  fun deleteWebRTCManager() {
+    _webRtcSessionManager = null
   }
 
   override fun onCreate() {

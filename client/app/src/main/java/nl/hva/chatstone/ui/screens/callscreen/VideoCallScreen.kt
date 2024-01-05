@@ -36,8 +36,8 @@ fun VideoCallScreen(
     sessionManager.onSessionScreenReady()
 
     onDispose {
-      Log.v("VideoCallScreen", "onreadyondispose")
-      sessionVM.application.resetManager()
+      Log.v("VideoCallScreen", "ondispose")
+      sessionManager.disconnect()
     }
   }
 

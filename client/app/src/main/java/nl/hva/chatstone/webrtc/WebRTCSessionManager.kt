@@ -224,7 +224,7 @@ class WebRtcSessionManager(
     handlerThread.quit()
 
     // delete the reference to the current instance
-    (context as? ChatstoneApplication)?.resetWebRTCManager()
+    (context as? ChatstoneApplication)?.deleteWebRTCManager()
   }
 
   private suspend fun sendOffer() {
