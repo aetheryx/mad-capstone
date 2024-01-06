@@ -107,8 +107,11 @@ private fun MessageInnerBox(
   val timestampWidth = LocalDensity.current.run { (30 + 4).dp.toPx() }
 
   val onTextLayout = { layout: TextLayoutResult ->
-    if (layout.lineCount == 1 && timestampEndPadding == 0.dp) {
+    if (layout.lineCount == 1 && timestampEndPadding == 0.dp && timestampBottomPadding == 0.dp) {
       timestampEndPadding = 36.dp
+    } else if (layout.lineCount != 1 && timestampEndPadding != 0.dp) {
+      timestampBottomPadding = 16.dp
+      timestampEndPadding = 0.dp
     } else if (outerPadding.intValue == 0 && timestampEndPadding == 0.dp) {
       val deltaPx = (0 until layout.lineCount)
         .map {
