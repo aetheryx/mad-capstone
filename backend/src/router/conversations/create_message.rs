@@ -23,6 +23,10 @@ pub async fn create_message(
     author_id: ActiveValue::Set(user.id),
     conversation_id: ActiveValue::Set(conversation_id),
     content: ActiveValue::Set(input.content),
+    reply_to_id: match input.reply_to_id {
+      None => ActiveValue::NotSet,
+      Some(id) => ActiveValue::Set(Some(id))
+    },
     ..Default::default()
   })
   .exec_with_returning(&state.db)
@@ -48,4 +52,5 @@ pub async fn create_message(
 #[typeshare]
 pub struct CreateMessageInput {
   content: String,
+  reply_to_id: Option<i32>
 }

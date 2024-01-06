@@ -48,6 +48,10 @@ model ConversationMessage {
   createdAt DateTime @default(now()) @map("created_at")
   content   String
 
+  replies   ConversationMessage[] @relation(name: "message_reply")
+  replyTo   ConversationMessage?  @relation(fields: [replyToId], references: [id], name: "message_reply")
+  replyToId Int?                  @map("reply_to_id")
+
   @@index([conversationID, createdAt(sort: Desc)])
   @@map("conversation_message")
 }
