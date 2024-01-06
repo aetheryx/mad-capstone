@@ -1,5 +1,6 @@
 package nl.hva.chatstone.ui.screens.conversation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
@@ -107,7 +108,9 @@ private fun MessageComponent(
 
   var outerPadding by remember { mutableIntStateOf(0) }
   var timestampPadding by remember { mutableStateOf(0.dp) }
+  var timestampBottomPadding by remember { mutableStateOf(0.dp) }
 
+  val timestampWidth = LocalDensity.current.run { 30.dp.toPx() }
   val outerDp = LocalDensity.current.run { outerPadding.toDp() }
 
   val swipeModifier = if (!isAuthor) {
@@ -169,7 +172,8 @@ private fun MessageComponent(
             modifier = Modifier
               .align(Alignment.TopStart)
               .padding(8.dp)
-              .padding(end = timestampPadding),
+              .padding(end = timestampPadding)
+              .padding(bottom = timestampBottomPadding),
             onTextLayout = { layout ->
               if (layout.lineCount == 1 && timestampPadding == 0.dp) {
                 timestampPadding = 36.dp
@@ -184,6 +188,14 @@ private fun MessageComponent(
                   .toInt()
 
                 outerPadding = deltaPx
+              }
+
+              if (layout.lineCount != 1) {
+                val right = layout.getLineRight(layout.lineCount - 1)
+                val diff = layout.size.width - right
+                if (diff < timestampWidth) {
+                  timestampBottomPadding = 16.dp
+                }
               }
             }
           )
