@@ -14,7 +14,8 @@ data class ConversationMessage(
   @SerialName("author_id") val authorID: Int,
   @SerialName("conversation_id") val conversationID: Int,
   val content: String,
-  @SerialName("created_at") val createdAtRaw: String
+  @SerialName("created_at") val createdAtRaw: String,
+  @SerialName("reply_to_id") val replyToId: Int?,
 ) {
   val createdAt: ZonedDateTime
     get() = Instant.parse("${createdAtRaw}Z")
