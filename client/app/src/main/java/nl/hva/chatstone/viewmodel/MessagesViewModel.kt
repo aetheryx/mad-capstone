@@ -36,9 +36,14 @@ class MessagesViewModel(
 
   fun sendMessage(conversation: Conversation, content: String) {
     scope.launch {
-      val input = CreateMessageInput(content)
+      val input = CreateMessageInput(
+        content = content,
+        replyToId = messageReply.value?.id
+      )
+
       val message = chatstoneApi.createMessage(conversation.id, input)
       addConversationMessage(message)
+      messageReply.postValue(null)
     }
   }
 
