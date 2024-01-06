@@ -21,4 +21,5 @@
     <string name="click_plus">Click the \'+\' icon at the bottom of your screen to create a conversation</string>
     <string name="ringing">Ringing...</string>
     <string name="call_declined">Call declined</string>
+    <string name="you">You</string>
 </resources>
