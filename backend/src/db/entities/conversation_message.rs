@@ -14,6 +14,7 @@ pub struct Model {
   pub created_at: DateTime,
   #[sea_orm(column_type = "Text")]
   pub content: String,
+  pub reply_to_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -26,6 +27,14 @@ pub enum Relation {
     on_delete = "Cascade"
   )]
   Conversation,
+  #[sea_orm(
+    belongs_to = "Entity",
+    from = "Column::ReplyToId",
+    to = "Column::Id",
+    on_update = "Cascade",
+    on_delete = "SetNull"
+  )]
+  SelfRef,
   #[sea_orm(
     belongs_to = "super::user::Entity",
     from = "Column::AuthorId",
