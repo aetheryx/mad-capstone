@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +23,7 @@ class MessagesViewModel(
   private val chatstoneApi get() = sessionVM.chatstoneApi
 
   val messages = HashMap<Int, SnapshotStateList<ConversationMessage>>()
-  val messageReply = mutableStateOf<ConversationMessage?>(null)
+  val messageReply = MutableLiveData<ConversationMessage>()
 
   fun addConversationMessage(message: ConversationMessage) {
     val messages = messages[message.conversationID] ?: return
