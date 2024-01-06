@@ -1,6 +1,11 @@
 package nl.hva.chatstone.ui.screens.conversation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -57,62 +62,62 @@ fun MessageBar(
 @Composable
 private fun ReplyBar(conversationsVM: ConversationsViewModel) {
   val messagesVM = conversationsVM.messagesVM
+  val reply by messagesVM.messageReply.observeAsState()
   var replyText by remember { mutableStateOf("") }
 
-  val reply by messagesVM.messageReply.observeAsState()
   LaunchedEffect(reply) {
     if (reply != null) {
       replyText = reply!!.content
     }
   }
 
-  val height by animateDpAsState(
-    reply?.let { 40.dp } ?: 0.dp,
-    label = "Reply"
-  )
-
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-    modifier = Modifier
-      .fillMaxWidth()
-      .height(height)
-      .background(MaterialTheme.colorScheme.surfaceContainer)
-      .padding(horizontal = 16.dp),
+  AnimatedVisibility(
+    visible = reply != null,
+    enter = expandVertically(),
+    exit = shrinkVertically()
   ) {
-    IconButton(
-      onClick = {
-        messagesVM.messageReply.value = null
-      },
-      colors = IconButtonDefaults.filledIconButtonColors(
-        containerColor = MaterialTheme.colorScheme.inverseSurface
-      ),
-      modifier = Modifier.size(24.dp).alpha(0.6f)
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(40.dp)
+        .background(MaterialTheme.colorScheme.surfaceContainer)
+        .padding(horizontal = 16.dp),
     ) {
-      Icon(
-        Icons.Filled.Close,
-        contentDescription = "Cancel reply",
-        modifier = Modifier.size(12.dp)
-      )
-    }
+      IconButton(
+        onClick = {
+          messagesVM.messageReply.value = null
+        },
+        colors = IconButtonDefaults.filledIconButtonColors(
+          containerColor = MaterialTheme.colorScheme.inverseSurface
+        ),
+        modifier = Modifier.size(24.dp).alpha(0.6f)
+      ) {
+        Icon(
+          Icons.Filled.Close,
+          contentDescription = "Cancel reply",
+          modifier = Modifier.size(12.dp)
+        )
+      }
 
-    Row() {
-      Text(
-        "Replying to ",
-        modifier = Modifier.alignByBaseline(),
-        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-        color = MaterialTheme.colorScheme.onSurface
-      )
-      Text(
-        replyText,
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1,
-        modifier = Modifier.alignByBaseline(),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurface
-      )
+      Row() {
+        Text(
+          "Replying to ",
+          modifier = Modifier.alignByBaseline(),
+          style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+          color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+          replyText,
+          overflow = TextOverflow.Ellipsis,
+          maxLines = 1,
+          modifier = Modifier.alignByBaseline(),
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurface
+        )
+      }
     }
-
   }
 }
 
