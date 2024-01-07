@@ -36,12 +36,8 @@ import kotlin.math.roundToInt
 
 @Composable
 fun MessageReplyComposable(
-  sourceMessage: ConversationMessage,
-  conversationsVM: ConversationsViewModel
+  message: ConversationMessage
 ) {
-  val messages = conversationsVM.messagesVM.messages[sourceMessage.conversationID]!!
-  val message = messages.find { it.id == sourceMessage.replyToId!! } ?: return
-
   Row(
     modifier = Modifier
       .padding(horizontal = 8.dp)
@@ -69,11 +65,10 @@ fun MessageReplyComposable(
 
 @OptIn(ExperimentalMaterialApi::class)
 fun Modifier.buildSwipeModifier(
-  messagesVM: MessagesViewModel,
   message: ConversationMessage,
-  isAuthor: Boolean,
+  onSwipe: () -> Unit
 ): Modifier = composed {
-  if (isAuthor) {
+  if (message.isAuthor) {
     return@composed Modifier
   }
 
@@ -83,7 +78,7 @@ fun Modifier.buildSwipeModifier(
     initialValue = 0,
     confirmStateChange = { state ->
       if (state == 1) {
-        messagesVM.messageReply.value = message
+        onSwipe()
       }
 
       false

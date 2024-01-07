@@ -17,6 +17,9 @@ data class ConversationMessage(
   @SerialName("created_at") val createdAtRaw: String,
   @SerialName("reply_to_id") val replyToId: Int?,
 ) {
+  var isAuthor: Boolean = false
+  var replyTo: ConversationMessage? = null
+
   val createdAt: ZonedDateTime
     get() = Instant.parse("${createdAtRaw}Z")
       .atZone(ZoneId.systemDefault())
