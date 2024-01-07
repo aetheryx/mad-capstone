@@ -64,6 +64,11 @@ fun MessageList(
           messagesVM.messageReply.value = message
         }
       )
+
+      if (idx == messages.lastIndex) {
+        val startDate = message.createdAt.truncatedTo(ChronoUnit.DAYS)
+        DayDivider(startDate)
+      }
     }
   }
 }
