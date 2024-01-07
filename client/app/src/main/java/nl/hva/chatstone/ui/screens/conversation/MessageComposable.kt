@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import nl.hva.chatstone.api.model.output.ConversationMessage
-import nl.hva.chatstone.viewmodel.ConversationsViewModel
 import java.time.format.DateTimeFormatter
 import kotlin.math.max
 
@@ -33,29 +32,26 @@ private val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("
 
 @Composable
 fun MessageComposable(
-  conversationsVM: ConversationsViewModel,
   message: ConversationMessage,
-  modifier: Modifier
+  modifier: Modifier,
+  onReply: () -> Unit
 ) {
-  val isAuthor = message.authorID == conversationsVM.me.id
-
   Box(modifier.fillMaxWidth()) {
     val innerModifier = Modifier
       .align(
-        if (isAuthor) Alignment.TopEnd else Alignment.TopStart
+        if (message.isAuthor) Alignment.TopEnd else Alignment.TopStart
       )
       .then(
         64.dp.let {
-          if (isAuthor) Modifier.padding(start = it)
+          if (message.isAuthor) Modifier.padding(start = it)
           else Modifier.padding(end = it)
         }
       )
 
     MessageInner(
       message,
-      isAuthor,
       innerModifier,
-      conversationsVM
+      onReply
     )
   }
 }
@@ -63,31 +59,33 @@ fun MessageComposable(
 @Composable
 private fun MessageInner(
   message: ConversationMessage,
-  isAuthor: Boolean,
   modifier: Modifier,
-  conversationsVM: ConversationsViewModel
+  onReply: () -> Unit
 ) {
-  val messagesVM = conversationsVM.messagesVM
   val color = MaterialTheme.colorScheme.let {
-    if (isAuthor) it.primaryContainer else it.outlineVariant
+    if (message.isAuthor) it.primaryContainer else it.outlineVariant
   }
 
   val outerPadding = remember { mutableIntStateOf(0) }
   val outerDp = LocalDensity.current.run { outerPadding.intValue.toDp() }
+  val swipeModifier = Modifier.buildSwipeModifier(
+    message = message,
+    onSwipe = onReply
+  )
 
   Column(
     modifier = modifier
-      .then(Modifier.buildSwipeModifier(messagesVM, message, isAuthor))
+      .then(swipeModifier)
       .then(
-        if (isAuthor) Modifier.padding(start = outerDp)
+        if (message.isAuthor) Modifier.padding(start = outerDp)
         else Modifier.padding(end = outerDp)
       )
       .clip(RoundedCornerShape(8.dp))
       .background(color)
       .width(IntrinsicSize.Max),
   ) {
-    if (message.replyToId != null) {
-      MessageReplyComposable(message, conversationsVM)
+    message.replyTo?.let {
+      MessageReplyComposable(it)
     }
 
     MessageInnerBox(

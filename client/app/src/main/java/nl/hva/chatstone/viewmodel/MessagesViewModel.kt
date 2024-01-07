@@ -1,7 +1,6 @@
 package nl.hva.chatstone.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -26,6 +25,7 @@ class MessagesViewModel(
   val messageReply = MutableLiveData<ConversationMessage>()
 
   fun addConversationMessage(message: ConversationMessage) {
+    populateMessage(message)
     val messages = messages[message.conversationID] ?: return
     messages.add(0, message)
 
@@ -53,9 +53,21 @@ class MessagesViewModel(
 
     val messages = chatstoneApi.getConversationMessages(
       conversationID = conversation.id,
-      limit = 50,
+      limit = 200,
       offset = 0
     )
+
+    messages.forEach { populateMessage(it) }
     data.addAll(messages)
+  }
+
+  private fun populateMessage(message: ConversationMessage) {
+    message.isAuthor = message.authorID == conversationsVM.me.id
+
+    if (message.replyToId != null) {
+      val channelMessages = messages[message.conversationID]
+      val replyTo = channelMessages?.find { it.id == message.replyToId }
+      message.replyTo = replyTo
+    }
   }
 }

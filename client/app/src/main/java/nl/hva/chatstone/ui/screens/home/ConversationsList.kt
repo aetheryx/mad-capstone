@@ -14,8 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -155,7 +153,7 @@ val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yy")
 
 @Composable
-private fun conversationDate( date: ZonedDateTime?): String {
+private fun conversationDate(date: ZonedDateTime?): String {
   if (date == null) return stringResource(R.string.never)
 
   val today = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS)
