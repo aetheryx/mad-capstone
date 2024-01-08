@@ -3,7 +3,6 @@ package nl.hva.chatstone.api.model.output
 import android.app.Person
 import android.content.Context
 import android.graphics.drawable.Icon
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.drawable.toBitmap
 import coil.imageLoader
 import coil.request.ImageRequest
@@ -13,7 +12,7 @@ import nl.hva.chatstone.R
 import nl.hva.chatstone.api.ChatstoneApi
 
 @Serializable
-data class User (
+data class User(
   val id: Int,
   val username: String,
   val password: String,

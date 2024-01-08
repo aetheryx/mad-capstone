@@ -47,7 +47,7 @@ fun ConversationsList(
       NoConversations()
     }
 
-    LazyColumn() {
+    LazyColumn {
       items(
         items = conversations,
         key = Conversation::id

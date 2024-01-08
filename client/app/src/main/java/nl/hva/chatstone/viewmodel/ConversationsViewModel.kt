@@ -2,24 +2,20 @@ package nl.hva.chatstone.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import nl.hva.chatstone.ChatstoneApplication
-import nl.hva.chatstone.api.model.output.Conversation
-import nl.hva.chatstone.api.model.output.ConversationMessage
 import nl.hva.chatstone.api.model.input.CreateConversationInput
-import nl.hva.chatstone.api.model.input.CreateMessageInput
+import nl.hva.chatstone.api.model.output.Conversation
 
 sealed class ConversationCreateState(val id: Int?) {
-  class None: ConversationCreateState(null)
-  class Creating: ConversationCreateState(null)
-  class Created(id: Int): ConversationCreateState(id)
-  class Errored: ConversationCreateState(null)
+  class None : ConversationCreateState(null)
+  class Creating : ConversationCreateState(null)
+  class Created(id: Int) : ConversationCreateState(id)
+  class Errored : ConversationCreateState(null)
 }
 
 class ConversationsViewModel(

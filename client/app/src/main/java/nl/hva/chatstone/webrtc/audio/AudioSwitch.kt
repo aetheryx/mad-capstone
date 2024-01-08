@@ -55,13 +55,9 @@ class AudioSwitch internal constructor(
    */
   fun start(listener: AudioDeviceChangeListener) {
     audioDeviceChangeListener = listener
-    when (state) {
-      State.STOPPED -> {
-        enumerateDevices()
-        state = State.STARTED
-      }
-      else -> {
-      }
+    if (state == State.STOPPED) {
+      enumerateDevices()
+      state = State.STARTED
     }
   }
 
@@ -76,11 +72,12 @@ class AudioSwitch internal constructor(
         deactivate()
         closeListeners()
       }
+
       State.STARTED -> {
         closeListeners()
       }
-      State.STOPPED -> {
-      }
+
+      State.STOPPED -> {}
     }
   }
 
@@ -101,6 +98,7 @@ class AudioSwitch internal constructor(
         selectedDevice?.let { activate(it) }
         state = State.ACTIVATED
       }
+
       State.ACTIVATED -> selectedDevice?.let { activate(it) }
       State.STOPPED -> throw IllegalStateException()
     }
@@ -117,8 +115,8 @@ class AudioSwitch internal constructor(
         audioManager.restoreAudioState()
         state = State.STARTED
       }
-      State.STARTED, State.STOPPED -> {
-      }
+
+      State.STARTED, State.STOPPED -> {}
     }
   }
 
@@ -186,8 +184,10 @@ class AudioSwitch internal constructor(
   }
 
   private fun addAvailableAudioDevices(bluetoothHeadsetName: String?) {
-    Log.v(TAG, "[addAvailableAudioDevices] wiredHeadsetAvailable: $wiredHeadsetAvailable, " +
-      "bluetoothHeadsetName: $bluetoothHeadsetName")
+    Log.v(
+      TAG, "[addAvailableAudioDevices] wiredHeadsetAvailable: $wiredHeadsetAvailable, " +
+              "bluetoothHeadsetName: $bluetoothHeadsetName"
+    )
     mutableAudioDevices.clear()
     preferredDeviceList.forEach { audioDevice ->
       Log.v(TAG, "[addAvailableAudioDevices] audioDevice: ${audioDevice.simpleName}")
@@ -200,20 +200,28 @@ class AudioSwitch internal constructor(
            * function.
            */
         }
+
         AudioDevice.WiredHeadset::class.java -> {
-          Log.v(TAG, "[addAvailableAudioDevices] #WiredHeadset; wiredHeadsetAvailable: $wiredHeadsetAvailable")
+          Log.v(
+            TAG,
+            "[addAvailableAudioDevices] #WiredHeadset; wiredHeadsetAvailable: $wiredHeadsetAvailable"
+          )
           if (wiredHeadsetAvailable) {
             mutableAudioDevices.add(AudioDevice.WiredHeadset())
           }
         }
+
         AudioDevice.Earpiece::class.java -> {
           val hasEarpiece = audioManager.hasEarpiece()
-          Log.v(TAG, "[addAvailableAudioDevices] #Earpiece; hasEarpiece: $hasEarpiece, " +
-            "wiredHeadsetAvailable: $wiredHeadsetAvailable")
+          Log.v(
+            TAG, "[addAvailableAudioDevices] #Earpiece; hasEarpiece: $hasEarpiece, " +
+                    "wiredHeadsetAvailable: $wiredHeadsetAvailable"
+          )
           if (hasEarpiece && !wiredHeadsetAvailable) {
             mutableAudioDevices.add(AudioDevice.Earpiece())
           }
         }
+
         AudioDevice.Speakerphone::class.java -> {
           val hasSpeakerphone = audioManager.hasSpeakerphone()
           Log.v(TAG, "[addAvailableAudioDevices] #Speakerphone; hasSpeakerphone: $hasSpeakerphone")

@@ -14,7 +14,7 @@ import nl.hva.chatstone.api.model.output.ConversationMessage
 
 class MessagesViewModel(
   val application: ChatstoneApplication
-): AndroidViewModel(application) {
+) : AndroidViewModel(application) {
   private val sessionVM = application.sessionVM
   private val conversationsVM = sessionVM.conversationsVM
 

@@ -1,7 +1,6 @@
 package nl.hva.chatstone.ui.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -94,7 +93,9 @@ fun ChatstoneTheme(
 ) {
   val context = LocalContext.current
   val darkTheme = isSystemInDarkTheme()
-  val colorScheme = if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+  val colorScheme =
+    if (darkTheme) dynamicDarkColorScheme(context)
+    else dynamicLightColorScheme(context)
 
   val view = LocalView.current
   if (!view.isInEditMode) {

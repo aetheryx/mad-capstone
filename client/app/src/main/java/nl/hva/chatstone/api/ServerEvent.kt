@@ -20,19 +20,19 @@ sealed class ServerEvent {
   data class ConversationCreateEvent(val data: Conversation) : ServerEvent()
 
   @Serializable
-  data class ConversationDeleteEvent(val data: Int): ServerEvent()
+  data class ConversationDeleteEvent(val data: Int) : ServerEvent()
 
   @Serializable
-  data class CallOfferEvent(val data: OutgoingCallOffer): ServerEvent()
+  data class CallOfferEvent(val data: OutgoingCallOffer) : ServerEvent()
 
   @Serializable
-  data class CallResponseEvent(val data: CallResponse): ServerEvent()
+  data class CallResponseEvent(val data: CallResponse) : ServerEvent()
 
   @Serializable
-  data class CallHangUpEvent(val data: Int): ServerEvent()
+  data class CallHangUpEvent(val data: Int) : ServerEvent()
 
   @Serializable
-  data class WebRTCPayloadEvent(val data: WebRTCPayload): ServerEvent()
+  data class WebRTCPayloadEvent(val data: WebRTCPayload) : ServerEvent()
 
   companion object : JsonContentPolymorphicSerializer<ServerEvent>(ServerEvent::class) {
     override fun selectDeserializer(element: JsonElement) =

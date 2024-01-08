@@ -6,13 +6,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import nl.hva.chatstone.webrtc.utils.addRtcIceCandidate
 import nl.hva.chatstone.webrtc.utils.createValue
 import nl.hva.chatstone.webrtc.utils.setValue
-import kotlinx.coroutines.isActive
 import nl.hva.chatstone.webrtc.utils.stringify
 import org.webrtc.CandidatePairChangeEvent
 import org.webrtc.DataChannel
@@ -113,7 +113,10 @@ class StreamPeerConnection(
    * @return An empty [Result], if the operation has been successful or not.
    */
   suspend fun setRemoteDescription(sessionDescription: SessionDescription): Result<Unit> {
-    Log.v(TAG, "[setRemoteDescription] #sfu; #$typeTag; answerSdp: ${sessionDescription.stringify()}")
+    Log.v(
+      TAG,
+      "[setRemoteDescription] #sfu; #$typeTag; answerSdp: ${sessionDescription.stringify()}"
+    )
     return setValue {
       connection.setRemoteDescription(
         it,
@@ -125,7 +128,10 @@ class StreamPeerConnection(
     }.also {
       pendingIceMutex.withLock {
         pendingIceCandidates.forEach { iceCandidate ->
-          Log.v(TAG, "[setRemoteDescription] #sfu; #subscriber; pendingRtcIceCandidate: $iceCandidate")
+          Log.v(
+            TAG,
+            "[setRemoteDescription] #sfu; #subscriber; pendingRtcIceCandidate: $iceCandidate"
+          )
           connection.addRtcIceCandidate(iceCandidate)
         }
         pendingIceCandidates.clear()
@@ -158,7 +164,10 @@ class StreamPeerConnection(
    */
   suspend fun addIceCandidate(iceCandidate: IceCandidate): Result<Unit> {
     if (connection.remoteDescription == null) {
-      Log.w(TAG, "[addIceCandidate] #sfu; #$typeTag; postponed (no remoteDescription): $iceCandidate")
+      Log.w(
+        TAG,
+        "[addIceCandidate] #sfu; #$typeTag; postponed (no remoteDescription): $iceCandidate"
+      )
       pendingIceMutex.withLock {
         pendingIceCandidates.add(iceCandidate)
       }
@@ -211,7 +220,10 @@ class StreamPeerConnection(
     mediaStreams?.forEach { mediaStream ->
       Log.v(TAG, "[onAddTrack] #sfu; #$typeTag; mediaStream: $mediaStream")
       mediaStream.audioTracks?.forEach { remoteAudioTrack ->
-        Log.v(TAG, "[onAddTrack] #sfu; #$typeTag; remoteAudioTrack: ${remoteAudioTrack.stringify()}")
+        Log.v(
+          TAG,
+          "[onAddTrack] #sfu; #$typeTag; remoteAudioTrack: ${remoteAudioTrack.stringify()}"
+        )
         remoteAudioTrack.setEnabled(true)
       }
       onStreamAdded?.invoke(mediaStream)
@@ -293,7 +305,7 @@ class StreamPeerConnection(
     Log.v(TAG, "[onIceGatheringChange] #sfu; #$typeTag; newState: $newState")
   }
 
-  override fun onIceCandidatesRemoved(iceCandidates: Array<out org.webrtc.IceCandidate>?) {
+  override fun onIceCandidatesRemoved(iceCandidates: Array<out IceCandidate>?) {
     Log.v(TAG, "[onIceCandidatesRemoved] #sfu; #$typeTag; iceCandidates: $iceCandidates")
   }
 

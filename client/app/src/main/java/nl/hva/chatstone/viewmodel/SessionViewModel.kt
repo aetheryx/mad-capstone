@@ -15,14 +15,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import nl.hva.chatstone.BuildConfig
+import nl.hva.chatstone.ChatstoneApplication
 import nl.hva.chatstone.api.ChatstoneApi
+import nl.hva.chatstone.api.ChatstoneWebsocket
+import nl.hva.chatstone.api.ServerEvent
 import nl.hva.chatstone.api.model.input.LoginInput
 import nl.hva.chatstone.api.model.input.SignupInput
 import nl.hva.chatstone.api.model.output.User
-import nl.hva.chatstone.BuildConfig
-import nl.hva.chatstone.ChatstoneApplication
-import nl.hva.chatstone.api.ChatstoneWebsocket
-import nl.hva.chatstone.api.ServerEvent
 
 enum class SessionState {
   INITIALISING,
@@ -87,7 +87,7 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
 
       val imageURI = ref.putFile(mediaURI)
         .continueWithTask { ref.downloadUrl }
-        .addOnCompleteListener { it.result }  // TODO: uri encoding
+        .addOnCompleteListener { it.result }
         .await()
         .toString()
         .split("/o/")[1]

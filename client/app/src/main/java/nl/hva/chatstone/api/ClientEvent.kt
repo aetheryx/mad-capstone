@@ -14,16 +14,16 @@ import nl.hva.chatstone.api.model.input.IncomingCallOffer
 @Serializable
 sealed class ClientEvent {
   @Serializable
-  data class CallOfferEvent(val data: IncomingCallOffer): ClientEvent()
+  data class CallOfferEvent(val data: IncomingCallOffer) : ClientEvent()
 
   @Serializable
-  data class CallResponseEvent(val data: CallResponse): ClientEvent()
+  data class CallResponseEvent(val data: CallResponse) : ClientEvent()
 
   @Serializable
-  data class CallHangUpEvent(val data: Int): ClientEvent()
+  data class CallHangUpEvent(val data: Int) : ClientEvent()
 
   @Serializable
-  data class WebRTCPayloadEvent(val data: WebRTCPayload): ClientEvent()
+  data class WebRTCPayloadEvent(val data: WebRTCPayload) : ClientEvent()
 
   fun toJSON() = buildJsonObject {
     val self = this@ClientEvent

@@ -39,6 +39,10 @@ fun HomeScreen(
     },
     modifier = modifier
   ) {
-    ConversationsList(navController, conversationsVM, Modifier.padding(top = it.calculateTopPadding()))
+    ConversationsList(
+      navController,
+      conversationsVM,
+      Modifier.padding(top = it.calculateTopPadding())
+    )
   }
 }

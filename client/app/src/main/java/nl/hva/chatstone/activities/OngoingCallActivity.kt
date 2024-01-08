@@ -10,7 +10,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import nl.hva.chatstone.ui.theme.ChatstoneTheme
-import nl.hva.chatstone.ui.theme.surfaceContainer
 import nl.hva.chatstone.ui.windows.OngoingCallWindow
 
 private val permissions = arrayOf(
