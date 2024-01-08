@@ -1,5 +1,6 @@
 package nl.hva.chatstone.ui.composables
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
@@ -18,13 +19,14 @@ import nl.hva.chatstone.R
 fun CredentialTextField(
   value: String,
   onChanged: (String) -> Unit,
+  @StringRes label: Int,
   error: String? = null,
   visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
   TextField(
     value = value,
     onValueChange = { onChanged(it) },
-    label = { Text(stringResource(R.string.password)) },
+    label = { Text(stringResource(label)) },
     modifier = Modifier.fillMaxWidth(),
     colors = TextFieldDefaults.colors(),
     shape = TextFieldDefaults.shape,

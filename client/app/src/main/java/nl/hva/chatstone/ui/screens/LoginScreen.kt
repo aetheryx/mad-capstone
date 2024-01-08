@@ -111,11 +111,13 @@ fun CredentialFields(
   var password by remember { mutableStateOf("") }
 
   CredentialTextField(
+    label = R.string.username,
     value = username,
     onChanged = { username = it },
   )
 
   CredentialTextField(
+    label = R.string.password,
     value = password,
     onChanged = { password = it },
     error = error,

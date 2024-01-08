@@ -183,12 +183,14 @@ private fun CredentialFields(
   passwordError: String?,
 ) {
   CredentialTextField(
+    label = R.string.username,
     value = username.value,
     onChanged = { username.value = it },
     error = usernameError
   )
 
   CredentialTextField(
+    label = R.string.password,
     value = password.value,
     onChanged = { password.value = it },
     error = passwordError,
