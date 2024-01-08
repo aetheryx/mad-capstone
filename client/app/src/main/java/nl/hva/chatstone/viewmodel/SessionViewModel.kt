@@ -108,6 +108,7 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
 
   private suspend fun onReady(newToken: String): Boolean {
     chatstoneApi = ChatstoneApi.createApi(newToken)
+    val previousState = state.value ?: SessionState.INITIALISING
 
     val user = try {
       chatstoneApi.getMe()
@@ -121,6 +122,10 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
 
     websocket.start(user.id)
     conversationsVM.fetchConversations()
+    if (previousState != SessionState.INITIALISING) {
+      application.stopChatstoneService()
+      application.startChatstoneService()
+    }
 
     return true
   }

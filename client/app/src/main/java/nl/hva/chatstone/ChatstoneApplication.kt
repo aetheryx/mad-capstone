@@ -44,10 +44,19 @@ class ChatstoneApplication : Application(), Application.ActivityLifecycleCallbac
   override fun onCreate() {
     super.onCreate()
     registerActivityLifecycleCallbacks(this)
-
-    val intent = Intent(this, ChatstoneService::class.java)
-    startService(intent)
+    startChatstoneService()
   }
+
+  fun startChatstoneService() {
+    startService(getChatstoneServiceIntent())
+  }
+
+  fun stopChatstoneService() {
+    stopService(getChatstoneServiceIntent())
+  }
+
+  private fun getChatstoneServiceIntent() =
+    Intent(this, ChatstoneService::class.java)
 
   override fun onActivityStarted(activity: Activity) {
     if (activity is OngoingCallActivity) callActivity = activity
