@@ -25,11 +25,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import nl.hva.chatstone.R
+import nl.hva.chatstone.ui.composables.CredentialTextField
 import nl.hva.chatstone.viewmodel.SessionState
 import nl.hva.chatstone.viewmodel.SessionViewModel
 
@@ -52,12 +54,21 @@ fun LoginScreen(
     modifier = modifier.padding(16.dp),
     verticalArrangement = Arrangement.SpaceBetween
   ) {
-    Column {}
+    Column(
+      modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+      horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+      Icon(
+        painterResource(R.drawable.hva),
+        contentDescription = "Chatstone icon",
+        modifier = Modifier.size(112.dp)
+      )
+    }
 
     Column(
       verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
     ) {
-      LogInSection(
+      CredentialFields(
         error,
         onSubmit = sessionVM::logIn
       ) {
@@ -91,7 +102,7 @@ fun LoginScreen(
 }
 
 @Composable
-fun LogInSection(
+fun CredentialFields(
   error: String?,
   onSubmit: (String, String) -> Unit,
   buttonContent: @Composable RowScope.() -> Unit,
@@ -99,41 +110,16 @@ fun LogInSection(
   var username by remember { mutableStateOf("") }
   var password by remember { mutableStateOf("") }
 
-  TextField(
+  CredentialTextField(
     value = username,
-    onValueChange = { username = it },
-    label = { Text(stringResource(R.string.username)) },
-    modifier = Modifier.fillMaxWidth(),
-    colors = TextFieldDefaults.colors(),
-    shape = TextFieldDefaults.shape,
+    onChanged = { username = it },
   )
 
-  TextField(
+  CredentialTextField(
     value = password,
-    onValueChange = { password = it },
-    label = { Text(stringResource(R.string.password)) },
-    modifier = Modifier.fillMaxWidth(),
-    colors = TextFieldDefaults.colors(),
-    shape = TextFieldDefaults.shape,
-    isError = error != null,
-    visualTransformation = PasswordVisualTransformation(),
-    supportingText = {
-      if (error != null) {
-        Text(
-          error,
-          color = MaterialTheme.colorScheme.error,
-        )
-      }
-    },
-    trailingIcon = {
-      if (error != null) {
-        Icon(
-          Icons.Filled.Error,
-          contentDescription = "Error",
-          tint = MaterialTheme.colorScheme.error
-        )
-      }
-    }
+    onChanged = { password = it },
+    error = error,
+    visualTransformation = PasswordVisualTransformation()
   )
 
   Button(

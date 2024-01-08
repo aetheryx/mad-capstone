@@ -94,8 +94,12 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
         .let { Uri.encode(it) }
 
       val signupInput = SignupInput(username, password, imageURI)
-      val resp = chatstoneApi.signUp(signupInput)
-      onReady(resp.token)
+      try {
+        val resp = chatstoneApi.signUp(signupInput)
+        onReady(resp.token)
+      } catch (err: Exception) {
+        state.postValue(SessionState.CREDENTIAL_ERROR)
+      }
     }
   }
 
