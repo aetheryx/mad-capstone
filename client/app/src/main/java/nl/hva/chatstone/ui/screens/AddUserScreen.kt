@@ -1,5 +1,6 @@
 package nl.hva.chatstone.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -70,9 +72,12 @@ private fun AddUserView(navController: NavHostController, conversationsVM: Conve
   val createState by conversationsVM.createState.observeAsState()
   val isError = createState is ConversationCreateState.Errored
 
-  if (createState is ConversationCreateState.Created) {
-    navController.navigate("/conversations/${createState!!.id}") {
-      popUpTo("/conversations")
+  LaunchedEffect(createState) {
+    if (createState is ConversationCreateState.Created) {
+      Log.v("AddUserScreen", "navigating")
+      navController.navigate("/conversations/${createState!!.id}") {
+        popUpTo("/conversations")
+      }
     }
   }
 

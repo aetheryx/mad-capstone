@@ -1,5 +1,7 @@
 package nl.hva.chatstone.ui.windows
 
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
+import androidx.compose.animation.EnterTransition
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
@@ -47,7 +49,7 @@ fun ChatstoneAppWindow(sessionVM: SessionViewModel) {
   NavHost(
     navController,
     startDestination = startDestination,
-    modifier = Modifier.fillMaxSize()
+    modifier = Modifier.fillMaxSize(),
   ) {
     val modifier = Modifier
       .fillMaxSize()
@@ -61,16 +63,25 @@ fun ChatstoneAppWindow(sessionVM: SessionViewModel) {
       SignupScreen(navController, sessionVM, modifier)
     }
 
-    composable("/conversations") {
+    composable(
+      "/conversations",
+      popEnterTransition = { EnterTransition.None }
+    ) {
       HomeScreen(navController, conversationsVM, modifier)
     }
 
-    composable("/conversations/add") {
+    composable(
+      route = "/conversations/add",
+      enterTransition = { slideIntoContainer(SlideDirection.Start) },
+      popExitTransition = { slideOutOfContainer(SlideDirection.End) },
+    ) {
       AddUserScreen(navController, conversationsVM, modifier)
     }
 
     composable(
       route = "/conversations/{id}",
+      enterTransition = { slideIntoContainer(SlideDirection.Start) },
+      popExitTransition = { slideOutOfContainer(SlideDirection.End) },
       arguments = listOf(
         navArgument("id") {
           type = NavType.IntType
