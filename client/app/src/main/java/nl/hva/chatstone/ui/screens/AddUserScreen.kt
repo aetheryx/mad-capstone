@@ -18,7 +18,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -70,14 +70,15 @@ private fun AddUserView(navController: NavHostController, conversationsVM: Conve
   val createState by conversationsVM.createState.observeAsState()
   val isError = createState is ConversationCreateState.Errored
 
-  LaunchedEffect(createState) {
-    if (createState !is ConversationCreateState.Created) {
-      return@LaunchedEffect
-    }
-
-    conversationsVM.createState.postValue(ConversationCreateState.None())
+  if (createState is ConversationCreateState.Created) {
     navController.navigate("/conversations/${createState!!.id}") {
       popUpTo("/conversations")
+    }
+  }
+
+  DisposableEffect(Unit) {
+    onDispose {
+      conversationsVM.createState.postValue(ConversationCreateState.None())
     }
   }
 
