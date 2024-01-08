@@ -69,13 +69,13 @@ private fun DeclinedButtons(sessionVM: SessionViewModel) {
     icon = Icons.Filled.Call,
     label = "Call again",
     containerColor = MaterialTheme.colorScheme.secondaryContainer,
-    onClick = onClick@{
+    onClick = fun() {
       val state = callVM.callState.value
       val conversationID = when (state) {
         is CallState.Ringing -> state.conversationID
         else -> {
           sessionVM.callVM.exitActivity()
-          return@onClick
+          return
         }
       }
 
