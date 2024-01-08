@@ -110,6 +110,7 @@ class ChatstoneEventHandler(
       .setSmallIcon(R.drawable.hva)
       .setStyle(Notification.CallStyle.forIncomingCall(person, declineIntent, answerIntent))
       .setFullScreenIntent(answerIntent, true)
+      .setFlag(Notification.FLAG_INSISTENT, true)
       .setCategory(Notification.CATEGORY_CALL)
       .build()
 
