@@ -45,7 +45,7 @@ class WebRtcSessionManager(
   private val TAG = "WebRTCSessionManager"
 
   private val handlerThread by lazy {
-    val handlerThread = HandlerThread("webrtc_t", Process.THREAD_PRIORITY_BACKGROUND)
+    val handlerThread = HandlerThread("webrtc_t", Process.THREAD_PRIORITY_VIDEO)
     handlerThread.start()
     handlerThread
   }
