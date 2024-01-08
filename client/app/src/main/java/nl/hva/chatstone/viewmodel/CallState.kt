@@ -1,6 +1,6 @@
 package nl.hva.chatstone.viewmodel
 
-sealed class CallState() {
+sealed class CallState {
   sealed class Ringing(
     val conversationID: Int,
     val callID: Int

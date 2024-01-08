@@ -1,9 +1,6 @@
 package nl.hva.chatstone.ui.screens.conversation
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
@@ -52,7 +49,7 @@ fun MessageBar(
   conversationsVM: ConversationsViewModel,
   conversation: Conversation
 ) {
-  Column() {
+  Column {
     ReplyBar(conversationsVM)
     Divider()
     MessageBarTextField(conversationsVM, conversation)
@@ -92,7 +89,9 @@ private fun ReplyBar(conversationsVM: ConversationsViewModel) {
         colors = IconButtonDefaults.filledIconButtonColors(
           containerColor = MaterialTheme.colorScheme.inverseSurface
         ),
-        modifier = Modifier.size(24.dp).alpha(0.6f)
+        modifier = Modifier
+          .size(24.dp)
+          .alpha(0.6f)
       ) {
         Icon(
           Icons.Filled.Close,
@@ -101,7 +100,7 @@ private fun ReplyBar(conversationsVM: ConversationsViewModel) {
         )
       }
 
-      Row() {
+      Row {
         Text(
           "Replying to ",
           modifier = Modifier.alignByBaseline(),

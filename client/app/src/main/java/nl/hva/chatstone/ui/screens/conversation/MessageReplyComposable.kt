@@ -30,8 +30,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import nl.hva.chatstone.api.model.output.ConversationMessage
-import nl.hva.chatstone.viewmodel.ConversationsViewModel
-import nl.hva.chatstone.viewmodel.MessagesViewModel
 import kotlin.math.roundToInt
 
 @Composable
@@ -51,7 +49,9 @@ fun MessageReplyComposable(
     Icon(
       Icons.Default.Reply,
       contentDescription = "Reply",
-      modifier = Modifier.size(12.dp).scale(scaleX = -1f, scaleY = 1f)
+      modifier = Modifier
+        .size(12.dp)
+        .scale(scaleX = -1f, scaleY = 1f)
     )
 
     Text(

@@ -1,7 +1,6 @@
 package nl.hva.chatstone.webrtc.peer
 
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import nl.hva.chatstone.BuildConfig
@@ -23,7 +22,7 @@ import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
 import org.webrtc.audio.JavaAudioDeviceModule
 
-class StreamPeerConnectionFactory (
+class StreamPeerConnectionFactory(
   private val context: Context
 ) {
   private val TAG = "StreamPeerConnectionFactory"

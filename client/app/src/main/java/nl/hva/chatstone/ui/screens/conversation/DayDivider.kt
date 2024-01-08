@@ -22,7 +22,9 @@ fun DayDivider(timestamp: ZonedDateTime) {
   val formatted = dayDividerFormatter.format(timestamp)
 
   Box(
-    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(vertical = 8.dp)
   ) {
     Divider(
       modifier = Modifier.align(Alignment.Center),

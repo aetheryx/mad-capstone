@@ -14,10 +14,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import nl.hva.chatstone.ui.screens.AddUserScreen
-import nl.hva.chatstone.ui.screens.conversation.ConversationScreen
-import nl.hva.chatstone.ui.screens.home.HomeScreen
 import nl.hva.chatstone.ui.screens.LoginScreen
 import nl.hva.chatstone.ui.screens.SignupScreen
+import nl.hva.chatstone.ui.screens.conversation.ConversationScreen
+import nl.hva.chatstone.ui.screens.home.HomeScreen
 import nl.hva.chatstone.viewmodel.SessionState
 import nl.hva.chatstone.viewmodel.SessionViewModel
 
@@ -49,7 +49,9 @@ fun ChatstoneAppWindow(sessionVM: SessionViewModel) {
     startDestination = startDestination,
     modifier = Modifier.fillMaxSize()
   ) {
-    val modifier = Modifier.fillMaxSize().safeDrawingPadding()
+    val modifier = Modifier
+      .fillMaxSize()
+      .safeDrawingPadding()
 
     composable("/login") {
       LoginScreen(navController, sessionVM, modifier)

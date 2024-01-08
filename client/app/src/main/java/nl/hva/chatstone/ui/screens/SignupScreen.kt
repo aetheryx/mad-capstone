@@ -7,7 +7,6 @@ import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,8 +30,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import coil.request.ImageRequest
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import nl.hva.chatstone.R
 import nl.hva.chatstone.viewmodel.SessionState
 import nl.hva.chatstone.viewmodel.SessionViewModel
@@ -67,9 +66,11 @@ fun SignupScreen(
     // TODO: fix layout
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
-      modifier = Modifier.fillMaxWidth().clickable {
-        pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
-      }
+      modifier = Modifier
+        .fillMaxWidth()
+        .clickable {
+          pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+        }
     ) {
       AsyncImage(
         model,
