@@ -42,8 +42,15 @@ class NotificationChannelManager(
   fun createCallChannel(): NotificationChannel {
     val values = Channels.Calls
     val channel = NotificationChannel(values.id, ctx.getString(values.channelName), NotificationManager.IMPORTANCE_HIGH)
-    notificationManager.createNotificationChannel(channel)
 
+    val audioUri = resourceToURI(ctx, R.raw.ringtone)
+    val audioAttributes = AudioAttributes.Builder()
+      .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+      .build()
+
+    channel.setSound(audioUri, audioAttributes)
+
+    notificationManager.createNotificationChannel(channel)
     return channel
   }
 }
