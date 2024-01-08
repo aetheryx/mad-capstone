@@ -9,14 +9,13 @@ import nl.hva.chatstone.ChatstoneApplication
 import nl.hva.chatstone.R
 import nl.hva.chatstone.util.resourceToURI
 
-enum class Channels(
+private enum class Channels(
   @StringRes val channelName: Int,
   val id: String,
 ) {
   Messages(R.string.messages, "chatstone_messages"),
   Calls(R.string.calls, "chatstone_calls")
 }
-
 
 class NotificationChannelManager(
   private val application: ChatstoneApplication,
@@ -42,6 +41,9 @@ class NotificationChannelManager(
   fun createCallChannel(): NotificationChannel {
     val values = Channels.Calls
     val channel = NotificationChannel(values.id, ctx.getString(values.channelName), NotificationManager.IMPORTANCE_HIGH)
+
+    channel.enableVibration(true)
+    channel.vibrationPattern = longArrayOf(1000, 1000)
 
     val audioUri = resourceToURI(ctx, R.raw.ringtone)
     val audioAttributes = AudioAttributes.Builder()
