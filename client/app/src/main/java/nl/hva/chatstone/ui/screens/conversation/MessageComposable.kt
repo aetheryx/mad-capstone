@@ -103,8 +103,10 @@ private fun MessageInnerBox(
   var timestampEndPadding by remember { mutableStateOf(0.dp) }
   var timestampBottomPadding by remember { mutableStateOf(0.dp) }
   val timestampWidth = LocalDensity.current.run { (30 + 4).dp.toPx() }
+  
+  val onTextLayout = fun (layout: TextLayoutResult) {
+    if (layout.size.width == 0) return
 
-  val onTextLayout = { layout: TextLayoutResult ->
     if (layout.lineCount == 1 && timestampEndPadding == 0.dp && timestampBottomPadding == 0.dp) {
       timestampEndPadding = 36.dp
     } else if (layout.lineCount != 1 && timestampEndPadding != 0.dp) {

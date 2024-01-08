@@ -57,8 +57,8 @@ class MessagesViewModel(
       offset = 0
     )
 
-    messages.forEach { populateMessage(it) }
     data.addAll(messages)
+    messages.forEach { populateMessage(it) }
   }
 
   private fun populateMessage(message: ConversationMessage) {
