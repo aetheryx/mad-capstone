@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,10 +22,15 @@ sealed class ConversationCreateState(val id: Int?) {
 class ConversationsViewModel(
   private val application: ChatstoneApplication,
 ) : AndroidViewModel(application) {
+  private val TAG = "ConversationsViewModel"
   val sessionVM = application.sessionVM
   val messagesVM by lazy { MessagesViewModel(application) }
-  private val scope = CoroutineScope(Dispatchers.IO)
   private val chatstoneApi get() = sessionVM.chatstoneApi
+
+  private val scope = CoroutineScope(Dispatchers.IO)
+  private val handler = CoroutineExceptionHandler { _, throwable ->
+    Log.v(TAG, "Caught exception: $throwable")
+  }
 
   val me get() = sessionVM.me.value!!
 
@@ -33,7 +39,7 @@ class ConversationsViewModel(
 
   fun createConversation(username: String) {
     createState.value = ConversationCreateState.Creating()
-    scope.launch {
+    scope.launch(handler) {
       try {
         val user = chatstoneApi.findUser(username)
         val conversation = chatstoneApi.createConversation(CreateConversationInput(user.id))
@@ -60,7 +66,7 @@ class ConversationsViewModel(
     conversations[index] = conversation
   }
 
-  fun deleteConversation(conversation: Conversation) = scope.launch {
+  fun deleteConversation(conversation: Conversation) = scope.launch(handler) {
     chatstoneApi.deleteConversation(conversation.id)
   }
 
@@ -70,15 +76,13 @@ class ConversationsViewModel(
     messagesVM.messages[id]?.clear()
   }
 
-  fun fetchConversations() {
-    scope.launch {
-      val fullConversations = chatstoneApi.getConversations()
-      conversations.clear()
-      conversations.addAll(fullConversations)
+  fun fetchConversations() = scope.launch(handler) {
+    val fullConversations = chatstoneApi.getConversations()
+    conversations.clear()
+    conversations.addAll(fullConversations)
 
-      fullConversations.forEach {
-        messagesVM.fetchConversationMessages(it)
-      }
+    fullConversations.forEach {
+      messagesVM.fetchConversationMessages(it)
     }
   }
 }

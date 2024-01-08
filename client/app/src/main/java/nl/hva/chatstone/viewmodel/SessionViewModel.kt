@@ -2,6 +2,7 @@ package nl.hva.chatstone.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -10,6 +11,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -36,10 +38,15 @@ val Context.sessionDataStore by preferencesDataStore(name = "session")
 val sessionTokenKey = stringPreferencesKey("session_token")
 
 class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel(application) {
+  private val TAG = "SessionViewModel"
   var chatstoneApi = ChatstoneApi.createApi("")
-  private val scope = CoroutineScope(Dispatchers.IO)
   private val storage = Firebase.storage("gs://${BuildConfig.FIREBASE_BUCKET}")
   private var listening = false
+
+  private val scope = CoroutineScope(Dispatchers.IO)
+  private val handler = CoroutineExceptionHandler { _, throwable ->
+    Log.v(TAG, "Caught exception: $throwable")
+  }
 
   val targetURL = mutableStateOf<String?>(null)
 
@@ -53,7 +60,7 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
   val me: MutableLiveData<User> = MutableLiveData()
 
   init {
-    scope.launch {
+    scope.launch(handler) {
       val data = application.sessionDataStore.data.first()
       val isValid = data[sessionTokenKey]?.let { onReady(it) } ?: false
       if (!isValid) {
@@ -65,7 +72,7 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
   fun logIn(username: String, password: String) {
     state.value = SessionState.LOGGING_IN
 
-    scope.launch {
+    scope.launch(handler) {
       val isValid = try {
         val resp = chatstoneApi.logIn(LoginInput(username, password))
         onReady(resp.token)
@@ -82,7 +89,7 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
   fun signUp(username: String, password: String, mediaURI: Uri) {
     state.value = SessionState.LOGGING_IN
 
-    scope.launch {
+    scope.launch(handler) {
       val ref = storage.reference.child("profile_pictures/$username.png")
 
       val imageURI = ref.putFile(mediaURI)
@@ -103,7 +110,7 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
     }
   }
 
-  fun signOut() = scope.launch {
+  fun signOut() = scope.launch(handler) {
     application.sessionDataStore.edit { it.remove(sessionTokenKey) }
     state.postValue(SessionState.STALE)
     me.postValue(null)
@@ -134,7 +141,7 @@ class SessionViewModel(val application: ChatstoneApplication) : AndroidViewModel
     return true
   }
 
-  fun listenForEvents() = scope.launch {
+  fun listenForEvents() = scope.launch(handler) {
     synchronized(this) {
       if (listening) return@launch
       listening = true

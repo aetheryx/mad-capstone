@@ -1,9 +1,11 @@
 package nl.hva.chatstone.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,11 +17,15 @@ import nl.hva.chatstone.api.model.output.ConversationMessage
 class MessagesViewModel(
   val application: ChatstoneApplication
 ) : AndroidViewModel(application) {
+  private val TAG = "MessagesViewModel"
   private val sessionVM = application.sessionVM
   private val conversationsVM = sessionVM.conversationsVM
 
-  private val scope = CoroutineScope(Dispatchers.IO)
   private val chatstoneApi get() = sessionVM.chatstoneApi
+  private val scope = CoroutineScope(Dispatchers.IO)
+  private val handler = CoroutineExceptionHandler { _, throwable ->
+    Log.v(TAG, "Caught exception: $throwable")
+  }
 
   val messages = HashMap<Int, SnapshotStateList<ConversationMessage>>()
   val messageReply = MutableLiveData<ConversationMessage>()
@@ -35,7 +41,7 @@ class MessagesViewModel(
   }
 
   fun sendMessage(conversation: Conversation, content: String) {
-    scope.launch {
+    scope.launch(handler) {
       val input = CreateMessageInput(
         content = content,
         replyToId = messageReply.value?.id

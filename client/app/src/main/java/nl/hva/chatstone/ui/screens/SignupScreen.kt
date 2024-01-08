@@ -161,7 +161,8 @@ private fun ImagePicker(
     modifier = Modifier
       .fillMaxWidth()
       .clickable {
-        pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+        val request = PickVisualMediaRequest(PickVisualMedia.ImageOnly)
+        pickMedia.launch(request)
       }
   ) {
     AsyncImage(
